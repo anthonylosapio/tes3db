@@ -1,6 +1,6 @@
-# Data files
-data/*.json
-data/**/*.json
+# Data files - ignore large JSON files
+tes3db/JSONReader/data/*.json
+tes3db/JSONReader/data/**/*.json
 
 # .NET / Visual Studio
 bin/
