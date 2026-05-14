@@ -1,0 +1,45 @@
+# Data files - ignore large JSON files
+tes3db/JSONReader/data/*.json
+tes3db/JSONReader/data/**/*.json
+
+# .NET / Visual Studio
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+.vs/
+.vscode/
+*.user
+*.suo
+*.sln.iml
+*.csproj.user
+.nuget/
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/packages/
+.nuget/NugetSolver
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local environment variables
+.env
+.env.local
