@@ -10,6 +10,10 @@ namespace MorrowindNPCExtractor.dataextractor
         static void Main()
         {
             var sw = Stopwatch.StartNew();
+
+            bool includeColumnHeadings = false;
+            string outputFileName = "AllNpc_NoHeadings.csv";
+
             List<Models.Npc> npcs = new List<Models.Npc>();
             List<Models.Cell> cells = new List<Models.Cell>();
             List<Models.Expansion> expansions = new List<Models.Expansion>();
@@ -113,14 +117,14 @@ namespace MorrowindNPCExtractor.dataextractor
 
             Console.WriteLine("Writing output file...");
 
-            WriteNpcCsv("AllNpc.csv", npcs);
+            WriteNpcCsv(outputFileName, npcs, includeColumnHeadings);
             sw.Stop();
             Console.WriteLine($"Runtime: {sw.Elapsed}");
         }//end of Main
 
 
 
-        static void WriteNpcCsv(string filePath, List<Npc> data)
+        static void WriteNpcCsv(string filePath, List<Npc> data, bool includeColumnHeadings)
         {
             if (string.IsNullOrWhiteSpace(filePath))
                 throw new ArgumentException("File path cannot be empty.");
@@ -131,19 +135,22 @@ namespace MorrowindNPCExtractor.dataextractor
             // Use UTF-8 encoding for compatibility
             using (var writer = new StreamWriter(filePath, false, Encoding.UTF8))
             {
-                // Write header
-                string header = "Id,Name,Race,Class,Faction,Flags,Gender,IsEssential,IsPersistent,Inventory,Spells,";
-                header += "Location,SubLocation,CellName,Region,IsInterior,Expansion,";
-                header += "Level,Health,Magicka,Fatigue,Hello,Fight,Flee,Alarm,Disposition,Reputation,Rank,Gold,";
-                header += "No_Services,BARTERS_WEAPONS,BARTERS_ARMOR,BARTERS_REPAIR_ITEMS,BARTERS_INGREDIENTS,BARTERS_ALCHEMY,BARTERS_BOOKS,";
-                header += "BARTERS_CLOTHING,BARTERS_LIGHTS,BARTERS_MISC_ITEMS,BARTERS_LOCKPICKS,BARTERS_PROBES,BARTERS_APPARATUS,";
-                header += "BARTERS_ENCHANTED_ITEMS,OFFERS_SPELLMAKING,OFFERS_SPELLS,OFFERS_REPAIRS,OFFERS_ENCHANTING,OFFERS_TRAINING,OFFERS_TRAVEL,";
-                header += "Strength,Intelligence,Willpower,Agility,Speed,Endurance,Personality,Luck,";
-                header += "Acrobatics,Alchemy,Alteration,Armorer,Athletics,Axe,Block,BluntWeapon,Conjuration,Destruction,Enchant,";
-                header += "HandToHand,HeavyArmor,Illusion,LightArmor,LongBlade,Marksman,MediumArmor,Mercantile,Mysticism,";
-                header += "Restoration,Security,ShortBlade,Sneak,Spear,Speechcraft,Unarmored";
+                if (includeColumnHeadings) {
+                    string header = "Id,Name,Race,Class,Faction,Flags,Gender,IsEssential,IsPersistent,Inventory,Spells,";
+                    header += "Location,SubLocation,CellName,Region,IsInterior,Expansion,";
+                    header += "Level,Health,Magicka,Fatigue,Hello,Fight,Flee,Alarm,Disposition,Reputation,Rank,Gold,";
+                    header += "No_Services,BARTERS_WEAPONS,BARTERS_ARMOR,BARTERS_REPAIR_ITEMS,BARTERS_INGREDIENTS,BARTERS_ALCHEMY,BARTERS_BOOKS,";
+                    header += "BARTERS_CLOTHING,BARTERS_LIGHTS,BARTERS_MISC_ITEMS,BARTERS_LOCKPICKS,BARTERS_PROBES,BARTERS_APPARATUS,";
+                    header += "BARTERS_ENCHANTED_ITEMS,OFFERS_SPELLMAKING,OFFERS_SPELLS,OFFERS_REPAIRS,OFFERS_ENCHANTING,OFFERS_TRAINING,OFFERS_TRAVEL,";
+                    header += "Strength,Intelligence,Willpower,Agility,Speed,Endurance,Personality,Luck,";
+                    header += "Acrobatics,Alchemy,Alteration,Armorer,Athletics,Axe,Block,BluntWeapon,Conjuration,Destruction,Enchant,";
+                    header += "HandToHand,HeavyArmor,Illusion,LightArmor,LongBlade,Marksman,MediumArmor,Mercantile,Mysticism,";
+                    header += "Restoration,Security,ShortBlade,Sneak,Spear,Speechcraft,Unarmored";
 
-                writer.WriteLine(header);
+                    writer.WriteLine(header);
+                }
+                // Write header
+
 
                 // Write each record
                 foreach (var item in data)
