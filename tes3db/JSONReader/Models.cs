@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace MorrowindNPCExtractor.dataextractor
+namespace tes3db.JSONReader
 {
     public class Models
     {

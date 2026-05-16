@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 using System.Xml.Linq;
-using static MorrowindNPCExtractor.dataextractor.Models;
+using tes3db.JSONReader;
 
-namespace MorrowindNPCExtractor.dataextractor
+namespace tes3db.JSONReader
 {
     public class Functions
     {
@@ -75,7 +75,7 @@ namespace MorrowindNPCExtractor.dataextractor
 
         public static Models.Attributes SetAttributes(JsonElement element)
         {
-            Attributes attributes = new Attributes();
+            Models.Attributes attributes = new Models.Attributes();
             attributes.Strength = element[0].GetInt32();
             attributes.Intelligence = element[1].GetInt32();
             attributes.Willpower = element[2].GetInt32();
