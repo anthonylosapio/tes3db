@@ -21,6 +21,7 @@ tes3db will look for a npc.json file and handle it accordingly so that Expansion
 
 ### Options
 tes3db.exe [options]
+|||
 |-----------------------|-------------------------------------------------------------------|
 |--type, -t <type>      |  Output type: csv or sql (default: csv)                           |
 |--sql-type, -s <type>  |  SQL type: mysql or postgresql (default: postgresql)              |
