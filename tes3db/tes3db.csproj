@@ -20,5 +20,10 @@
 	  <EmbeddedResource Remove="tes3db\data\**" />
 	  <None Remove="tes3db\data\**" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove=".gitignore" />
+	  <None Remove="README.md" />
+	</ItemGroup>
 	
 </Project>
