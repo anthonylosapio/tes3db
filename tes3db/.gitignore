@@ -1,4 +1,7 @@
 # Data files - ignore large JSON files
+/*.json
+tes3db/*.json
+tes3db/JSONReader/*.json
 tes3db/JSONReader/data/*.json
 tes3db/JSONReader/data/**/*.json
 

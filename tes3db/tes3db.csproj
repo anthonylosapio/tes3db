@@ -5,36 +5,20 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <StartupObject>tes3db.Program</StartupObject>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Bloodmoon.json" />
-    <None Remove="morrowind.json" />
-    <None Remove="npc.json" />
-    <None Remove="npc_AutoCalcOff.json" />
-    <None Remove="TamrielRebuilt.json" />
-    <None Remove="Tribunal.json" />
-  </ItemGroup>
+	<PropertyGroup>
+		<PublishSingleFile>true</PublishSingleFile>
+		<SelfContained>true</SelfContained>
+		<RuntimeIdentifier>win-x64</RuntimeIdentifier>
+		<PublishReadyToRun>false</PublishReadyToRun>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Content Include="JSONReader\data\Bloodmoon.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="JSONReader\data\morrowind.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="JSONReader\data\npc.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="JSONReader\data\npc_AutoCalcOff.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="JSONReader\data\TamrielRebuilt.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="JSONReader\data\Tribunal.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
+	<ItemGroup>
+	  <Compile Remove="tes3db\data\**" />
+	  <EmbeddedResource Remove="tes3db\data\**" />
+	  <None Remove="tes3db\data\**" />
+	</ItemGroup>
+	
 </Project>
