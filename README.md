@@ -7,7 +7,7 @@ This tool requires you to first use tes3conv to convert .esp & .esm files to jso
 ## Usage
 Place json files in the same directory as tes3db.exe.
 
-The file name will be used to populate the Expansion column of the output. For example, if the file is named "Morrowind.json", the Expansion column will be populated with "Morrowind". If the file is named "Tribunal.json", the Expansion column will be populated with "Tribunal". If the file is named "Bloodmoon.json", the Expansion column will be populated with "Bloodmoon". If the file is named "Tamriel Rebuilt.json", the Expansion column will be populated with "Tamriel Rebuilt".
+The file name will be used to populate the Expansion column of the output. For example, if the file is named "Morrowind.json", the Expansion column will be populated with "Morrowind".
 
 If converting multiple json files at once, prefix the file name with a number so that they will be processed in the correct order. 
 Example: 01Morrowind.json, 02Tribunal.json, 03Bloodmoon.json, 04Tamriel Rebuilt.json. This will ensure NPC's are assigned the correct
@@ -21,7 +21,6 @@ tes3db will look for a npc.json file and handle it accordingly so that Expansion
 
 ### Options
 tes3db.exe [options]
-|Options:               |                                                                   |
 |-----------------------|-------------------------------------------------------------------|
 |--type, -t <type>      |  Output type: csv or sql (default: csv)                           |
 |--sql-type, -s <type>  |  SQL type: mysql or postgresql (default: postgresql)              |
