@@ -11,7 +11,7 @@ The file name will be used to populate the Expansion column of the output. For e
 
 If converting multiple json files at once, prefix the file name with a number so that they will be processed in the correct order. 
 Example: 01Morrowind.json, 02Tribunal.json, 03Bloodmoon.json, 04Tamriel Rebuilt.json. This will ensure NPC's are assigned the correct
-expansion as some NPC's appear in multiple .esm files. The leading digits will be stripped away before the expansion name is assigned.
+expansion as some NPC's appear in multiple .esm files. The leading digits will be stripped away before the expansion name is assigned so 01Morrowind.json will still become "Morrowind" in the Expansion column.
 
 
 ### npc.json
@@ -29,3 +29,8 @@ tes3db.exe [options]
 |`--no-headers`           |  Exclude column headers in (CSV only)                             |
 |`--no-skip`              |  Wont's skip NPCs missing Cell,Region,Attribute or Skill poperties|
 |`--help`                 |  Show this help message                                           |
+
+
+## sql
+
+## Site
