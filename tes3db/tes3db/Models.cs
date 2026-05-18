@@ -120,4 +120,10 @@ public class Models
         public string? SubLocation { get; set; }
         public List<string>? CellRefs { get; set; }
     }
+
+    public class FieldValueandType { 
+    
+        public object? Value { get; set; }
+        public Type? Type { get; set; }
+    }
 }

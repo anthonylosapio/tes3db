@@ -84,4 +84,4 @@ CREATE TABLE npc (
     "Speechcraft"             INTEGER,
     "Unarmored"               INTEGER
 );
-ALTER TABLE allnpc ADD PRIMARY KEY ("Id");
+ALTER TABLE npc ADD PRIMARY KEY ("Id");
