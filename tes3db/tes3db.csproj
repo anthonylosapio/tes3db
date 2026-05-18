@@ -25,5 +25,9 @@
 	  <None Remove=".gitignore" />
 	  <None Remove="README.md" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Include="sql\postgresql\data_cleanup_postgres.sql" />
+	</ItemGroup>
 	
 </Project>

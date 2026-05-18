@@ -1,5 +1,5 @@
 CREATE TABLE npc (
-    "Id"                      VARCHAR(23),
+    "Id"                      VARCHAR(23) COLLATE "C",
     "Name"                    VARCHAR(31),
     "Race"                    VARCHAR(17),
     "Class"                   VARCHAR(24),
