@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
+using static tes3db.Models;
 
 public class FileWriter
 {
@@ -29,11 +30,11 @@ public class FileWriter
             {
 
                 string line = string.Empty;
-                List<object?> values = GetPropertyValues(npc, typeof(Models.Npc));
+                List<FieldValueandType> values = GetPropertyValues(npc, typeof(Models.Npc));
                 int c = 0;
                 foreach (var value in values)
                 {
-                    string item = value?.ToString() ?? "";
+                    string item = value.Value?.ToString() ?? "";
                     line += EscapeCsvField(item);
                     if (c < values.Count - 1) line += ",";
                     c++;
@@ -52,7 +53,7 @@ public class FileWriter
             throw new ArgumentException("File path cannot be empty.");
         
         string q = (sqlType=="postgresql") ? "\"" : "`";
-        
+        //Write the start of the INSERT statement with column names
         string queryStart = $"INSERT INTO {q}{tableName}{q} (";
         foreach(string col in cols)
         {
@@ -61,18 +62,20 @@ public class FileWriter
             counter++;
         }
         queryStart += ") VALUES ";
+        
         using (var writer = new StreamWriter(filePath, false, Encoding.UTF8))
         {
             writer.WriteLine(queryStart);
+        // Write the values for each rows to insert
             counter = 0;
             foreach(var npc in data)
             {
                 string queryLine = "(";
-                List<object?> values = GetPropertyValues(npc, typeof(Models.Npc));
+                List<FieldValueandType> values = GetPropertyValues(npc, typeof(Models.Npc));
                 int c = 0;
                 foreach (var value in values) {
-                    string item = value?.ToString() ?? "";
-                    queryLine += $"'{item.Replace("'", "''")}'";
+                    string field = FormatValueForSql(value);
+                    queryLine += field;
                     if(c < values.Count - 1) queryLine += ",";
                     c++;
                 }
@@ -130,10 +133,13 @@ public class FileWriter
         return propertyNames;
     }
 
-    private static List<object?> GetPropertyValues(object instance, Type type)
+    private static List<FieldValueandType> GetPropertyValues(object instance, Type type)
     {
-        var propertyValues = new List<object?>();
+        //var propertyValues = new List<object?>();
+
         var properties = type.GetProperties();
+
+        var fieldValueandType = new List<FieldValueandType>();
 
         var targetTypes = new HashSet<Type>
         {
@@ -144,7 +150,7 @@ public class FileWriter
 
         var serializeTypes = new HashSet<Type>
         {
-            typeof(List<Models.InventoryItem>),
+            typeof(List<InventoryItem>),
             typeof(List<string>)
         };
 
@@ -153,12 +159,24 @@ public class FileWriter
             if (targetTypes.Contains(property.PropertyType))
             {
                 var value = property.GetValue(instance);
-                propertyValues.Add(value);
+                var newFieldValueandType = new FieldValueandType
+                {
+                    Value = value,
+                    Type = property.PropertyType
+                };
+                fieldValueandType.Add(newFieldValueandType);
+               // propertyValues.Add(value);
             }else if(serializeTypes.Contains(property.PropertyType))
             {
                 var value = property.GetValue(instance);
                 string serializedValue = JsonSerializer.Serialize(value);
-                propertyValues.Add(serializedValue);
+                var newFieldValueandType = new FieldValueandType
+                {
+                    Value = serializedValue,
+                    Type = property.PropertyType
+                };
+                fieldValueandType.Add(newFieldValueandType);
+               // propertyValues.Add(serializedValue);
             }
             else
             {
@@ -166,12 +184,29 @@ public class FileWriter
                 if (nestedInstance is not null)
                 {
                     var nestedValues = GetPropertyValues(nestedInstance, property.PropertyType);
-                    propertyValues.AddRange(nestedValues);
+                    fieldValueandType.AddRange(nestedValues);
                 }
             }
         }
 
-        return propertyValues;
+        return fieldValueandType;
     }
+
+    private static string FormatValueForSql(FieldValueandType obj)
+    {
+        if(obj.Type == typeof(int?))
+        {
+            return obj.Value?.ToString() ?? "NULL";
+        }
+        if (obj.Type == typeof(bool?))
+        {
+            string returnValue = obj.Value?.ToString() ?? "False";
+            return $"'{returnValue}'";
+        }
+
+        string s = obj.Value?.ToString() ?? "";
+        return $"'{s.Replace("'", "''")}'";
+    }
+
 }
 

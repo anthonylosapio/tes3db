@@ -1,5 +1,5 @@
 CREATE TABLE npc (
-    "Id"                      VARCHAR(23),
+    "Id"                      VARCHAR(23) COLLATE "C",
     "Name"                    VARCHAR(31),
     "Race"                    VARCHAR(17),
     "Class"                   VARCHAR(24),
@@ -84,4 +84,4 @@ CREATE TABLE npc (
     "Speechcraft"             INTEGER,
     "Unarmored"               INTEGER
 );
-ALTER TABLE allnpc ADD PRIMARY KEY ("Id");
+ALTER TABLE npc ADD PRIMARY KEY ("Id");

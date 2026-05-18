@@ -1,5 +1,5 @@
 CREATE TABLE `npc` (
-    `Id`                      VARCHAR(23),
+    `Id`                      VARCHAR(23) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin,
     `Name`                    VARCHAR(31),
     `Race`                    VARCHAR(17),
     `Class`                   VARCHAR(24),
