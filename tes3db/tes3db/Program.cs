@@ -196,14 +196,17 @@ class Program
             foreach (var npc in npcs)
             {
                 if (npc.CellName == null && npc.Region == null) Console.WriteLine("CellName & Region mssing - " + npc.Id);
-                if (npc.Attributes is null) Console.WriteLine($"Attributes missing - {npc.Id}");
+                if (npc.Attributes == null) Console.WriteLine($"Attributes missing - {npc.Id}");
                 if (npc.Skills == null) Console.WriteLine($"Skills missing - " + npc.Id);
+                if(npc.Expansion == null) Console.WriteLine($"Expansion missing - " + npc.Id);
             }
 
             // Remove objects from list that we don't want to include
             npcs.RemoveAll(item => item.Attributes == null);
             npcs.RemoveAll(item => (item.CellName == null && item.Region == null));
         }
+        //Remove template npcs
+        npcs.RemoveAll(item => (item.Expansion == null));
 
         Console.WriteLine("Writing output file...");
 
