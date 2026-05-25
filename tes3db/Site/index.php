@@ -10,6 +10,7 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link href="bootstrap.css" rel="stylesheet">
+		<script src="trie.js"></script>
 		<script src="main.js?<?php echo time(); ?>"></script>
 		<script>
 			window.onload = function() {
@@ -111,6 +112,7 @@
 			
 			.filterHeading{
 				font-weight: bold;
+				color: #c7c7c7;
 			}
 			.filterCollapsible{
 				max-height: 60vh;
@@ -122,6 +124,29 @@
 				color: #c7c7c7;
 				background-color: black;
 				margins: 1px 3px 1px 3px;
+			}
+			
+			.postDateCol{
+				color: #6F541D;
+				text-align: right;
+				font-size: 0.9em;
+			}
+			.postTitleCol{
+				color: #6F541D;
+				text-align: left;
+				font-size: 1.2em;
+				font-weight: bold;
+			}
+			.search-input{
+				background-color: black;
+				color: white;
+			}
+			.search-result-type{
+				color: #c7c7c7;
+				font-size: .8em;
+			}
+			.search-result-name{
+				font-size: 1.1em;
 			}
 		</style>
  	</head>
@@ -210,18 +235,34 @@
 							<ul>
 								<li>Run Query</li>
 								<ul>
-									<li>Select how you want the data to be aggregated; Average, Sum, Min, Max, and Count (Count is a special case where it will always</li>
+									<li>Select how you want the data to be aggregated:
+										<ul>
+											<li> AVG - Results will by sorted by the averages value for the group</li>
+											<li> SUM - Results sorted by the sum total for the group</li>
+											<li> MIN - Results sorted by the smallest/minimum value found in the group</li>
+											<li> MAX - Results sorted by the largest/maximum value gound in the group</li>
+											<li> COUNT - Results sorted by the total number of NPCs in the group</li>
+										</ul>
+									</li>
 									<li>Choose which data point you want the aggregation applied to (Level, Health, Intelligence, Long Blade, etc)</li>
 									<li>Select how you want the NPCs to be grouped (Class, Faction, Race, Gender, Expansion)</li>
-									<li>Expand the filters and un-check anything you want to exclude from the results (for example, if you only want to include NPCs from Tamriel Rebuilt, expand the "Expansion" section and un-select Morrowind, Tribunal & Bloodmoon)</li>
-									<li>Click the Run Query button</li>								
+									<li>Adjust the minimum number of NPCs you want to include to prevent small groups from skewing the results</li>
+									<li>Expand the filters and un-check anything you want to exclude from the results</li>
+									<li>Click the Run Query button</li>
+									<li>Examples:
+										<ul>
+											<li>To find the Average level of NPCs in each Expansion choose: Expansion - AVG - Level</li>
+											<li>To find out which faction has the most bartering gold choose: Faction - SUM - Gold</li> 
+											<li>To find out where the luckiest NPC lives choose (spoiler, there's a tie): Location - MAX - Luck</li>
+										</ul>
+									</li>
 								</ul>
 								<li>Find NPCs</li>
 								<ul>
 									<li>Select How many NPC's you want to include in the results</li>
 									<li>Choose which data point you want the NPC's sorted by</li>
 									<li>Expand the filters and un-check anything you want to exclude from the results</li>
-									<li>Click the Run Query button</li>			
+									<li>Click the Find NPCs button</li>			
 								</ul>
 							</ul>
 						</div>
@@ -231,19 +272,48 @@
 		<!-- END RESULTS ROW -->
 		<!-- BEGIN CONTENT ROW -->
 			<div class="row gx-1 my-1">
+				<div class="col-12 col-md-4">
+					<div class="content content-border h-100 p-2">
+						<div class="text-center">
+							Search the database:
+							<input type="text" id="objectSearchInput" class="search-input w-100" />
+							
+						</div>
+						<hr>
+						<div class="row" id="searchResultsDiv">
+						
+						</div>
+					</div>
+				</div>
+				<div class="col-12 col-md-8">
+					<div class="content content-border">
+						<div id="postContainer"></div>
+						<div class="d-flex justify-content-end">
+							<div class="btn filterBtn" id="pastUpdatesButton" data-state="show"> show past updates</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row gx-1 my-1">
 				<div class="col">
 					<div class="content content-border">
+						<div class="text-center">Notes about the data:</div>
 						<p>
-						
-						</p>
-						<p>Notes about the data:<br>
 						<ul>
-							<li>Only NPCs that are placed in a cell are included here. NPCs added by scripts may not appear in the data.</li>
-							<li>Classes are combined with their service offering equivalent by removing the word "serivce" from the end of class names that contained it (eg. "Wise Woman Service" becomes just "Wise Woman", "Smith Service" => "Smith" etc.).</li>
-							<li>Some names, races, & factions from Tamriel Rebuilt are altered to be more human readable ("T_Glb_Jeweler"=>"Jeweler", "TR_Fact_SyvvitTong"=>"Syvvit Tong")</li>
-							<li>All Khajiit racial variations were converted to "Khajiit" for now, at some point I will update the data to bring those back in.</li>
-							<li>All alterations to the raw data can be seen in the SQL file here.</li>
-							<li><a href="https://github.com/Greatness7/tes3conv">tes3conv</a> was used to convert the game files to json so that NPC's could be extracted.</li>
+							<li><b>13,690</b> NPCs Currently Included in the database from the following game files:
+								<ul>
+									<li><b>Morrowind.esm</b>, <b>Tribunal.esm</b>, and <b>Bloodmoon.esm</b> - <i>GOTY Edition</i></li>
+									<li><b>TR_Mainland.esm</b> - 2025-08-12 release <i>Grasping Fortune</i></li>
+									<li><b>Cyr_Main.esm</b> - 2025-05-14 release <i>Abecean Shores</i></li>
+									<li><b>Sky_Main.esm</b> - 2025-05-05 release <i>Dragonstar</i></li>
+								</ul>
+							</li>
+
+							<li>Classes are combined with their service offering equivalent by removing the word <i>serivce</i> from the end of class names (eg. <i>Wise Woman Service</i> becomes just Wise Woman, <i>Smith Service</i> -> Smith etc)</li>
+							<li>Class, Race, & Faction names from Project Tamriel mods were altered to be more human readable and match the names from the base game (T_Cyr_MagesGuild -> <i>Mages Guild</i>, TR_Fact_SyvvitTong -> <i>Syvvit Tong</i>)</li>
+							<li>All Khajiit racial variations were converted to <i>Khajiit</i> for now, at some point I will update the data to bring those back in</li>
+							<li>All alterations to the raw data can be found in the SQL file <a href="https://github.com/anthonylosapio/tes3db/blob/main/tes3db/sql/data_cleanup.sql" target="_blank">here</a>.</li>
+							<li><a href="https://github.com/Greatness7/tes3conv">tes3conv</a> was used to convert the game files to json so that NPC's could be extracted</li>
 						</ul>
 						</p>
 					</div>
@@ -253,7 +323,9 @@
 			<div class="row gx-0 my-1 text-center">
 				<div class="col">
 					<div class="content content-border">
-						See something wrong? Missing data or a bug? Please let me know! <a href="mailto: morrowind@tes3db.com">morrowind@tes3db.com</a>
+						<p>See something wrong? Missing data or a bug? Please let me know! <a href="mailto: contact@tes3db.com">contact@tes3db.com</a></p>
+						<p>Have a popular landmass mod that doesn't conflict with the base game? Let me know and I will include it.</p>
+		
 					</div>
 				</div>
 			</div>
@@ -262,22 +334,7 @@
 			<div class="row gx-1 my-1 text-center">
 				<div class="col">				
 					<div class="content-border content">
-						
-						<p>This data has been queried <span style="font-weight: bold;">
-						<?php 
-							try{
-								require_once __DIR__ . '/config.php';
-								$sql = "SELECT table_rows FROM information_schema.tables WHERE table_schema = 'morrowind' AND table_name = 'logs'";
-								//$sql = "SELECT COUNT(1) FROM logs";
-								$result = $con->query($sql);
-								$row   = mysqli_fetch_row($result);
-								echo $row[0];
-							}catch(Exception $e){
-								echo $e->getMessage();
-							}
-						?>
-						</span> times.
-						</p>
+
 					</div>
 				</div>
 			</div>

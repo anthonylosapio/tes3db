@@ -37,6 +37,12 @@ class Controller
 				case 'NPC':
 					$this->getNPC($data);
 					break;
+				case 'Posts':
+					$this->getPosts();
+					break;
+				case 'Search':
+					$this->GetSearchObjectArray();
+					break;
                 default:
                     http_response_code(400);
                     echo json_encode(['error' => 'Unknown action']);
@@ -54,6 +60,13 @@ class Controller
         header('Content-Type: application/json');
         echo $jsonData;
     }
+	
+	
+	private function getSearchObjectArray(){
+		$jsonData = $this->service->GetSearchObjectArray();
+        header('Content-Type: application/json');
+        echo $jsonData;
+	}
 
     private function runQuery(string $data, bool $isAgg)
     {
@@ -72,6 +85,12 @@ class Controller
 	private function getNPC(string $data)
 	{
 		$jsonData = $this->service->GetNpc($data);
+        header('Content-Type: application/json');
+        echo $jsonData;
+	}
+	
+	private function getPosts(){
+		$jsonData = $this->service->GetPosts();
         header('Content-Type: application/json');
         echo $jsonData;
 	}

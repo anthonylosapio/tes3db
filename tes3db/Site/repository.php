@@ -44,7 +44,7 @@ class Repository {
 	
 	public function GetNpc($npcId): array{
 		try {
-			$stmt = $this->db->prepare("SELECT * FROM allnpc WHERE Id = ?");
+			$stmt = $this->db->prepare("SELECT * FROM npc WHERE Id = ?");
 			$stmt->bind_param("s", $npcId); 
 			$stmt->execute();
 			$result = $stmt->get_result();
