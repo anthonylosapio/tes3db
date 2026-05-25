@@ -81,7 +81,7 @@ class Program
             string fileNameWithoutExt = Path.GetFileNameWithoutExtension(file);
             string stripped = fileNameWithoutExt.TrimStart('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
             expansionNames.Add(stripped);
-
+            Console.WriteLine("Expansion name added: " + stripped);
         }
         /*Check for special npc.json file
          npc.json file can be generated if you need attributes & skills from npc's with autocalculate on.

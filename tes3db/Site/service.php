@@ -14,7 +14,9 @@ Class Service {
 			"Morrowind" => BASE_LOCATIONS,
 			"Tribunal" => TRIBUNAL_LOCATIONS,
 			"Bloodmoon" => BLOODMOON_LOCATIONS,
-			"Tamriel Rebuilt" => TAMRIEL_LOCATIONS
+			"Tamriel Rebuilt" => TAMRIEL_LOCATIONS,
+			"Project Cyrodiil" => CYRODIIL_LOCATIONS,
+			"Skyrim Home of the Nords" => SKYRIM_LOCATIONS
 		];
 		
 		$filters = [
@@ -143,7 +145,7 @@ Class Service {
 					$errors[] = "'filters.LOCATIONS' must be an object";
 				} else {
 					$loc = $fil['LOCATIONS'];
-					$locKeys = ['BASE_LOCATIONS', 'BLOODMOON_LOCATIONS', 'TRIBUNAL_LOCATIONS', 'TAMRIEL_LOCATIONS'];
+					$locKeys = ['BASE_LOCATIONS', 'BLOODMOON_LOCATIONS', 'TRIBUNAL_LOCATIONS', 'TAMRIEL_LOCATIONS', 'CYRODIIL_LOCATIONS', 'SKYRIM_LOCATIONS'];
 					foreach ($locKeys as $key) {
 						if (!array_key_exists($key, $loc)) {
 							$errors[] = "Missing required key in 'filters.LOCATIONS': '$key'";
@@ -177,6 +179,19 @@ Class Service {
 		];
 	}
 
+	public function GetSearchObjectArray():string{
+		
+		$rows = $this->repo->runSelectQuery("SELECT id, name FROM npc");
+
+		$output = array_map(fn($row) => [
+			'id'   => $row['id'],
+			'name' => $row['name'],
+			'type' => 'npc',
+		], $rows);
+
+		return json_encode($output);
+	}
+	
 	
 	public function GetData(string $json, bool $isAgg): string{
 		
@@ -222,7 +237,7 @@ Class Service {
 		*/
 		$data = json_decode($json, true);
 		
-		$TABLE = "allnpc";
+		$TABLE = "npc";
 		$SELECTS = "";
 		$WHERE = "";
 		$GROUPBY = "";
@@ -242,7 +257,7 @@ Class Service {
 		foreach ($locations as $locKey => $locArray) {
 			$locations_merged = array_merge($locations_merged, $locArray);
 		}
-		$const_locations = array_merge(BASE_LOCATIONS, BLOODMOON_LOCATIONS, TRIBUNAL_LOCATIONS, TAMRIEL_LOCATIONS);
+		$const_locations = array_merge(BASE_LOCATIONS, BLOODMOON_LOCATIONS, TRIBUNAL_LOCATIONS, TAMRIEL_LOCATIONS, CYRODIIL_LOCATIONS, SKYRIM_LOCATIONS);
 		
 		if($isAgg){
 			$SELECTS = " {$group_value}, COUNT(1) AS `Total NPCs`, MIN({$agg_value}) AS `Min {$agg_value}`, MAX({$agg_value}) AS `Max {$agg_value}`,  AVG({$agg_value}) AS `Avg {$agg_value}`, SUM({$agg_value}) AS `Sum {$agg_value}`";			
@@ -316,6 +331,20 @@ Class Service {
 			}
 		}		
 		return $returnString;
+	}
+	
+	public function GetPosts(): string{
+		
+		try{
+			
+			$query = "SELECT * FROM posts ORDER BY post_date DESC";
+			$result = $this->repo->runSelectQuery($query);
+			return json_encode($result);
+			
+		}catch(\Exception $e){
+			$this->LogException($e);
+			return "Something went wrong...";		
+		}
 	}
 	
 	private static function LogException(\Exception $e){
