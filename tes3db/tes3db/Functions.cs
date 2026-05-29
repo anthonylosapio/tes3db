@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using static tes3db.Models;
 
 public class Functions
 {
@@ -235,6 +236,26 @@ public class Functions
             }
         }
         return refs;
+    }
+
+    public static Models.DialogueInfo DeserializeDialogueInfo(JsonElement element)
+    {
+        try { 
+            DialogueInfo info = JsonSerializer.Deserialize<DialogueInfo>(element)
+             ?? throw new InvalidOperationException("Failed to deserialize DialogueInfo.");
+            return info;
+        }
+        catch (JsonException ex)
+        {
+            Console.WriteLine(ex.ToString());
+            return new Models.DialogueInfo();
+        }
+        catch (InvalidOperationException ex)
+        {
+            Console.WriteLine(ex.ToString());
+            return new Models.DialogueInfo();
+        }
+        
     }
 
     public static void AddCellLocationInfoToNPC(Models.Npc npc, List<Models.Cell> cells)

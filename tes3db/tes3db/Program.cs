@@ -2,6 +2,7 @@
 
 using System.Diagnostics;
 using System.Text.Json;
+using static tes3db.Models;
 
 class Program
 {
@@ -11,6 +12,7 @@ class Program
 
         // Default values
         string outputNpc = "npc";
+        string outputDialogue = "dialogue";
         /* only applicable to csv output */
         bool includeColumnHeadings = true;
         //sql or csv
@@ -27,6 +29,11 @@ class Program
                 case "--npc":
                     if (i + 1 < args.Length)
                         outputNpc = args[++i];
+                    break;
+
+                case "--dialogue":
+                    if (i + 1 < args.Length)
+                        outputDialogue = args[++i];
                     break;
 
                 case "--type":
@@ -58,6 +65,8 @@ class Program
         List<Models.Npc> npcs = new List<Models.Npc>();
         List<Models.Cell> cells = new List<Models.Cell>();
         List<Models.Expansion> expansions = new List<Models.Expansion>(); //tracks which JSON file an NPC came from
+
+        List<DialogueInfo> dialogues = new List<DialogueInfo>();
 
         /*Get List of JSON files in the executable directory*/
         string currentDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -96,7 +105,7 @@ class Program
             Console.WriteLine("npc.json file found.");
             npcJsonPath = Path.Combine(currentDir, "npc.json");
             jsonFilePaths.Remove(npcJsonPath);
-            expansionNames.Remove("npc");
+            expansionNames.Remove("npc"); // List<string> containing the extracted expansion file names
             expansionFilePaths.AddRange(jsonFilePaths);
             jsonFilePaths.Insert(0, npcJsonPath);
         }
@@ -120,20 +129,26 @@ class Program
                 {
                     if (element.TryGetProperty("type", out JsonElement type))
                     {
-                        if (type.GetString() == "Npc")
-                        {
-                            Models.Expansion expansion = Functions.SetExpansion(expansionNames[expansionIndex], element);
-                            if (!expansions.Any(p => p.NPCId == expansion.NPCId))
-                            {
-                                expansions.Add(expansion);
-                            }
-                            else
-                            {
-                                string alreadyAddedTo = expansions.Find(x => x.NPCId == expansion.NPCId)?.Name ?? "";
-                                Console.WriteLine(expansionNames[expansionIndex] + " " + expansion.NPCId + " already added to " + alreadyAddedTo);
-                            }
+                        switch (type.GetString()) {
 
+                            case "Npc":
+                                Models.Expansion expansion = Functions.SetExpansion(expansionNames[expansionIndex], element);
+                                if (!expansions.Any(p => p.NPCId == expansion.NPCId))
+                                {
+                                    expansions.Add(expansion);
+                                }
+                                else
+                                {
+                                    string alreadyAddedTo = expansions.Find(x => x.NPCId == expansion.NPCId)?.Name ?? "";
+                                    Console.WriteLine(expansionNames[expansionIndex] + " " + expansion.NPCId + " already added to " + alreadyAddedTo);
+                                }
+                                break;
+
+                            case "DialogueInfo":
+                                dialogues.Add(Functions.DeserializeDialogueInfo(element));
+                                break;
                         }
+
                     }
                 }
             }
@@ -208,16 +223,19 @@ class Program
         //Remove template npcs
         npcs.RemoveAll(item => (item.Expansion == null));
 
-        Console.WriteLine("Writing output file...");
+        Console.WriteLine("Writing output files...");
 
         string outputFile = $"{outputNpc}.{outputFileType}";
+        string outputFileDialogue = $"{outputDialogue}.{outputFileType}";
         switch (outputFileType.ToLower())
         {
             case "csv":
-                FileWriter.WriteNpcCsv(outputFile, npcs, includeColumnHeadings);
+                FileWriter.WriteCsv(outputFile, npcs, includeColumnHeadings);
+                FileWriter.WriteCsv(outputFileDialogue, dialogues, includeColumnHeadings);
                 break;
             case "sql":
-                FileWriter.WriteNpcSql(outputFile, npcs, outputNpc, sqlType);
+                FileWriter.WriteSql(outputFile, npcs, outputNpc, sqlType);
+                FileWriter.WriteSql(outputFileDialogue, dialogues, outputDialogue, sqlType);
                 break;
             default:
                 Console.WriteLine("Unsupported output file type. Please choose 'csv' or 'sql'.");
@@ -234,6 +252,7 @@ class Program
         Console.WriteLine("  --type, -t <type>        Output type: csv or sql (default: csv)");
         Console.WriteLine("  --sql-type, -s <type>    SQL type: mysql or postgresql (default: postgresql)");
         Console.WriteLine("  --npc <name>             db Table & output File name for extracted NPCs (default: npc)");
+        Console.WriteLine("  --dialogue <name>        db Table & output File name for extracted NPCs (default: dialogue)");
         Console.WriteLine("  --no-headers             Exclude column headers in (CSV only)");
         Console.WriteLine("  --no-skip                Wont's skip NPCs missing Cell,Region,Attribute or Skill poperties");
         Console.WriteLine("  --help                   Show this help message");

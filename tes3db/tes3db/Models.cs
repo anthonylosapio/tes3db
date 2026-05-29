@@ -126,4 +126,12 @@ public class Models
         public object? Value { get; set; }
         public Type? Type { get; set; }
     }
+
+    public class DialogueInfo { 
+        public string? id { get; set; }
+        public string? prev_id { get; set; }
+        public string? next_id { get; set; }
+        public string? speaker_id { get; set; }
+        public string? text { get; set; }
+    }
 }
