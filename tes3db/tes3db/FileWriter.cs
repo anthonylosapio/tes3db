@@ -8,7 +8,7 @@ using static tes3db.Models;
 
 public class FileWriter
 {
-    public static void WriteNpcCsv(string filePath, List<Models.Npc> data, bool includeColumnHeadings)
+    public static void WriteCsv<T>(string filePath, List<T> data, bool includeColumnHeadings)
     {
         if (string.IsNullOrWhiteSpace(filePath))
             throw new ArgumentException("File path cannot be empty.");
@@ -21,7 +21,7 @@ public class FileWriter
             // Write header
             if (includeColumnHeadings)
             {
-                List<string> cols = GetPropertyNames(typeof(Models.Npc));
+                List<string> cols = GetPropertyNames(typeof(T));
                 string header = $"{string.Join(", ", cols)}";
                 writer.WriteLine(header);
             }
@@ -30,7 +30,7 @@ public class FileWriter
             {
 
                 string line = string.Empty;
-                List<FieldValueandType> values = GetPropertyValues(npc, typeof(Models.Npc));
+                List<FieldValueandType> values = GetPropertyValues(npc, typeof(T));
                 int c = 0;
                 foreach (var value in values)
                 {
@@ -44,9 +44,9 @@ public class FileWriter
         }
     }
 
-    public static void WriteNpcSql(string filePath, List<Models.Npc> data, string tableName, string sqlType)
+    public static void WriteSql<T>(string filePath, List<T> data, string tableName, string sqlType)
     {
-        List<string> cols = GetPropertyNames(typeof(Models.Npc));
+        List<string> cols = GetPropertyNames(typeof(T));
         int counter =0;
 
         if (string.IsNullOrWhiteSpace(filePath))
@@ -71,7 +71,7 @@ public class FileWriter
             foreach(var npc in data)
             {
                 string queryLine = "(";
-                List<FieldValueandType> values = GetPropertyValues(npc, typeof(Models.Npc));
+                List<FieldValueandType> values = GetPropertyValues(npc, typeof(T));
                 int c = 0;
                 foreach (var value in values) {
                     string field = FormatValueForSql(value);

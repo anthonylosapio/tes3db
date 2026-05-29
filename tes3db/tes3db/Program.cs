@@ -217,16 +217,16 @@ class Program
         //Remove template npcs
         npcs.RemoveAll(item => (item.Expansion == null));
 
-        Console.WriteLine("Writing output file...");
+        Console.WriteLine("Writing output files...");
 
         string outputFile = $"{outputNpc}.{outputFileType}";
         switch (outputFileType.ToLower())
         {
             case "csv":
-                FileWriter.WriteNpcCsv(outputFile, npcs, includeColumnHeadings);
+                FileWriter.WriteCsv(outputFile, npcs, includeColumnHeadings);
                 break;
             case "sql":
-                FileWriter.WriteNpcSql(outputFile, npcs, outputNpc, sqlType);
+                FileWriter.WriteSql(outputFile, npcs, outputNpc, sqlType);
                 break;
             default:
                 Console.WriteLine("Unsupported output file type. Please choose 'csv' or 'sql'.");
