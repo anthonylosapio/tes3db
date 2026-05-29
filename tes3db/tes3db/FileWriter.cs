@@ -135,7 +135,6 @@ public class FileWriter
 
     private static List<FieldValueandType> GetPropertyValues(object instance, Type type)
     {
-        //var propertyValues = new List<object?>();
 
         var properties = type.GetProperties();
 
@@ -165,7 +164,6 @@ public class FileWriter
                     Type = property.PropertyType
                 };
                 fieldValueandType.Add(newFieldValueandType);
-               // propertyValues.Add(value);
             }else if(serializeTypes.Contains(property.PropertyType))
             {
                 var value = property.GetValue(instance);
@@ -176,7 +174,6 @@ public class FileWriter
                     Type = property.PropertyType
                 };
                 fieldValueandType.Add(newFieldValueandType);
-               // propertyValues.Add(serializedValue);
             }
             else
             {
