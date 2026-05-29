@@ -128,10 +128,10 @@ public class Models
     }
 
     public class DialogueInfo { 
-        public string id { get; set; }
-        public string prev_id { get; set; }
-        public string next_id { get; set; }
-        public string speaker_id { get; set; }
-        public string text { get; set; }
+        public string? id { get; set; }
+        public string? prev_id { get; set; }
+        public string? next_id { get; set; }
+        public string? speaker_id { get; set; }
+        public string? text { get; set; }
     }
 }

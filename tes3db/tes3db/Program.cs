@@ -2,6 +2,7 @@
 
 using System.Diagnostics;
 using System.Text.Json;
+using static tes3db.Models;
 
 class Program
 {
@@ -58,6 +59,8 @@ class Program
         List<Models.Npc> npcs = new List<Models.Npc>();
         List<Models.Cell> cells = new List<Models.Cell>();
         List<Models.Expansion> expansions = new List<Models.Expansion>(); //tracks which JSON file an NPC came from
+
+        List<DialogueInfo> dialogues = new List<DialogueInfo>();
 
         /*Get List of JSON files in the executable directory*/
         string currentDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -120,20 +123,26 @@ class Program
                 {
                     if (element.TryGetProperty("type", out JsonElement type))
                     {
-                        if (type.GetString() == "Npc")
-                        {
-                            Models.Expansion expansion = Functions.SetExpansion(expansionNames[expansionIndex], element);
-                            if (!expansions.Any(p => p.NPCId == expansion.NPCId))
-                            {
-                                expansions.Add(expansion);
-                            }
-                            else
-                            {
-                                string alreadyAddedTo = expansions.Find(x => x.NPCId == expansion.NPCId)?.Name ?? "";
-                                Console.WriteLine(expansionNames[expansionIndex] + " " + expansion.NPCId + " already added to " + alreadyAddedTo);
-                            }
+                        switch (type.GetString()) {
 
+                            case "Npc":
+                                Models.Expansion expansion = Functions.SetExpansion(expansionNames[expansionIndex], element);
+                                if (!expansions.Any(p => p.NPCId == expansion.NPCId))
+                                {
+                                    expansions.Add(expansion);
+                                }
+                                else
+                                {
+                                    string alreadyAddedTo = expansions.Find(x => x.NPCId == expansion.NPCId)?.Name ?? "";
+                                    Console.WriteLine(expansionNames[expansionIndex] + " " + expansion.NPCId + " already added to " + alreadyAddedTo);
+                                }
+                                break;
+
+                            case "DialogueInfo":
+                                dialogues.Add(Functions.DeserializeDialogueInfo(element));
+                                break;
                         }
+
                     }
                 }
             }
