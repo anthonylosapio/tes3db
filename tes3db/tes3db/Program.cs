@@ -15,6 +15,7 @@ class Program
         string outputDialogue = "dialogue";
         string outputBook = "book";
         string outputMiscItem = "miscitem";
+        string outputClothing = "clothing";
         /* only applicable to csv output */
         bool includeColumnHeadings = true;
         //sql or csv
@@ -46,6 +47,11 @@ class Program
                 case "--miscitem":
                     if (i + 1 < args.Length)
                         outputMiscItem = args[++i];
+                    break;
+
+                case "--clothing":
+                    if (i + 1 < args.Length)
+                        outputClothing = args[++i];
                     break;
 
                 case "--type":
@@ -82,6 +88,7 @@ class Program
         List<DialogueInfo> dialogues = new List<DialogueInfo>();
         List<Book> books = new List<Book>();
         List<MiscItem> miscItems = new List<MiscItem>();
+        List<Clothing> clothes = new List<Clothing>();
 
         /*Get List of JSON files in the executable directory*/
         string currentDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -160,15 +167,27 @@ class Program
                                 break;
 
                             case "DialogueInfo":
-                                dialogues.Add(Functions.DeserializObject<DialogueInfo>(element));
+                                var dialogue = Functions.DeserializObject<DialogueInfo>(element);
+                                dialogue.expansion = expansionNames[expansionIndex];
+                                dialogues.Add(dialogue);
                                 break;
 
                             case "Book":
-                                books.Add(Functions.DeserializObject<Book>(element));
+                                var book = Functions.DeserializObject<Book>(element);
+                                book.expansion = expansionNames[expansionIndex];
+                                books.Add(book);
                                 break;
 
                             case "MiscItem":
-                                miscItems.Add(Functions.DeserializObject<MiscItem>(element));
+                                var miscItem = Functions.DeserializObject<MiscItem>(element);
+                                miscItem.expansion = expansionNames[expansionIndex];
+                                miscItems.Add(miscItem);
+                                break;
+
+                            case "Clothing":
+                                var cloth = Functions.DeserializObject<Clothing>(element);
+                                cloth.expansion = expansionNames[expansionIndex];
+                                clothes.Add(cloth);
                                 break;
                         }
 
@@ -179,7 +198,8 @@ class Program
             {
                 Console.WriteLine("Expecting an array.");
             }
-            Console.WriteLine($"Expansion {expansionNames[expansionIndex]}: {expansions.Count} NPCs, {dialogues.Count} Dialogues, {books.Count} Books, {miscItems.Count} MiscItems");
+            Console.WriteLine($"After Expansion {expansionNames[expansionIndex]}:");
+            Console.WriteLine($"{expansions.Count} NPCs, {dialogues.Count} Dialogues, {books.Count} Books, {miscItems.Count} MiscItems, {clothes.Count} Clothing");
             expansionIndex++;
         }
 
@@ -252,6 +272,7 @@ class Program
         string outputFileDialogue = $"{outputDialogue}.{outputFileType}";
         string outputFileBook = $"{outputBook}.{outputFileType}";
         string outputFileMiscItem = $"{outputMiscItem}.{outputFileType}";
+        string outputFileClothing = $"{outputClothing}.{outputFileType}";
 
         switch (outputFileType.ToLower())
         {
@@ -260,12 +281,14 @@ class Program
                 FileWriter.WriteCsv(outputFileDialogue, dialogues, includeColumnHeadings);
                 FileWriter.WriteCsv(outputFileBook, books, includeColumnHeadings);
                 FileWriter.WriteCsv(outputFileMiscItem, miscItems, includeColumnHeadings);
+                FileWriter.WriteCsv(outputFileClothing, clothes, includeColumnHeadings);
                 break;
             case "sql":
                 FileWriter.WriteSql(outputFile, npcs, outputNpc, sqlType);
                 FileWriter.WriteSql(outputFileDialogue, dialogues, outputDialogue, sqlType);
                 FileWriter.WriteSql(outputFileBook, books, outputBook, sqlType);
                 FileWriter.WriteSql(outputFileMiscItem, miscItems, outputMiscItem, sqlType);
+                FileWriter.WriteSql(outputFileClothing, clothes, outputClothing, sqlType);
                 break;
             default:
                 Console.WriteLine("Unsupported output file type. Please choose 'csv' or 'sql'.");
@@ -283,6 +306,7 @@ class Program
         Console.WriteLine("  --sql-type, -s <type>    SQL type: mysql or postgresql (default: postgresql)");
         Console.WriteLine("  --npc <name>             db Table & output File name for extracted NPCs (default: npc)");
         Console.WriteLine("  --book <name>            db Table & output File name for extracted Books (default: book)");
+        Console.WriteLine("  --clothing <name>        db Table & output File name for extracted Clothing (default: clothing)");
         Console.WriteLine("  --dialogue <name>        db Table & output File name for extracted Dialogue (default: dialogue)");
         Console.WriteLine("  --miscitem <name>        db Table & output File name for extracted MiscItems (default: miscitem)");
         Console.WriteLine("  --no-headers             Exclude column headers in (CSV only)");

@@ -134,7 +134,23 @@ public class Models
         public string? prev_id { get; set; }
         public string? next_id { get; set; }
         public string? speaker_id { get; set; }
+        public string? speaker_race { get; set; }
+        public string? speaker_class { get; set; }
+        public string? speaker_faction { get; set; }
+        public string? speaker_cell { get; set; }
+        public string? player_faction { get; set; }
         public string? text { get; set; }
+        public string? expansion { get; set; }
+        public DialogueInfoData? data { get; set; }
+    }
+
+    public class DialogueInfoData
+    {
+        public string? dialogue_type { get; set; }
+        public string? disposition { get; set; }
+        public string? speaker_rank { get; set; }
+        public string? speaker_sex { get; set; }
+        public string? player_rank { get; set; }
     }
 
     public class Book
@@ -142,6 +158,7 @@ public class Models
         public string? id { get; set; }
         public string? name { get; set; }
         public string? text { get; set; }
+        public string? expansion { get; set; }
         public BookData? data { get; set; }
     }
 
@@ -158,6 +175,7 @@ public class Models
     {
         public string? id { get; set; }
         public string? name { get; set; }
+        public string? expansion { get; set; }
         public MiscItemData? data { get; set; }
     }
 
@@ -165,5 +183,24 @@ public class Models
     {
         public double? weight { get; set; }
         public int? value { get; set; }
+        public string? flags { get; set; }
+    }
+
+    public class Clothing
+    {
+        public string? flags { get; set; }
+        public string? id { get; set; }
+        public string? name { get; set; }
+        public string? enchanting { get; set; }
+        public string? expansion { get; set; }
+        public ClothingData? data { get; set; }
+    }
+
+    public class ClothingData
+    {
+        public string? clothing_type {  get; set; }
+        public double? weight { get; set; }
+        public int? value { get; set; }
+        public int? enchantment { get; set; }
     }
 }

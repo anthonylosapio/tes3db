@@ -111,6 +111,7 @@ public class FileWriter
                 typeof(string),
                 typeof(int?),
                 typeof(bool?),
+                typeof(double?),
                 typeof(List<Models.InventoryItem>),
                 typeof(List<string>)
             };
@@ -145,6 +146,7 @@ public class FileWriter
             typeof(string),
             typeof(int?),
             typeof(bool?),
+            typeof(double?)
         };
 
         var serializeTypes = new HashSet<Type>
