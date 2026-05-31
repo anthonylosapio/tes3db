@@ -7,17 +7,17 @@ using static tes3db.Models;
 
 public class Functions
 {
-    public static Models.Expansion SetExpansion(string expansionName, JsonElement element)
+    public static Expansion SetExpansion(string expansionName, JsonElement element)
     {
-        Models.Expansion expansion = new Models.Expansion();
+        Expansion expansion = new Expansion();
         expansion.Name = expansionName;
         if (element.TryGetProperty("id", out JsonElement id)) expansion.NPCId = id.GetString();
         return expansion;
     }
 
-    public static Models.Npc newNpc(JsonElement element)
+    public static Npc newNpc(JsonElement element)
     {
-        Models.Npc newNpc = new Models.Npc();
+        Npc newNpc = new Npc();
         try
         {
             if (element.TryGetProperty("id", out JsonElement id)) newNpc.Id = id.GetString();
@@ -71,9 +71,9 @@ public class Functions
         return newNpc;
     }
 
-    public static Models.Attributes SetAttributes(JsonElement element)
+    public static Attributes SetAttributes(JsonElement element)
     {
-        Models.Attributes attributes = new Models.Attributes();
+        Attributes attributes = new Attributes();
         attributes.Strength = element[0].GetInt32();
         attributes.Intelligence = element[1].GetInt32();
         attributes.Willpower = element[2].GetInt32();
@@ -85,7 +85,7 @@ public class Functions
         return attributes;
     }
 
-    public static Models.Npc AddServices(Models.Npc npc, string services)
+    public static Npc AddServices(Npc npc, string services)
     {
         npc.BARTERS_WEAPONS = (services.Contains("BARTERS_WEAPONS")) ? true : false;
         npc.BARTERS_ARMOR = (services.Contains("BARTERS_ARMOR")) ? true : false;
@@ -135,12 +135,12 @@ public class Functions
 
     public static List<Models.InventoryItem> GetInventory(JsonElement element)
     {
-        List<Models.InventoryItem> inventory = new List<Models.InventoryItem>();
+        List<InventoryItem> inventory = new List<InventoryItem>();
         if (element.ValueKind == JsonValueKind.Array)
         {
             foreach (JsonElement array in element.EnumerateArray())
             {
-                Models.InventoryItem inventoryItem = new Models.InventoryItem();
+                InventoryItem inventoryItem = new InventoryItem();
                 inventoryItem.Quantity = array[0].GetInt32();
                 inventoryItem.ItemId = array[1].GetString();
                 inventory.Add(inventoryItem);
@@ -161,9 +161,9 @@ public class Functions
         }
         return spells;
     }
-    public static Models.Skills SetSkills(JsonElement element)
+    public static Skills SetSkills(JsonElement element)
     {
-        Models.Skills skills = new Models.Skills();
+        Skills skills = new Skills();
 
         skills.Block = element[0].GetInt32();
         skills.Armorer = element[1].GetInt32();
@@ -198,7 +198,7 @@ public class Functions
 
     public static Models.Cell GetCell(JsonElement element)
     {
-        Models.Cell cell = new Models.Cell();
+        Cell cell = new Cell();
         if (element.TryGetProperty("name", out JsonElement name)) cell.CellName = name.GetString();
         if (element.TryGetProperty("data", out JsonElement data)) cell = SetCellFlags(data, cell);
         if (element.TryGetProperty("region", out JsonElement region)) cell.CellRegion = region.GetString();
@@ -214,7 +214,7 @@ public class Functions
         if (element.TryGetProperty("references", out JsonElement references)) cell.CellRefs = GetCellRefs(references);
         return cell;
     }
-    public static Models.Cell SetCellFlags(JsonElement element, Models.Cell cell)
+    public static Cell SetCellFlags(JsonElement element, Cell cell)
     {
         string flags = "";
         if (element.TryGetProperty("flags", out JsonElement flag)) flags = flag.GetString() ?? string.Empty;
@@ -238,27 +238,27 @@ public class Functions
         return refs;
     }
 
-    public static Models.DialogueInfo DeserializeDialogueInfo(JsonElement element)
+    public static T DeserializObject<T>(JsonElement element) where T : new()
     {
-        try { 
-            DialogueInfo info = JsonSerializer.Deserialize<DialogueInfo>(element)
-             ?? throw new InvalidOperationException("Failed to deserialize DialogueInfo.");
-            return info;
+        try
+        {
+            return JsonSerializer.Deserialize<T>(element)
+                ?? throw new InvalidOperationException($"Failed to deserialize {typeof(T).Name}.");
         }
         catch (JsonException ex)
         {
             Console.WriteLine(ex.ToString());
-            return new Models.DialogueInfo();
+            return new T();
         }
         catch (InvalidOperationException ex)
         {
             Console.WriteLine(ex.ToString());
-            return new Models.DialogueInfo();
+            return new T();
         }
-        
     }
 
-    public static void AddCellLocationInfoToNPC(Models.Npc npc, List<Models.Cell> cells)
+
+    public static void AddCellLocationInfoToNPC(Npc npc, List<Cell> cells)
     {
         foreach (var cell in cells)
         {
@@ -279,7 +279,7 @@ public class Functions
             }
         }
     }
-    public static void AddExpansionInfoToNPC(Models.Npc npc, List<Models.Expansion> expansions)
+    public static void AddExpansionInfoToNPC(Npc npc, List<Expansion> expansions)
     {
         foreach (var expansion in expansions)
         {

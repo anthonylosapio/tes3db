@@ -111,6 +111,7 @@ public class FileWriter
                 typeof(string),
                 typeof(int?),
                 typeof(bool?),
+                typeof(double?),
                 typeof(List<Models.InventoryItem>),
                 typeof(List<string>)
             };
@@ -135,7 +136,6 @@ public class FileWriter
 
     private static List<FieldValueandType> GetPropertyValues(object instance, Type type)
     {
-        //var propertyValues = new List<object?>();
 
         var properties = type.GetProperties();
 
@@ -146,6 +146,7 @@ public class FileWriter
             typeof(string),
             typeof(int?),
             typeof(bool?),
+            typeof(double?)
         };
 
         var serializeTypes = new HashSet<Type>
@@ -165,7 +166,6 @@ public class FileWriter
                     Type = property.PropertyType
                 };
                 fieldValueandType.Add(newFieldValueandType);
-               // propertyValues.Add(value);
             }else if(serializeTypes.Contains(property.PropertyType))
             {
                 var value = property.GetValue(instance);
@@ -176,7 +176,6 @@ public class FileWriter
                     Type = property.PropertyType
                 };
                 fieldValueandType.Add(newFieldValueandType);
-               // propertyValues.Add(serializedValue);
             }
             else
             {

@@ -13,6 +13,9 @@ class Program
         // Default values
         string outputNpc = "npc";
         string outputDialogue = "dialogue";
+        string outputBook = "book";
+        string outputMiscItem = "miscitem";
+        string outputClothing = "clothing";
         /* only applicable to csv output */
         bool includeColumnHeadings = true;
         //sql or csv
@@ -36,6 +39,21 @@ class Program
                         outputDialogue = args[++i];
                     break;
 
+                case "--book":
+                    if (i + 1 < args.Length)
+                        outputBook = args[++i];
+                    break;
+
+                case "--miscitem":
+                    if (i + 1 < args.Length)
+                        outputMiscItem = args[++i];
+                    break;
+
+                case "--clothing":
+                    if (i + 1 < args.Length)
+                        outputClothing = args[++i];
+                    break;
+
                 case "--type":
                 case "-t":
                     if (i + 1 < args.Length)
@@ -57,16 +75,20 @@ class Program
                     break;
 
                 case "--help":
+                case "-help":
                     PrintUsage();
                     return;
             }
         }
 
-        List<Models.Npc> npcs = new List<Models.Npc>();
-        List<Models.Cell> cells = new List<Models.Cell>();
-        List<Models.Expansion> expansions = new List<Models.Expansion>(); //tracks which JSON file an NPC came from
+        List<Npc> npcs = new List<Npc>();
+        List<Cell> cells = new List<Cell>();
+        List<Expansion> expansions = new List<Expansion>(); //tracks which JSON file an NPC came from
 
         List<DialogueInfo> dialogues = new List<DialogueInfo>();
+        List<Book> books = new List<Book>();
+        List<MiscItem> miscItems = new List<MiscItem>();
+        List<Clothing> clothes = new List<Clothing>();
 
         /*Get List of JSON files in the executable directory*/
         string currentDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -145,7 +167,33 @@ class Program
                                 break;
 
                             case "DialogueInfo":
-                                dialogues.Add(Functions.DeserializeDialogueInfo(element));
+                                var dialogue = Functions.DeserializObject<DialogueInfo>(element);
+                                if(!dialogues.Any(d => d.id == dialogue.id))
+                                {
+                                    dialogue.expansion = expansionNames[expansionIndex];
+                                    dialogues.Add(dialogue);
+                                }
+                                break;
+
+                            case "Book":
+                                var book = Functions.DeserializObject<Book>(element);
+                                if (!books.Any(b => b.id == book.id))
+                                {
+                                    book.expansion = expansionNames[expansionIndex];
+                                    books.Add(book);
+                                }
+                                break;
+
+                            case "MiscItem":
+                                var miscItem = Functions.DeserializObject<MiscItem>(element);
+                                miscItem.expansion = expansionNames[expansionIndex];
+                                miscItems.Add(miscItem);
+                                break;
+
+                            case "Clothing":
+                                var cloth = Functions.DeserializObject<Clothing>(element);
+                                cloth.expansion = expansionNames[expansionIndex];
+                                clothes.Add(cloth);
                                 break;
                         }
 
@@ -156,7 +204,8 @@ class Program
             {
                 Console.WriteLine("Expecting an array.");
             }
-            Console.WriteLine("Expansion: " + expansionNames[expansionIndex] + " - found " + expansions.Count + "NPCs");
+            Console.WriteLine($"After Expansion {expansionNames[expansionIndex]}:");
+            Console.WriteLine($"{expansions.Count} NPCs, {dialogues.Count} Dialogues, {books.Count} Books, {miscItems.Count} MiscItems, {clothes.Count} Clothing");
             expansionIndex++;
         }
 
@@ -227,15 +276,25 @@ class Program
 
         string outputFile = $"{outputNpc}.{outputFileType}";
         string outputFileDialogue = $"{outputDialogue}.{outputFileType}";
+        string outputFileBook = $"{outputBook}.{outputFileType}";
+        string outputFileMiscItem = $"{outputMiscItem}.{outputFileType}";
+        string outputFileClothing = $"{outputClothing}.{outputFileType}";
+
         switch (outputFileType.ToLower())
         {
             case "csv":
                 FileWriter.WriteCsv(outputFile, npcs, includeColumnHeadings);
                 FileWriter.WriteCsv(outputFileDialogue, dialogues, includeColumnHeadings);
+                FileWriter.WriteCsv(outputFileBook, books, includeColumnHeadings);
+                FileWriter.WriteCsv(outputFileMiscItem, miscItems, includeColumnHeadings);
+                FileWriter.WriteCsv(outputFileClothing, clothes, includeColumnHeadings);
                 break;
             case "sql":
                 FileWriter.WriteSql(outputFile, npcs, outputNpc, sqlType);
                 FileWriter.WriteSql(outputFileDialogue, dialogues, outputDialogue, sqlType);
+                FileWriter.WriteSql(outputFileBook, books, outputBook, sqlType);
+                FileWriter.WriteSql(outputFileMiscItem, miscItems, outputMiscItem, sqlType);
+                FileWriter.WriteSql(outputFileClothing, clothes, outputClothing, sqlType);
                 break;
             default:
                 Console.WriteLine("Unsupported output file type. Please choose 'csv' or 'sql'.");
@@ -252,7 +311,10 @@ class Program
         Console.WriteLine("  --type, -t <type>        Output type: csv or sql (default: csv)");
         Console.WriteLine("  --sql-type, -s <type>    SQL type: mysql or postgresql (default: postgresql)");
         Console.WriteLine("  --npc <name>             db Table & output File name for extracted NPCs (default: npc)");
-        Console.WriteLine("  --dialogue <name>        db Table & output File name for extracted NPCs (default: dialogue)");
+        Console.WriteLine("  --book <name>            db Table & output File name for extracted Books (default: book)");
+        Console.WriteLine("  --clothing <name>        db Table & output File name for extracted Clothing (default: clothing)");
+        Console.WriteLine("  --dialogue <name>        db Table & output File name for extracted Dialogue (default: dialogue)");
+        Console.WriteLine("  --miscitem <name>        db Table & output File name for extracted MiscItems (default: miscitem)");
         Console.WriteLine("  --no-headers             Exclude column headers in (CSV only)");
         Console.WriteLine("  --no-skip                Wont's skip NPCs missing Cell,Region,Attribute or Skill poperties");
         Console.WriteLine("  --help                   Show this help message");

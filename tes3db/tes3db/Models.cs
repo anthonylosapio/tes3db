@@ -121,17 +121,86 @@ public class Models
         public List<string>? CellRefs { get; set; }
     }
 
-    public class FieldValueandType { 
-    
+    public class FieldValueandType
+    {
+
         public object? Value { get; set; }
         public Type? Type { get; set; }
     }
 
-    public class DialogueInfo { 
+    public class DialogueInfo
+    {
         public string? id { get; set; }
         public string? prev_id { get; set; }
         public string? next_id { get; set; }
         public string? speaker_id { get; set; }
+        public string? speaker_race { get; set; }
+        public string? speaker_class { get; set; }
+        public string? speaker_faction { get; set; }
+        public string? speaker_cell { get; set; }
+        public string? player_faction { get; set; }
         public string? text { get; set; }
+        public string? expansion { get; set; }
+        public DialogueInfoData? data { get; set; }
+    }
+
+    public class DialogueInfoData
+    {
+        public string? dialogue_type { get; set; }
+        public int? disposition { get; set; }
+        public int? speaker_rank { get; set; }
+        public string? speaker_sex { get; set; }
+        public int? player_rank { get; set; }
+    }
+
+    public class Book
+    {
+        public string? id { get; set; }
+        public string? name { get; set; }
+        public string? text { get; set; }
+        public string? expansion { get; set; }
+        public BookData? data { get; set; }
+    }
+
+    public class BookData
+    {
+        public double? weight { get; set; }
+        public int? value { get; set; }
+        public string? book_type { get; set; }
+        public string? skill { get; set; }
+        public int? enchantment { get; set; }
+    }
+
+    public class MiscItem
+    {
+        public string? id { get; set; }
+        public string? name { get; set; }
+        public string? expansion { get; set; }
+        public MiscItemData? data { get; set; }
+    }
+
+    public class MiscItemData
+    {
+        public double? weight { get; set; }
+        public int? value { get; set; }
+        public string? flags { get; set; }
+    }
+
+    public class Clothing
+    {
+        public string? flags { get; set; }
+        public string? id { get; set; }
+        public string? name { get; set; }
+        public string? enchanting { get; set; }
+        public string? expansion { get; set; }
+        public ClothingData? data { get; set; }
+    }
+
+    public class ClothingData
+    {
+        public string? clothing_type {  get; set; }
+        public double? weight { get; set; }
+        public int? value { get; set; }
+        public int? enchantment { get; set; }
     }
 }
