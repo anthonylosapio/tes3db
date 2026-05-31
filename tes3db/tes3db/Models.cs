@@ -147,10 +147,10 @@ public class Models
     public class DialogueInfoData
     {
         public string? dialogue_type { get; set; }
-        public string? disposition { get; set; }
-        public string? speaker_rank { get; set; }
+        public int? disposition { get; set; }
+        public int? speaker_rank { get; set; }
         public string? speaker_sex { get; set; }
-        public string? player_rank { get; set; }
+        public int? player_rank { get; set; }
     }
 
     public class Book

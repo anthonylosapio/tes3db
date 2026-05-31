@@ -168,14 +168,20 @@ class Program
 
                             case "DialogueInfo":
                                 var dialogue = Functions.DeserializObject<DialogueInfo>(element);
-                                dialogue.expansion = expansionNames[expansionIndex];
-                                dialogues.Add(dialogue);
+                                if(!dialogues.Any(d => d.id == dialogue.id))
+                                {
+                                    dialogue.expansion = expansionNames[expansionIndex];
+                                    dialogues.Add(dialogue);
+                                }
                                 break;
 
                             case "Book":
                                 var book = Functions.DeserializObject<Book>(element);
-                                book.expansion = expansionNames[expansionIndex];
-                                books.Add(book);
+                                if (!books.Any(b => b.id == book.id))
+                                {
+                                    book.expansion = expansionNames[expansionIndex];
+                                    books.Add(book);
+                                }
                                 break;
 
                             case "MiscItem":
