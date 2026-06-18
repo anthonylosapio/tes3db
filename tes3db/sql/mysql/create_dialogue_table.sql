@@ -1,4 +1,4 @@
-CREATE TABLE `dialogue` (
+CREATE TABLE `dialogueinfo` (
     `id`                      VARCHAR(255),
     `prev_id`                 VARCHAR(255),
     `next_id`                 VARCHAR(255),
@@ -10,6 +10,8 @@ CREATE TABLE `dialogue` (
     `player_faction`          VARCHAR(255),
     `text`                    TEXT,
     `expansion`               VARCHAR(255),
+    `dialogue_topic`          VARCHAR(255),
+    `dialogue_id`             INT,
     `dialogue_type`           VARCHAR(255),
     `disposition`             INT,
     `speaker_rank`            INT,

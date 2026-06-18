@@ -1,5 +1,6 @@
 ﻿namespace tes3db;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 public class Models
 {
@@ -128,6 +129,13 @@ public class Models
         public Type? Type { get; set; }
     }
 
+    public class Dialogue
+    {
+        public string? id { get; set; }
+        public string? dialogue_type { get; set; }
+        public int? dialogue_id { get; set; }
+    }
+
     public class DialogueInfo
     {
         public string? id { get; set; }
@@ -141,6 +149,8 @@ public class Models
         public string? player_faction { get; set; }
         public string? text { get; set; }
         public string? expansion { get; set; }
+        public string? dialogue_topic { get; set; }
+        public int? dialogue_id { get; set; }
         public DialogueInfoData? data { get; set; }
     }
 
@@ -157,6 +167,9 @@ public class Models
     {
         public string? id { get; set; }
         public string? name { get; set; }
+        public string? mesh { get; set; }
+        public string? icon { get; set; }
+        public string? enchanting { get; set; }
         public string? text { get; set; }
         public string? expansion { get; set; }
         public BookData? data { get; set; }
@@ -169,6 +182,29 @@ public class Models
         public string? book_type { get; set; }
         public string? skill { get; set; }
         public int? enchantment { get; set; }
+    }
+
+    public class Enchanting { 
+        public string? id { get; set; }
+        public List<MagicEffect>? effects { get; set; }
+        public EnchantingData? data { get; set; }
+    }
+    public class MagicEffect
+    {
+        public string? magic_effect { get; set; }
+        public string? skill { get; set; }
+        public string? attribute { get; set; }
+        public string? range { get; set; }
+        public int? area { get; set; }
+        public int? duration { get; set; }
+        public int? min_magnitude { get; set; }
+        public int? max_magnitude { get; set; }
+    }
+    public class EnchantingData
+    {
+        public string? enchant_type { get; set; }
+        public int? cost { get; set; }
+        public int? max_charge { get; set; }
     }
 
     public class MiscItem
@@ -191,6 +227,8 @@ public class Models
         public string? flags { get; set; }
         public string? id { get; set; }
         public string? name { get; set; }
+        public string? mesh { get; set; }
+        public string? icon { get; set; }
         public string? enchanting { get; set; }
         public string? expansion { get; set; }
         public ClothingData? data { get; set; }
@@ -203,4 +241,37 @@ public class Models
         public int? value { get; set; }
         public int? enchantment { get; set; }
     }
+
+    public class Weapon 
+    {
+        public string? flags { get; set; }
+        public string? id { get; set; }
+        public string? name { get; set; }
+        public string? mesh { get; set; }
+        public string? icon { get; set; }
+        public string? enchanting { get; set; }
+        public string? expansion { get; set; }
+        public WeaponData? data
+        {
+            get; set;
+        }
+    public class WeaponData
+    {
+        public double? weight { get; set; }
+        public int? value { get; set; }
+        public string? weapon_type { get; set; }
+        public int? health { get; set; }
+        public double? speed { get; set; }
+        public double? reach {  get; set; }
+        public int? enchantment {  set; get; }
+        public int? chop_min { get; set; }
+        public int? chop_max { get; set; }
+        public int? slash_min { get; set; }
+        public int? slash_max { get; set; }
+        public int? thrust_min {  get; set; }
+        public int? thrust_max {  get; set; }
+        [JsonPropertyName("flags")]
+        public string? other {  get; set; }
+    }
+}
 }

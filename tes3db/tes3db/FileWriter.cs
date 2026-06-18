@@ -112,7 +112,8 @@ public class FileWriter
                 typeof(int?),
                 typeof(bool?),
                 typeof(double?),
-                typeof(List<Models.InventoryItem>),
+                typeof(List<InventoryItem>),
+                typeof(List<MagicEffect>),
                 typeof(List<string>)
             };
 
@@ -152,6 +153,7 @@ public class FileWriter
         var serializeTypes = new HashSet<Type>
         {
             typeof(List<InventoryItem>),
+            typeof(List<MagicEffect>),
             typeof(List<string>)
         };
 

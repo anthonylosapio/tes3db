@@ -13,9 +13,13 @@ class Program
         // Default values
         string outputNpc = "npc";
         string outputDialogue = "dialogue";
+        string outputDialogueInfo = "dialogueinfo";
         string outputBook = "book";
         string outputMiscItem = "miscitem";
         string outputClothing = "clothing";
+        string outputEnchanting = "enchanting";
+        string outputWeapon = "weapon";
+
         /* only applicable to csv output */
         bool includeColumnHeadings = true;
         //sql or csv
@@ -39,6 +43,11 @@ class Program
                         outputDialogue = args[++i];
                     break;
 
+                case "--dialogueinfo":
+                    if (i + 1 < args.Length)
+                        outputDialogueInfo = args[++i];
+                    break;
+
                 case "--book":
                     if (i + 1 < args.Length)
                         outputBook = args[++i];
@@ -52,6 +61,11 @@ class Program
                 case "--clothing":
                     if (i + 1 < args.Length)
                         outputClothing = args[++i];
+                    break;
+
+                case "--weapon":
+                    if (i + 1 < args.Length)
+                        outputWeapon = args[++i];
                     break;
 
                 case "--type":
@@ -85,10 +99,17 @@ class Program
         List<Cell> cells = new List<Cell>();
         List<Expansion> expansions = new List<Expansion>(); //tracks which JSON file an NPC came from
 
-        List<DialogueInfo> dialogues = new List<DialogueInfo>();
+        List<Dialogue> dialogues = new List<Dialogue>();
+        List<DialogueInfo> dialogueInfos = new List<DialogueInfo>();
         List<Book> books = new List<Book>();
         List<MiscItem> miscItems = new List<MiscItem>();
         List<Clothing> clothes = new List<Clothing>();
+        List<Enchanting> enchantings = new List<Enchanting>();
+        List<Weapon> weapons = new List<Weapon>();
+
+        //used to populate the topic of DialogueInfo. DialogInfo related to a specific topic appear of Dialogue object
+        string DialogueTopic = "";
+        int DialogueId = 0;
 
         /*Get List of JSON files in the executable directory*/
         string currentDir = AppDomain.CurrentDomain.BaseDirectory;
@@ -147,6 +168,7 @@ class Program
             JsonElement expansionRoot = expansionDoc.RootElement;
             if (expansionRoot.ValueKind == JsonValueKind.Array)
             {
+                Console.WriteLine($"Reading {expansionNames[expansionIndex]}:");
                 foreach (JsonElement element in expansionRoot.EnumerateArray())
                 {
                     if (element.TryGetProperty("type", out JsonElement type))
@@ -166,12 +188,22 @@ class Program
                                 }
                                 break;
 
+                            case "Dialogue":
+                                var dialogue = Functions.DeserializObject<Dialogue>(element);
+                                dialogue.dialogue_id = DialogueId;
+                                DialogueTopic = dialogue.id ?? "";
+                                DialogueId++;
+                                dialogues.Add(dialogue);
+                                break;
+
                             case "DialogueInfo":
-                                var dialogue = Functions.DeserializObject<DialogueInfo>(element);
-                                if(!dialogues.Any(d => d.id == dialogue.id))
+                                var dialogueInfo = Functions.DeserializObject<DialogueInfo>(element);
+                                if(!dialogueInfos.Any(d => d.id == dialogueInfo.id))
                                 {
-                                    dialogue.expansion = expansionNames[expansionIndex];
-                                    dialogues.Add(dialogue);
+                                    dialogueInfo.expansion = expansionNames[expansionIndex];
+                                    dialogueInfo.dialogue_topic = DialogueTopic;
+                                    dialogueInfo.dialogue_id = DialogueId - 1;
+                                    dialogueInfos.Add(dialogueInfo);
                                 }
                                 break;
 
@@ -192,8 +224,31 @@ class Program
 
                             case "Clothing":
                                 var cloth = Functions.DeserializObject<Clothing>(element);
-                                cloth.expansion = expansionNames[expansionIndex];
-                                clothes.Add(cloth);
+                                if (!clothes.Any(c => c.id == cloth.id)) {
+                                    cloth.expansion = expansionNames[expansionIndex];
+                                    clothes.Add(cloth);
+                                }
+                                break;
+
+                            case "Enchanting":
+                                var enchant = Functions.DeserializObject<Enchanting>(element);
+                                if(!enchantings.Any(e => e.id == enchant.id))
+                                {
+                                    enchantings.Add(enchant);
+                                }
+                                else
+                                {
+                                    enchantings.RemoveAll(e => e.id == enchant.id);
+                                    enchantings.Add(enchant);
+                                }
+                                break;
+                            case "Weapon":
+                                var weapon = Functions.DeserializObject<Weapon>(element);
+                                if (!weapons.Any(w => w.id == weapon.id))
+                                {
+                                    weapon.expansion = expansionNames[expansionIndex];
+                                    weapons.Add(weapon);
+                                }
                                 break;
                         }
 
@@ -276,25 +331,34 @@ class Program
 
         string outputFile = $"{outputNpc}.{outputFileType}";
         string outputFileDialogue = $"{outputDialogue}.{outputFileType}";
+        string outputFileDialogueInfo = $"{outputDialogueInfo}.{outputFileType}";
         string outputFileBook = $"{outputBook}.{outputFileType}";
         string outputFileMiscItem = $"{outputMiscItem}.{outputFileType}";
         string outputFileClothing = $"{outputClothing}.{outputFileType}";
+        string outputFileEnchanting = $"{outputEnchanting}.{outputFileType}";
+        string outputFileWeapon = $"{outputWeapon}.{outputFileType}";
 
         switch (outputFileType.ToLower())
         {
             case "csv":
                 FileWriter.WriteCsv(outputFile, npcs, includeColumnHeadings);
                 FileWriter.WriteCsv(outputFileDialogue, dialogues, includeColumnHeadings);
+                FileWriter.WriteCsv(outputFileDialogueInfo, dialogueInfos, includeColumnHeadings);
                 FileWriter.WriteCsv(outputFileBook, books, includeColumnHeadings);
                 FileWriter.WriteCsv(outputFileMiscItem, miscItems, includeColumnHeadings);
                 FileWriter.WriteCsv(outputFileClothing, clothes, includeColumnHeadings);
+                FileWriter.WriteCsv(outputFileEnchanting, enchantings, includeColumnHeadings);
+                FileWriter.WriteCsv(outputFileWeapon, weapons, includeColumnHeadings);
                 break;
             case "sql":
                 FileWriter.WriteSql(outputFile, npcs, outputNpc, sqlType);
                 FileWriter.WriteSql(outputFileDialogue, dialogues, outputDialogue, sqlType);
+                FileWriter.WriteSql(outputFileDialogueInfo, dialogueInfos, outputDialogueInfo, sqlType);
                 FileWriter.WriteSql(outputFileBook, books, outputBook, sqlType);
                 FileWriter.WriteSql(outputFileMiscItem, miscItems, outputMiscItem, sqlType);
                 FileWriter.WriteSql(outputFileClothing, clothes, outputClothing, sqlType);
+                FileWriter.WriteSql(outputFileEnchanting, enchantings, outputEnchanting, sqlType);
+                FileWriter.WriteSql(outputFileWeapon, weapons, outputWeapon, sqlType);
                 break;
             default:
                 Console.WriteLine("Unsupported output file type. Please choose 'csv' or 'sql'.");
@@ -314,7 +378,9 @@ class Program
         Console.WriteLine("  --book <name>            db Table & output File name for extracted Books (default: book)");
         Console.WriteLine("  --clothing <name>        db Table & output File name for extracted Clothing (default: clothing)");
         Console.WriteLine("  --dialogue <name>        db Table & output File name for extracted Dialogue (default: dialogue)");
+        Console.WriteLine("  --dialogueinfo <name>    db Table & output File name for extracted DialogueInfo (default: dialogueinfo)");
         Console.WriteLine("  --miscitem <name>        db Table & output File name for extracted MiscItems (default: miscitem)");
+        Console.WriteLine("  --weapon <name>          db Table & output File name for extracted Weapons (default: weapon)");
         Console.WriteLine("  --no-headers             Exclude column headers in (CSV only)");
         Console.WriteLine("  --no-skip                Wont's skip NPCs missing Cell,Region,Attribute or Skill poperties");
         Console.WriteLine("  --help                   Show this help message");
