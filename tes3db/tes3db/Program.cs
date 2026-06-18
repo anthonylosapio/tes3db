@@ -19,6 +19,8 @@ class Program
         string outputClothing = "clothing";
         string outputEnchanting = "enchanting";
         string outputWeapon = "weapon";
+        string outputSpell = "spell";
+        string outputArmor = "armor";
 
         /* only applicable to csv output */
         bool includeColumnHeadings = true;
@@ -68,6 +70,16 @@ class Program
                         outputWeapon = args[++i];
                     break;
 
+                case "--spell":
+                    if (i + 1 < args.Length)
+                        outputSpell = args[++i];
+                    break;
+
+                case "--armor":
+                    if (i + 1 < args.Length)
+                        outputArmor = args[++i];
+                    break;
+
                 case "--type":
                 case "-t":
                     if (i + 1 < args.Length)
@@ -106,6 +118,8 @@ class Program
         List<Clothing> clothes = new List<Clothing>();
         List<Enchanting> enchantings = new List<Enchanting>();
         List<Weapon> weapons = new List<Weapon>();
+        List<Spell> spells = new List<Spell>();
+        List<Armor> armors = new List<Armor>();
 
         //used to populate the topic of DialogueInfo. DialogInfo related to a specific topic appear of Dialogue object
         string DialogueTopic = "";
@@ -250,6 +264,22 @@ class Program
                                     weapons.Add(weapon);
                                 }
                                 break;
+                            case "Spell":
+                                var spell = Functions.DeserializObject<Spell>(element);
+                                if (!spells.Any(s => s.id == spell.id))
+                                {
+                                    spell.expansion = expansionNames[expansionIndex];
+                                    spells.Add(spell);
+                                }
+                                break;
+                            case "Armor":
+                                var armor = Functions.DeserializObject<Armor>(element);
+                                if (!armors.Any(a => a.id == armor.id))
+                                {
+                                    armor.expansion = expansionNames[expansionIndex];
+                                    armors.Add(armor);
+                                }
+                                break;
                         }
 
                     }
@@ -337,6 +367,8 @@ class Program
         string outputFileClothing = $"{outputClothing}.{outputFileType}";
         string outputFileEnchanting = $"{outputEnchanting}.{outputFileType}";
         string outputFileWeapon = $"{outputWeapon}.{outputFileType}";
+        string outputFileSpell = $"{outputSpell}.{outputFileType}";
+        string outputFileArmor = $"{outputArmor}.{outputFileType}";
 
         switch (outputFileType.ToLower())
         {
@@ -349,6 +381,8 @@ class Program
                 FileWriter.WriteCsv(outputFileClothing, clothes, includeColumnHeadings);
                 FileWriter.WriteCsv(outputFileEnchanting, enchantings, includeColumnHeadings);
                 FileWriter.WriteCsv(outputFileWeapon, weapons, includeColumnHeadings);
+                FileWriter.WriteCsv(outputFileSpell, spells, includeColumnHeadings);
+                FileWriter.WriteCsv(outputFileArmor, armors, includeColumnHeadings);
                 break;
             case "sql":
                 FileWriter.WriteSql(outputFile, npcs, outputNpc, sqlType);
@@ -359,6 +393,8 @@ class Program
                 FileWriter.WriteSql(outputFileClothing, clothes, outputClothing, sqlType);
                 FileWriter.WriteSql(outputFileEnchanting, enchantings, outputEnchanting, sqlType);
                 FileWriter.WriteSql(outputFileWeapon, weapons, outputWeapon, sqlType);
+                FileWriter.WriteSql(outputFileSpell, spells, outputSpell, sqlType);
+                FileWriter.WriteSql(outputFileArmor, armors, outputArmor, sqlType);
                 break;
             default:
                 Console.WriteLine("Unsupported output file type. Please choose 'csv' or 'sql'.");
@@ -381,6 +417,8 @@ class Program
         Console.WriteLine("  --dialogueinfo <name>    db Table & output File name for extracted DialogueInfo (default: dialogueinfo)");
         Console.WriteLine("  --miscitem <name>        db Table & output File name for extracted MiscItems (default: miscitem)");
         Console.WriteLine("  --weapon <name>          db Table & output File name for extracted Weapons (default: weapon)");
+        Console.WriteLine("  --armor <name>           db Table & output File name for extracted Armors (default: armor)");
+        Console.WriteLine("  --spell <name>           db Table & output File name for extracted Spells (default: spell)");
         Console.WriteLine("  --no-headers             Exclude column headers in (CSV only)");
         Console.WriteLine("  --no-skip                Wont's skip NPCs missing Cell,Region,Attribute or Skill poperties");
         Console.WriteLine("  --help                   Show this help message");

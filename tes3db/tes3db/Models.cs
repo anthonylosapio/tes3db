@@ -251,10 +251,8 @@ public class Models
         public string? icon { get; set; }
         public string? enchanting { get; set; }
         public string? expansion { get; set; }
-        public WeaponData? data
-        {
-            get; set;
-        }
+        public WeaponData? data { get; set; }
+    }
     public class WeaponData
     {
         public double? weight { get; set; }
@@ -273,5 +271,48 @@ public class Models
         [JsonPropertyName("flags")]
         public string? other {  get; set; }
     }
-}
+
+    public class Spell
+    {
+        public string? flags { get; set; }
+        public string? id { get; set; }
+        public string? name { get; set; }
+        public List<MagicEffect>? effects { get; set; }
+        public string? expansion { get; set; }
+        public SpellData? data { get; set; }
+    }
+    public class SpellData
+    {
+        public string? spell_type { get; set; }
+        public int? cost { get; set; }
+        [JsonPropertyName("flags")]
+        public int? other { get; set; }
+    }
+
+    public class Armor
+    {
+        public string? flags { get; set; }
+        public string? id { get; set; }
+        public string? name { get; set; }
+        public string? mesh { get; set; }
+        public string? icon { get; set; }
+        public string? enchanting { get; set; }
+        public string? expansion { get; set; }
+        public ArmorData? data { get; set; }
+    }
+
+    public class ArmorData
+    {
+        public string? armor_type { get; set; }
+        public double? weight { get; set; }
+        public int? value { get; set; }
+        public int? health { get; set; }
+        public int? enchantment { get; set; }
+        public double? armor_rating { get; set; }
+    }
+    //Alchemly
+    //Ingredient
+
+
+
 }
