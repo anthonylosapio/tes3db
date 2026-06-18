@@ -26,4 +26,10 @@
 	  <None Remove="README.md" />
 	</ItemGroup>
 	
+	<ItemGroup>
+		<!-- Treat everything in these folders as None (not built) -->
+		<None Include="sql\**\*" />
+		<None Include="Site\**\*" />
+	</ItemGroup>
+	
 </Project>
