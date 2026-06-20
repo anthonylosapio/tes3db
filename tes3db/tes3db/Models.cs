@@ -286,7 +286,7 @@ public class Models
         public string? spell_type { get; set; }
         public int? cost { get; set; }
         [JsonPropertyName("flags")]
-        public int? other { get; set; }
+        public string? other { get; set; }
     }
 
     public class Armor
@@ -308,7 +308,7 @@ public class Models
         public int? value { get; set; }
         public int? health { get; set; }
         public int? enchantment { get; set; }
-        public double? armor_rating { get; set; }
+        public int? armor_rating { get; set; }
     }
     //Alchemly
     //Ingredient
