@@ -238,7 +238,7 @@ public class Functions
         return refs;
     }
 
-    public static T DeserializObject<T>(JsonElement element) where T : new()
+    public static T DeserializeObject<T>(JsonElement element) where T : new()
     {
         try
         {
