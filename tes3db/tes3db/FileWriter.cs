@@ -112,6 +112,7 @@ public class FileWriter
                 typeof(int?),
                 typeof(bool?),
                 typeof(double?),
+                typeof(int?[]),
                 typeof(List<InventoryItem>),
                 typeof(List<MagicEffect>),
                 typeof(List<string>)
@@ -154,7 +155,8 @@ public class FileWriter
         {
             typeof(List<InventoryItem>),
             typeof(List<MagicEffect>),
-            typeof(List<string>)
+            typeof(List<string>),
+            typeof(int?[])
         };
 
         foreach (var property in properties)

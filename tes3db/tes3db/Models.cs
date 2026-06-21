@@ -152,15 +152,14 @@ public class Models
         public string? dialogue_topic { get; set; }
         public int? dialogue_id { get; set; }
         public DialogueInfoData? data { get; set; }
-    }
-
-    public class DialogueInfoData
-    {
-        public string? dialogue_type { get; set; }
-        public int? disposition { get; set; }
-        public int? speaker_rank { get; set; }
-        public string? speaker_sex { get; set; }
-        public int? player_rank { get; set; }
+        public class DialogueInfoData
+        {
+            public string? dialogue_type { get; set; }
+            public int? disposition { get; set; }
+            public int? speaker_rank { get; set; }
+            public string? speaker_sex { get; set; }
+            public int? player_rank { get; set; }
+        }
     }
 
     public class Book
@@ -173,21 +172,26 @@ public class Models
         public string? text { get; set; }
         public string? expansion { get; set; }
         public BookData? data { get; set; }
-    }
-
-    public class BookData
-    {
-        public double? weight { get; set; }
-        public int? value { get; set; }
-        public string? book_type { get; set; }
-        public string? skill { get; set; }
-        public int? enchantment { get; set; }
+        public class BookData
+        {
+            public double? weight { get; set; }
+            public int? value { get; set; }
+            public string? book_type { get; set; }
+            public string? skill { get; set; }
+            public int? enchantment { get; set; }
+        }
     }
 
     public class Enchanting { 
         public string? id { get; set; }
         public List<MagicEffect>? effects { get; set; }
         public EnchantingData? data { get; set; }
+        public class EnchantingData
+        {
+            public string? enchant_type { get; set; }
+            public int? cost { get; set; }
+            public int? max_charge { get; set; }
+        }
     }
     public class MagicEffect
     {
@@ -200,27 +204,26 @@ public class Models
         public int? min_magnitude { get; set; }
         public int? max_magnitude { get; set; }
     }
-    public class EnchantingData
-    {
-        public string? enchant_type { get; set; }
-        public int? cost { get; set; }
-        public int? max_charge { get; set; }
-    }
 
     public class MiscItem
     {
+        public string? flags { get; set; }
         public string? id { get; set; }
         public string? name { get; set; }
+        public string? mesh { get; set; }
+        public string? icon { get; set; }
         public string? expansion { get; set; }
         public MiscItemData? data { get; set; }
+        public class MiscItemData
+        {
+            public double? weight { get; set; }
+            public int? value { get; set; }
+            [JsonPropertyName("flags")]
+            public string? data_flags { get; set; }
+        }
     }
 
-    public class MiscItemData
-    {
-        public double? weight { get; set; }
-        public int? value { get; set; }
-        public string? flags { get; set; }
-    }
+
 
     public class Clothing
     {
@@ -232,14 +235,13 @@ public class Models
         public string? enchanting { get; set; }
         public string? expansion { get; set; }
         public ClothingData? data { get; set; }
-    }
-
-    public class ClothingData
-    {
-        public string? clothing_type {  get; set; }
-        public double? weight { get; set; }
-        public int? value { get; set; }
-        public int? enchantment { get; set; }
+        public class ClothingData
+        {
+            public string? clothing_type { get; set; }
+            public double? weight { get; set; }
+            public int? value { get; set; }
+            public int? enchantment { get; set; }
+        }
     }
 
     public class Weapon 
@@ -252,25 +254,26 @@ public class Models
         public string? enchanting { get; set; }
         public string? expansion { get; set; }
         public WeaponData? data { get; set; }
+        public class WeaponData
+        {
+            public double? weight { get; set; }
+            public int? value { get; set; }
+            public string? weapon_type { get; set; }
+            public int? health { get; set; }
+            public double? speed { get; set; }
+            public double? reach { get; set; }
+            public int? enchantment { set; get; }
+            public int? chop_min { get; set; }
+            public int? chop_max { get; set; }
+            public int? slash_min { get; set; }
+            public int? slash_max { get; set; }
+            public int? thrust_min { get; set; }
+            public int? thrust_max { get; set; }
+            [JsonPropertyName("flags")]
+            public string? other { get; set; }
+        }
     }
-    public class WeaponData
-    {
-        public double? weight { get; set; }
-        public int? value { get; set; }
-        public string? weapon_type { get; set; }
-        public int? health { get; set; }
-        public double? speed { get; set; }
-        public double? reach {  get; set; }
-        public int? enchantment {  set; get; }
-        public int? chop_min { get; set; }
-        public int? chop_max { get; set; }
-        public int? slash_min { get; set; }
-        public int? slash_max { get; set; }
-        public int? thrust_min {  get; set; }
-        public int? thrust_max {  get; set; }
-        [JsonPropertyName("flags")]
-        public string? other {  get; set; }
-    }
+
 
     public class Spell
     {
@@ -280,13 +283,13 @@ public class Models
         public List<MagicEffect>? effects { get; set; }
         public string? expansion { get; set; }
         public SpellData? data { get; set; }
-    }
-    public class SpellData
-    {
-        public string? spell_type { get; set; }
-        public int? cost { get; set; }
-        [JsonPropertyName("flags")]
-        public string? other { get; set; }
+        public class SpellData
+        {
+            public string? spell_type { get; set; }
+            public int? cost { get; set; }
+            [JsonPropertyName("flags")]
+            public string? other { get; set; }
+        }
     }
 
     public class Armor
@@ -299,20 +302,65 @@ public class Models
         public string? enchanting { get; set; }
         public string? expansion { get; set; }
         public ArmorData? data { get; set; }
+        public class ArmorData
+        {
+            public string? armor_type { get; set; }
+            public double? weight { get; set; }
+            public int? value { get; set; }
+            public int? health { get; set; }
+            public int? enchantment { get; set; }
+            public int? armor_rating { get; set; }
+        }
     }
 
-    public class ArmorData
+    public class Effect
     {
-        public string? armor_type { get; set; }
-        public double? weight { get; set; }
-        public int? value { get; set; }
-        public int? health { get; set; }
-        public int? enchantment { get; set; }
-        public int? armor_rating { get; set; }
+        public string? flags { get; set; }
+        [JsonPropertyName("effect_id")]
+        public string? id { get; set; }
+        public string? icon { get; set; }
+        public string? texture { get; set; }
+        public string? bolt_sound { get; set; }
+        public string? cast_sound { get; set; }
+        public string? hit_sound { get; set; }
+        public string? area_sound { get; set; }
+        public string? cast_visual { get; set; }
+        public string? bolt_visual { get; set; }
+        public string? hit_visual { get; set; }
+        public string? area_visual { get; set; }
+        public string? description { get; set; }
+        public string? expansion { get; set; }
+        public EffectData? data { get; set; }
+        public class EffectData
+        {
+            public string? school { get; set; }
+            public double? base_cost { get; set; }
+            public string? flags { get; set; }
+            public int?[] color { get; set; }
+            public double? speed { get; set; }
+            public double? size { get; set; }
+            public double? size_cap { get; set; }
+        }
     }
-    //Alchemly
+
+    public class Alchemy
+    {
+        public string? flags { get; set; }
+        public string? id { get; set; }
+        public string? name { get; set; }
+        public string? mesh { get; set; }
+        public string? icon { get; set; }
+        public string? expansion { get; set; }
+        public List<MagicEffect>? effects { get; set; }
+        public AlchemyData? data { get; set; }
+        public class AlchemyData {
+            public double? weight { get; set; }
+            public int? value { get; set; }
+            [JsonPropertyName("flags")]
+            public string? data_flags { get; set; }
+        }
+    }
+
     //Ingredient
-
-
 
 }

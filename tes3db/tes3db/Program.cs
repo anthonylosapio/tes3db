@@ -21,6 +21,8 @@ class Program
         string outputWeapon = "weapon";
         string outputSpell = "spell";
         string outputArmor = "armor";
+        string outputEffect = "effect";
+        string outputAlchemy = "alchemy";
 
         /* only applicable to csv output */
         bool includeColumnHeadings = true;
@@ -80,6 +82,16 @@ class Program
                         outputArmor = args[++i];
                     break;
 
+                case "--alchemy":
+                    if (i + 1 < args.Length)
+                        outputAlchemy = args[++i];
+                    break;
+
+                case "--effect":
+                    if (i + 1 < args.Length)
+                        outputEffect = args[++i];
+                    break;
+
                 case "--type":
                 case "-t":
                     if (i + 1 < args.Length)
@@ -120,6 +132,8 @@ class Program
         List<Weapon> weapons = new List<Weapon>();
         List<Spell> spells = new List<Spell>();
         List<Armor> armors = new List<Armor>();
+        List<Effect> effects = new List<Effect>();
+        List<Alchemy> alchemies = new List<Alchemy>();
 
         //used to populate the topic of DialogueInfo. DialogInfo related to a specific topic appear of Dialogue object
         string DialogueTopic = "";
@@ -203,7 +217,7 @@ class Program
                                 break;
 
                             case "Dialogue":
-                                var dialogue = Functions.DeserializObject<Dialogue>(element);
+                                var dialogue = Functions.DeserializeObject<Dialogue>(element);
                                 dialogue.dialogue_id = DialogueId;
                                 DialogueTopic = dialogue.id ?? "";
                                 DialogueId++;
@@ -211,7 +225,7 @@ class Program
                                 break;
 
                             case "DialogueInfo":
-                                var dialogueInfo = Functions.DeserializObject<DialogueInfo>(element);
+                                var dialogueInfo = Functions.DeserializeObject<DialogueInfo>(element);
                                 if(!dialogueInfos.Any(d => d.id == dialogueInfo.id))
                                 {
                                     dialogueInfo.expansion = expansionNames[expansionIndex];
@@ -222,7 +236,7 @@ class Program
                                 break;
 
                             case "Book":
-                                var book = Functions.DeserializObject<Book>(element);
+                                var book = Functions.DeserializeObject<Book>(element);
                                 if (!books.Any(b => b.id == book.id))
                                 {
                                     book.expansion = expansionNames[expansionIndex];
@@ -231,13 +245,13 @@ class Program
                                 break;
 
                             case "MiscItem":
-                                var miscItem = Functions.DeserializObject<MiscItem>(element);
+                                var miscItem = Functions.DeserializeObject<MiscItem>(element);
                                 miscItem.expansion = expansionNames[expansionIndex];
                                 miscItems.Add(miscItem);
                                 break;
 
                             case "Clothing":
-                                var cloth = Functions.DeserializObject<Clothing>(element);
+                                var cloth = Functions.DeserializeObject<Clothing>(element);
                                 if (!clothes.Any(c => c.id == cloth.id)) {
                                     cloth.expansion = expansionNames[expansionIndex];
                                     clothes.Add(cloth);
@@ -245,7 +259,7 @@ class Program
                                 break;
 
                             case "Enchanting":
-                                var enchant = Functions.DeserializObject<Enchanting>(element);
+                                var enchant = Functions.DeserializeObject<Enchanting>(element);
                                 if(!enchantings.Any(e => e.id == enchant.id))
                                 {
                                     enchantings.Add(enchant);
@@ -257,7 +271,7 @@ class Program
                                 }
                                 break;
                             case "Weapon":
-                                var weapon = Functions.DeserializObject<Weapon>(element);
+                                var weapon = Functions.DeserializeObject<Weapon>(element);
                                 if (!weapons.Any(w => w.id == weapon.id))
                                 {
                                     weapon.expansion = expansionNames[expansionIndex];
@@ -265,7 +279,7 @@ class Program
                                 }
                                 break;
                             case "Spell":
-                                var spell = Functions.DeserializObject<Spell>(element);
+                                var spell = Functions.DeserializeObject<Spell>(element);
                                 if (!spells.Any(s => s.id == spell.id))
                                 {
                                     spell.expansion = expansionNames[expansionIndex];
@@ -273,11 +287,28 @@ class Program
                                 }
                                 break;
                             case "Armor":
-                                var armor = Functions.DeserializObject<Armor>(element);
+                                var armor = Functions.DeserializeObject<Armor>(element);
                                 if (!armors.Any(a => a.id == armor.id))
                                 {
                                     armor.expansion = expansionNames[expansionIndex];
                                     armors.Add(armor);
+                                }
+                                break;
+                            case "Alchemy":
+                                var alchemy = Functions.DeserializeObject<Alchemy>(element);
+                                if(!alchemies.Any(a => a.id == alchemy.id))
+                                {
+                                    alchemy.expansion = expansionNames[expansionIndex];
+                                    alchemies.Add(alchemy);
+                                }
+                                break;
+
+                            case "MagicEffect":
+                                var effect = Functions.DeserializeObject<Effect>(element);
+                                if (!effects.Any(e => e.id == effect.id))
+                                {
+                                    effect.expansion = expansionNames[expansionIndex];
+                                    effects.Add(effect);
                                 }
                                 break;
                         }
@@ -369,6 +400,8 @@ class Program
         string outputFileWeapon = $"{outputWeapon}.{outputFileType}";
         string outputFileSpell = $"{outputSpell}.{outputFileType}";
         string outputFileArmor = $"{outputArmor}.{outputFileType}";
+        string outputFileEffect = $"{outputEffect}.{outputFileType}";
+        string outputFileAlchemy = $"{outputAlchemy}.{outputFileType}";
 
         switch (outputFileType.ToLower())
         {
@@ -383,6 +416,8 @@ class Program
                 FileWriter.WriteCsv(outputFileWeapon, weapons, includeColumnHeadings);
                 FileWriter.WriteCsv(outputFileSpell, spells, includeColumnHeadings);
                 FileWriter.WriteCsv(outputFileArmor, armors, includeColumnHeadings);
+                FileWriter.WriteCsv(outputFileEffect, effects, includeColumnHeadings);
+                FileWriter.WriteCsv(outputFileAlchemy, alchemies, includeColumnHeadings);
                 break;
             case "sql":
                 FileWriter.WriteSql(outputFile, npcs, outputNpc, sqlType);
@@ -395,6 +430,8 @@ class Program
                 FileWriter.WriteSql(outputFileWeapon, weapons, outputWeapon, sqlType);
                 FileWriter.WriteSql(outputFileSpell, spells, outputSpell, sqlType);
                 FileWriter.WriteSql(outputFileArmor, armors, outputArmor, sqlType);
+                FileWriter.WriteSql(outputFileEffect, effects, outputEffect, sqlType);
+                FileWriter.WriteSql(outputFileAlchemy, alchemies, outputAlchemy, sqlType);
                 break;
             default:
                 Console.WriteLine("Unsupported output file type. Please choose 'csv' or 'sql'.");
