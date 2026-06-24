@@ -1,5 +1,6 @@
 ﻿namespace tes3db;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 public class Models
@@ -270,7 +271,7 @@ public class Models
             public int? thrust_min { get; set; }
             public int? thrust_max { get; set; }
             [JsonPropertyName("flags")]
-            public string? other { get; set; }
+            public string? data_flags { get; set; }
         }
     }
 
@@ -288,7 +289,7 @@ public class Models
             public string? spell_type { get; set; }
             public int? cost { get; set; }
             [JsonPropertyName("flags")]
-            public string? other { get; set; }
+            public string? data_flags { get; set; }
         }
     }
 
@@ -361,6 +362,80 @@ public class Models
         }
     }
 
-    //Ingredient
+    public class Ingredient
+    {
+        public string? flags { get; set; }
+        public string? id { get; set; }
+        public string? name { get; set; }
+        public string? mesh { get; set; }
+        public string? icon { get; set; }
+        public string? expansion { get; set; }
+        public IngredientData? data { get; set; }
+
+        public class IngredientData
+        {
+            public double? weight { get; set; }
+            public int? value { get; set; }
+            public string[]? effects { get; set; }
+            public string[]? skills { get; set; }
+            public string[]? attributes { get; set; }
+        }
+    }
+    public class Creature {
+        public string? flags { get; set; }
+        public string? id { get; set; }
+        public string? name { get; set; }
+        public string? mesh { get; set; }
+        [JsonPropertyName("inventory")]
+        public JsonElement InventoryRaw { get; set; }
+        [JsonIgnore]
+        public List<InventoryItem> inventory => Functions.GetInventory(InventoryRaw);
+        public List<string>? spells { get; set; }
+        public AIData? ai_data { get; set; }
+        public string? creature_flags { get; set; }
+        public string? expansion { get; set; }
+        public CreatureData? data { get; set; }
+
+        public class AIData { 
+            public int? hello { get; set; }
+            public int? fight { get; set; }
+            public int? flee { get; set; }
+            public int? alarm { get; set; }
+            public string? services { get; set; }
+        }
+        public class CreatureData
+        {
+            public string? creature_type { get; set; }
+            public int? level { get; set; }
+            public int? strength { get; set; }
+            public int? intelligence { get; set; }
+            public int? willpower { get; set; }
+            public int? agility { get; set; }
+            public int? speed { get; set; }
+            public int? endurance { get; set; }
+            public int? personality { get; set; }
+            public int? luck { get; set; }
+            public int? health { get; set; }
+            public int? magicka { get; set; }
+            public int? fatigue { get; set; }
+            public int? soul { get; set; }
+            public int? combat { get; set; }
+            public int? magic { get; set; }
+            public int? stealth { get; set; }
+            public int[]? attack1 { get; set; }
+            public int[]? attack2 { get; set; }
+            public int[]? attack3 { get; set; }
+            public int? gold { get; set; }
+        }
+    }
+
+    public class Birthsign {
+        public string? flags { get; set; }
+        public string? id { get; set; }
+        public string? name { get; set; }
+        public string? texture { get; set; }
+        public string? description { get; set; }
+        public string[]? spells { get; set; }
+    }
 
 }

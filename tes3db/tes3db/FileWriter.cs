@@ -113,22 +113,29 @@ public class FileWriter
                 typeof(bool?),
                 typeof(double?),
                 typeof(int?[]),
+                typeof(string[]),
                 typeof(List<InventoryItem>),
                 typeof(List<MagicEffect>),
                 typeof(List<string>)
             };
+        var ignoreTypes = new HashSet<Type>
+            {
+                typeof(JsonElement),
+            };
 
         foreach (var property in properties)
         {
-            string propertyName = property.Name;
-            if (targetTypes.Contains(property.PropertyType))
-            {
-                propertyNames.Add(propertyName);
-            }
-            else
-            {
-                var nestedProperties = GetPropertyNames(property.PropertyType);
-                propertyNames.AddRange(nestedProperties);
+            if (!ignoreTypes.Contains(property.PropertyType)) {
+                string propertyName = property.Name;
+                if (targetTypes.Contains(property.PropertyType))
+                {
+                    propertyNames.Add(propertyName);
+                }
+                else
+                {
+                    var nestedProperties = GetPropertyNames(property.PropertyType);
+                    propertyNames.AddRange(nestedProperties);
+                }
             }
 
         }
@@ -156,40 +163,52 @@ public class FileWriter
             typeof(List<InventoryItem>),
             typeof(List<MagicEffect>),
             typeof(List<string>),
+            typeof(string[]),
             typeof(int?[])
         };
 
+        var ignoreTypes = new HashSet<Type>
+            {
+                typeof(JsonElement),
+            };
+
         foreach (var property in properties)
         {
-            if (targetTypes.Contains(property.PropertyType))
+            if (!ignoreTypes.Contains(property.PropertyType))
             {
-                var value = property.GetValue(instance);
-                var newFieldValueandType = new FieldValueandType
+                if (targetTypes.Contains(property.PropertyType))
                 {
-                    Value = value,
-                    Type = property.PropertyType
-                };
-                fieldValueandType.Add(newFieldValueandType);
-            }else if(serializeTypes.Contains(property.PropertyType))
-            {
-                var value = property.GetValue(instance);
-                string serializedValue = JsonSerializer.Serialize(value);
-                var newFieldValueandType = new FieldValueandType
+                    var value = property.GetValue(instance);
+                    var newFieldValueandType = new FieldValueandType
+                    {
+                        Value = value,
+                        Type = property.PropertyType
+                    };
+                    fieldValueandType.Add(newFieldValueandType);
+                }
+                else if (serializeTypes.Contains(property.PropertyType))
                 {
-                    Value = serializedValue,
-                    Type = property.PropertyType
-                };
-                fieldValueandType.Add(newFieldValueandType);
-            }
-            else
-            {
-                var nestedInstance = property.GetValue(instance);
-                if (nestedInstance is not null)
+                    var value = property.GetValue(instance);
+                    string serializedValue = JsonSerializer.Serialize(value);
+                    var newFieldValueandType = new FieldValueandType
+                    {
+                        Value = serializedValue,
+                        Type = property.PropertyType
+                    };
+                    fieldValueandType.Add(newFieldValueandType);
+                }
+                else
                 {
-                    var nestedValues = GetPropertyValues(nestedInstance, property.PropertyType);
-                    fieldValueandType.AddRange(nestedValues);
+                    var nestedInstance = property.GetValue(instance);
+                    if (nestedInstance is not null)
+                    {
+                        var nestedValues = GetPropertyValues(nestedInstance, property.PropertyType);
+                        fieldValueandType.AddRange(nestedValues);
+                    }
                 }
             }
+
+                
         }
 
         return fieldValueandType;

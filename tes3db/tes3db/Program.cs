@@ -11,18 +11,21 @@ class Program
         var sw = Stopwatch.StartNew();
 
         // Default values
-        string outputNpc = "npc";
+        string outputAlchemy = "alchemy";
+        string outputArmor = "armor";
+        string outputBirthsign = "birthsign";
+        string outputBook = "book";
+        string outputClothing = "clothing";
+        string outputCreature = "creature";
         string outputDialogue = "dialogue";
         string outputDialogueInfo = "dialogueinfo";
-        string outputBook = "book";
-        string outputMiscItem = "miscitem";
-        string outputClothing = "clothing";
-        string outputEnchanting = "enchanting";
-        string outputWeapon = "weapon";
-        string outputSpell = "spell";
-        string outputArmor = "armor";
         string outputEffect = "effect";
-        string outputAlchemy = "alchemy";
+        string outputEnchanting = "enchanting";
+        string outputIngredient = "ingredient";
+        string outputMiscItem = "miscitem";
+        string outputNpc = "npc";
+        string outputSpell = "spell";
+        string outputWeapon = "weapon";
 
         /* only applicable to csv output */
         bool includeColumnHeadings = true;
@@ -37,10 +40,14 @@ class Program
         {
             switch (args[i].ToLower())
             {
-                case "--npc":
-                    if (i + 1 < args.Length)
-                        outputNpc = args[++i];
+                case "--alchemy":
+                    outputAlchemy = args[++i];
+                    break;  
+
+                case "--birthsign":
+                    outputBirthsign = args[++i];
                     break;
+
 
                 case "--dialogue":
                     if (i + 1 < args.Length)
@@ -72,6 +79,11 @@ class Program
                         outputWeapon = args[++i];
                     break;
 
+                case "--npc":
+                    if (i + 1 < args.Length)
+                        outputNpc = args[++i];
+                    break;
+
                 case "--spell":
                     if (i + 1 < args.Length)
                         outputSpell = args[++i];
@@ -82,9 +94,14 @@ class Program
                         outputArmor = args[++i];
                     break;
 
-                case "--alchemy":
+                case "--ingredient":
                     if (i + 1 < args.Length)
-                        outputAlchemy = args[++i];
+                        outputIngredient = args[++i];
+                    break;
+
+                case "--creature":
+                    if (i + 1 < args.Length)
+                        outputCreature = args[++i];
                     break;
 
                 case "--effect":
@@ -134,6 +151,9 @@ class Program
         List<Armor> armors = new List<Armor>();
         List<Effect> effects = new List<Effect>();
         List<Alchemy> alchemies = new List<Alchemy>();
+        List<Ingredient> ingredients = new List<Ingredient>();
+        List<Creature> creatures = new List<Creature>();
+        List<Birthsign> birthsigns = new List<Birthsign>();
 
         //used to populate the topic of DialogueInfo. DialogInfo related to a specific topic appear of Dialogue object
         string DialogueTopic = "";
@@ -302,6 +322,14 @@ class Program
                                     alchemies.Add(alchemy);
                                 }
                                 break;
+                            case "Ingredient":
+                                var ingredient = Functions.DeserializeObject<Ingredient>(element);
+                                if (!ingredients.Any(i => i.id == ingredient.id))
+                                {
+                                    ingredient.expansion = expansionNames[expansionIndex];
+                                    ingredients.Add(ingredient);
+                                }
+                                break;
 
                             case "MagicEffect":
                                 var effect = Functions.DeserializeObject<Effect>(element);
@@ -309,6 +337,21 @@ class Program
                                 {
                                     effect.expansion = expansionNames[expansionIndex];
                                     effects.Add(effect);
+                                }
+                                break;
+                            case "Creature":
+                                var creature = Functions.DeserializeObject<Creature>(element);
+                                if (!creatures.Any(c => c.id == creature.id))
+                                {
+                                    creature.expansion = expansionNames[expansionIndex];
+                                    creatures.Add(creature);
+                                }
+                                break;
+                            case "Birthsign":
+                                var birthsign = Functions.DeserializeObject<Birthsign>(element);
+                                if (!birthsigns.Any(b => b.id == birthsign.id))
+                                {
+                                    birthsigns.Add(birthsign);
                                 }
                                 break;
                         }
@@ -402,6 +445,9 @@ class Program
         string outputFileArmor = $"{outputArmor}.{outputFileType}";
         string outputFileEffect = $"{outputEffect}.{outputFileType}";
         string outputFileAlchemy = $"{outputAlchemy}.{outputFileType}";
+        string outputFileIngredient = $"{outputIngredient}.{outputFileType}";
+        string outputFileCreature = $"{outputCreature}.{outputFileType}";
+        string outputFileBirthsign = $"{outputBirthsign}.{outputFileType}";
 
         switch (outputFileType.ToLower())
         {
@@ -418,6 +464,9 @@ class Program
                 FileWriter.WriteCsv(outputFileArmor, armors, includeColumnHeadings);
                 FileWriter.WriteCsv(outputFileEffect, effects, includeColumnHeadings);
                 FileWriter.WriteCsv(outputFileAlchemy, alchemies, includeColumnHeadings);
+                FileWriter.WriteCsv(outputFileIngredient, ingredients, includeColumnHeadings);
+                FileWriter.WriteCsv(outputFileCreature, creatures, includeColumnHeadings);
+                FileWriter.WriteCsv(outputFileBirthsign, birthsigns, includeColumnHeadings);
                 break;
             case "sql":
                 FileWriter.WriteSql(outputFile, npcs, outputNpc, sqlType);
@@ -432,6 +481,9 @@ class Program
                 FileWriter.WriteSql(outputFileArmor, armors, outputArmor, sqlType);
                 FileWriter.WriteSql(outputFileEffect, effects, outputEffect, sqlType);
                 FileWriter.WriteSql(outputFileAlchemy, alchemies, outputAlchemy, sqlType);
+                FileWriter.WriteSql(outputFileIngredient, ingredients, outputIngredient, sqlType);
+                FileWriter.WriteSql(outputFileCreature, creatures, outputCreature, sqlType);
+                FileWriter.WriteSql(outputFileBirthsign, birthsigns, outputBirthsign, sqlType);
                 break;
             default:
                 Console.WriteLine("Unsupported output file type. Please choose 'csv' or 'sql'.");
@@ -447,17 +499,23 @@ class Program
         Console.WriteLine("Options:");
         Console.WriteLine("  --type, -t <type>        Output type: csv or sql (default: csv)");
         Console.WriteLine("  --sql-type, -s <type>    SQL type: mysql or postgresql (default: postgresql)");
-        Console.WriteLine("  --npc <name>             db Table & output File name for extracted NPCs (default: npc)");
-        Console.WriteLine("  --book <name>            db Table & output File name for extracted Books (default: book)");
-        Console.WriteLine("  --clothing <name>        db Table & output File name for extracted Clothing (default: clothing)");
-        Console.WriteLine("  --dialogue <name>        db Table & output File name for extracted Dialogue (default: dialogue)");
-        Console.WriteLine("  --dialogueinfo <name>    db Table & output File name for extracted DialogueInfo (default: dialogueinfo)");
-        Console.WriteLine("  --miscitem <name>        db Table & output File name for extracted MiscItems (default: miscitem)");
-        Console.WriteLine("  --weapon <name>          db Table & output File name for extracted Weapons (default: weapon)");
-        Console.WriteLine("  --armor <name>           db Table & output File name for extracted Armors (default: armor)");
-        Console.WriteLine("  --spell <name>           db Table & output File name for extracted Spells (default: spell)");
         Console.WriteLine("  --no-headers             Exclude column headers in (CSV only)");
         Console.WriteLine("  --no-skip                Wont's skip NPCs missing Cell,Region,Attribute or Skill poperties");
+        Console.WriteLine("");
+        Console.WriteLine("  --alchemy <name>         db Table & output File name for extracted Alchemies (default: alchemy)");
+        Console.WriteLine("  --armor <name>           db Table & output File name for extracted Armors (default: armor)");
+        Console.WriteLine("  --birthsign <name>       db Table & output File name for extracted Birthsigns (default: birthsign)");
+        Console.WriteLine("  --book <name>            db Table & output File name for extracted Books (default: book)");
+        Console.WriteLine("  --clothing <name>        db Table & output File name for extracted Clothing (default: clothing)");
+        Console.WriteLine("  --creature <name>        db Table & output File name for extracted Creatures (default: creature)");
+        Console.WriteLine("  --dialogue <name>        db Table & output File name for extracted Dialogue (default: dialogue)");
+        Console.WriteLine("  --dialogueinfo <name>    db Table & output File name for extracted DialogueInfo (default: dialogueinfo)");
+        Console.WriteLine("  --ingredient <name>      db Table & output File name for extracted Ingredients (default: ingredient)");
+        Console.WriteLine("  --miscitem <name>        db Table & output File name for extracted MiscItems (default: miscitem)");
+        Console.WriteLine("  --npc <name>             db Table & output File name for extracted NPCs (default: npc)");  
+        Console.WriteLine("  --spell <name>           db Table & output File name for extracted Spells (default: spell)");
+        Console.WriteLine("  --weapon <name>          db Table & output File name for extracted Weapons (default: weapon)");
+        Console.WriteLine("");
         Console.WriteLine("  --help                   Show this help message");
     }
 }//end of Program
