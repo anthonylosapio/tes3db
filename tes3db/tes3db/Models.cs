@@ -336,7 +336,8 @@ public class Models
         {
             public string? school { get; set; }
             public double? base_cost { get; set; }
-            public string? flags { get; set; }
+            [JsonPropertyName("flags")]
+            public string? data_flags { get; set; }
             public int?[] color { get; set; }
             public double? speed { get; set; }
             public double? size { get; set; }
@@ -438,4 +439,114 @@ public class Models
         public string[]? spells { get; set; }
     }
 
+    public class Race {
+        public string? flags { get; set; }
+        public string? id { get; set; }
+        public string? name { get; set; }
+        public string[]? spells { get; set; }
+        public string? description { get; set; }
+        public string? expansion { get; set; }
+        public RaceData? data { get; set; }
+        public class RaceData
+        {
+            public SkillBonuses? skill_bonuses { get; set; }
+            [JsonPropertyName("strength")]
+            public JsonElement StrengthRaw { get; set; }
+            [JsonIgnore]
+            public int? male_strength => StrengthRaw[0].GetInt32();
+            [JsonIgnore]
+            public int? female_strength => StrengthRaw[1].GetInt32();
+
+            [JsonPropertyName("intelligence")]
+            public JsonElement IntelligenceRaw { get; set; }
+            [JsonIgnore]
+            public int? male_intelligence => IntelligenceRaw[0].GetInt32();
+            [JsonIgnore]
+            public int? female_intelligence => IntelligenceRaw[1].GetInt32();
+
+            [JsonPropertyName("willpower")]
+            public JsonElement WillpowerRaw { get; set; }
+            [JsonIgnore]
+            public int? male_willpower => WillpowerRaw[0].GetInt32();
+            [JsonIgnore]
+            public int? female_willpower => WillpowerRaw[1].GetInt32();
+
+            [JsonPropertyName("agility")]
+            public JsonElement AgilityRaw { get; set; }
+            [JsonIgnore]
+            public int? male_agility => AgilityRaw[0].GetInt32();
+            [JsonIgnore]
+            public int? female_agility => AgilityRaw[1].GetInt32();
+
+            [JsonPropertyName("speed")]
+            public JsonElement SpeedRaw { get; set; }
+            [JsonIgnore]
+            public int? male_speed => SpeedRaw[0].GetInt32();
+            [JsonIgnore]
+            public int? female_speed => SpeedRaw[1].GetInt32();
+
+            [JsonPropertyName("endurance")]
+            public JsonElement EnduranceRaw { get; set; }
+            [JsonIgnore]
+            public int? male_endurance => EnduranceRaw[0].GetInt32();
+            [JsonIgnore]
+            public int? female_endurance => EnduranceRaw[1].GetInt32();
+
+            [JsonPropertyName("personality")]
+            public JsonElement PersonalityRaw { get; set; }
+            [JsonIgnore]
+            public int? male_personality => PersonalityRaw[0].GetInt32();
+            [JsonIgnore]
+            public int? female_personality => PersonalityRaw[1].GetInt32();
+
+            [JsonPropertyName("luck")]
+            public JsonElement LuckRaw { get; set; }
+            [JsonIgnore]
+            public int? male_luck => LuckRaw[0].GetInt32();
+            [JsonIgnore]
+            public int? female_luck => LuckRaw[1].GetInt32();
+
+            [JsonPropertyName("height")]
+            public JsonElement HeightRaw { get; set; }
+            [JsonIgnore]
+            public double? male_height => HeightRaw[0].GetDouble();
+            [JsonIgnore]
+            public double? female_height => HeightRaw[1].GetDouble();
+
+            [JsonPropertyName("weight")]
+            public JsonElement WeightRaw { get; set; }
+            [JsonIgnore]
+            public double? male_weight => WeightRaw[0].GetDouble();
+            [JsonIgnore]
+            public double? female_weight => WeightRaw[1].GetDouble();
+
+            [JsonPropertyName("flags")]
+            public string? data_flags { get; set; }
+
+            public class SkillBonuses
+            {
+                public string? skill_0 { get; set; }
+                public int? bonus_0 { get; set; }
+                public string? skill_1 { get; set; }
+                public int? bonus_1 { get; set; }
+                public string? skill_2 { get; set; }
+                public int? bonus_2 { get; set; }
+                public string? skill_3 { get; set; }
+                public int? bonus_3 { get; set; }
+                public string? skill_4 { get; set; }
+                public int? bonus_4 { get; set; }
+                public string? skill_5 { get; set; }
+                public int? bonus_5 { get; set; }
+                public string? skill_6 { get; set; }
+                public int? bonus_6 { get; set; }
+            }
+        }
+    }
+
+    //Apparatus
+    //Class
+    //Faction
+    //Skill
+    //Lockpick
+    //Probe
 }

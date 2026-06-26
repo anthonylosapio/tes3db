@@ -3,8 +3,7 @@ CREATE TABLE `birthsign` (
     `id`               VARCHAR(255),
     `name`             VARCHAR(255),
     `texture`          VARCHAR(255),
-    `icon`             VARCHAR(255),
     `description`      TEXT,
-    `spells`           JSON(255),
+    `spells`           JSON,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

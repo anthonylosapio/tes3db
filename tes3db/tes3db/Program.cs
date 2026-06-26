@@ -24,6 +24,7 @@ class Program
         string outputIngredient = "ingredient";
         string outputMiscItem = "miscitem";
         string outputNpc = "npc";
+        string outputRace = "race";
         string outputSpell = "spell";
         string outputWeapon = "weapon";
 
@@ -82,6 +83,11 @@ class Program
                 case "--npc":
                     if (i + 1 < args.Length)
                         outputNpc = args[++i];
+                    break;
+
+                case "--race":
+                    if (i + 1 < args.Length)
+                        outputRace = args[++i];
                     break;
 
                 case "--spell":
@@ -154,6 +160,7 @@ class Program
         List<Ingredient> ingredients = new List<Ingredient>();
         List<Creature> creatures = new List<Creature>();
         List<Birthsign> birthsigns = new List<Birthsign>();
+        List<Race> races = new List<Race>();
 
         //used to populate the topic of DialogueInfo. DialogInfo related to a specific topic appear of Dialogue object
         string DialogueTopic = "";
@@ -266,8 +273,11 @@ class Program
 
                             case "MiscItem":
                                 var miscItem = Functions.DeserializeObject<MiscItem>(element);
-                                miscItem.expansion = expansionNames[expansionIndex];
-                                miscItems.Add(miscItem);
+                                if(!miscItems.Any(m => m.id == miscItem.id))
+                                {
+                                    miscItem.expansion = expansionNames[expansionIndex];
+                                    miscItems.Add(miscItem);
+                                }
                                 break;
 
                             case "Clothing":
@@ -353,6 +363,14 @@ class Program
                                 {
                                     birthsigns.Add(birthsign);
                                 }
+                                break;
+                            case "Race":
+                                var race = Functions.DeserializeObject<Race>(element);
+                                if(!races.Any(r => r.id == race.id))
+                                {
+                                    race.expansion = expansionNames[expansionIndex];
+                                    races.Add(race);
+                                } 
                                 break;
                         }
 
@@ -448,6 +466,7 @@ class Program
         string outputFileIngredient = $"{outputIngredient}.{outputFileType}";
         string outputFileCreature = $"{outputCreature}.{outputFileType}";
         string outputFileBirthsign = $"{outputBirthsign}.{outputFileType}";
+        string outputFileRace = $"{outputRace}.{outputFileType}";
 
         switch (outputFileType.ToLower())
         {
@@ -467,6 +486,7 @@ class Program
                 FileWriter.WriteCsv(outputFileIngredient, ingredients, includeColumnHeadings);
                 FileWriter.WriteCsv(outputFileCreature, creatures, includeColumnHeadings);
                 FileWriter.WriteCsv(outputFileBirthsign, birthsigns, includeColumnHeadings);
+                FileWriter.WriteCsv(outputFileRace, races, includeColumnHeadings);
                 break;
             case "sql":
                 FileWriter.WriteSql(outputFile, npcs, outputNpc, sqlType);
@@ -484,6 +504,7 @@ class Program
                 FileWriter.WriteSql(outputFileIngredient, ingredients, outputIngredient, sqlType);
                 FileWriter.WriteSql(outputFileCreature, creatures, outputCreature, sqlType);
                 FileWriter.WriteSql(outputFileBirthsign, birthsigns, outputBirthsign, sqlType);
+                FileWriter.WriteSql(outputFileRace, races, outputRace, sqlType);
                 break;
             default:
                 Console.WriteLine("Unsupported output file type. Please choose 'csv' or 'sql'.");
@@ -513,6 +534,7 @@ class Program
         Console.WriteLine("  --ingredient <name>      db Table & output File name for extracted Ingredients (default: ingredient)");
         Console.WriteLine("  --miscitem <name>        db Table & output File name for extracted MiscItems (default: miscitem)");
         Console.WriteLine("  --npc <name>             db Table & output File name for extracted NPCs (default: npc)");  
+        Console.WriteLine("  --race <name>            db Table & output File name for extracted Races (default: race)");
         Console.WriteLine("  --spell <name>           db Table & output File name for extracted Spells (default: spell)");
         Console.WriteLine("  --weapon <name>          db Table & output File name for extracted Weapons (default: weapon)");
         Console.WriteLine("");

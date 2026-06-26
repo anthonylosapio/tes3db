@@ -192,7 +192,7 @@ public class FileWriter
                     string serializedValue = JsonSerializer.Serialize(value);
                     var newFieldValueandType = new FieldValueandType
                     {
-                        Value = serializedValue,
+                        Value = serializedValue.Replace("\\u0027", "'"),// Replace escaped single quotes with actual single quotes
                         Type = property.PropertyType
                     };
                     fieldValueandType.Add(newFieldValueandType);
@@ -206,9 +206,7 @@ public class FileWriter
                         fieldValueandType.AddRange(nestedValues);
                     }
                 }
-            }
-
-                
+            }                
         }
 
         return fieldValueandType;
