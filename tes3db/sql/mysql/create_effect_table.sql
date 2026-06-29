@@ -16,7 +16,7 @@ CREATE TABLE `effect` (
     `expansion`        VARCHAR(255),
     `school`           VARCHAR(255),
     `base_cost`        DOUBLE,
-    `flags`            VARCHAR(255),
+    `data_flags`       VARCHAR(255),
     `color`            JSON,
     `speed`            DOUBLE,
     `size`             DOUBLE,

@@ -19,6 +19,6 @@ CREATE TABLE `weapon` (
     `slash_max`        INT,
     `thrust_min`       INT,
     `thrust_max`       INT,
-    `other`			   VARCHAR(255),
+    `data_flags`	   VARCHAR(255),
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

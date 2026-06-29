@@ -133,7 +133,7 @@ public class Functions
 
     }
 
-    public static List<Models.InventoryItem> GetInventory(JsonElement element)
+    public static List<InventoryItem> GetInventory(JsonElement element)
     {
         List<InventoryItem> inventory = new List<InventoryItem>();
         if (element.ValueKind == JsonValueKind.Array)
