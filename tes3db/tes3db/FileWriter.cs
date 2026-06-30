@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 using static tes3db.Models;
+using static tes3db.Models.Faction;
+using static tes3db.Models.Faction.FactionData;
 
 public class FileWriter
 {
@@ -116,7 +118,9 @@ public class FileWriter
                 typeof(string[]),
                 typeof(List<InventoryItem>),
                 typeof(List<MagicEffect>),
-                typeof(List<string>)
+                typeof(List<string>),
+                typeof(List<Reaction>),
+                typeof(List<Requirement>)
             };
         var ignoreTypes = new HashSet<Type>
             {
@@ -164,7 +168,9 @@ public class FileWriter
             typeof(List<MagicEffect>),
             typeof(List<string>),
             typeof(string[]),
-            typeof(int?[])
+            typeof(int?[]),
+            typeof(List<Reaction>),
+            typeof(List<Requirement>)
         };
 
         var ignoreTypes = new HashSet<Type>
