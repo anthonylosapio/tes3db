@@ -632,6 +632,7 @@ public class Models
         public string? id { get; set; }
         public string? description { get; set; }
         public string? expansion { get; set; }
+        public SkillData? data { get; set; }
         public class SkillData
         {
             public int? governing_attribute { get; set; }
