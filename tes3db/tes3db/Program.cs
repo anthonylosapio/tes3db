@@ -12,19 +12,23 @@ class Program
 
         // Default values
         string outputAlchemy = "alchemy";
+        string outputApparatus = "apparatus";
         string outputArmor = "armor";
         string outputBirthsign = "birthsign";
         string outputBook = "book";
+        string outputClass = "class";
         string outputClothing = "clothing";
         string outputCreature = "creature";
         string outputDialogue = "dialogue";
         string outputDialogueInfo = "dialogueinfo";
         string outputEffect = "effect";
         string outputEnchanting = "enchanting";
+        string outputFaction = "faction";
         string outputIngredient = "ingredient";
         string outputMiscItem = "miscitem";
         string outputNpc = "npc";
         string outputRace = "race";
+        string outputSkill = "skill";
         string outputSpell = "spell";
         string outputWeapon = "weapon";
 
@@ -42,13 +46,44 @@ class Program
             switch (args[i].ToLower())
             {
                 case "--alchemy":
-                    outputAlchemy = args[++i];
+                    if (i + 1 < args.Length)
+                        outputAlchemy = args[++i];
                     break;  
 
-                case "--birthsign":
-                    outputBirthsign = args[++i];
+                case "--apparatus":
+                    if (i + 1 < args.Length)
+                        outputApparatus = args[++i];
                     break;
 
+                case "--armor":
+                    if (i + 1 < args.Length)
+                        outputArmor = args[++i];
+                    break;
+
+                case "--birthsign":
+                    if (i + 1 < args.Length)
+                        outputBirthsign = args[++i];
+                    break;
+                
+                case "--book":
+                    if (i + 1 < args.Length)
+                        outputBook = args[++i];
+                    break;
+
+                case "--class":
+                    if (i + 1 < args.Length)
+                        outputClass = args[++i];
+                    break;
+
+                case "--clothing":
+                    if (i + 1 < args.Length)
+                        outputClothing = args[++i];
+                    break;
+
+                case "--creature":
+                    if (i + 1 < args.Length)
+                        outputCreature = args[++i];
+                    break;
 
                 case "--dialogue":
                     if (i + 1 < args.Length)
@@ -60,24 +95,24 @@ class Program
                         outputDialogueInfo = args[++i];
                     break;
 
-                case "--book":
+                case "--effect":
                     if (i + 1 < args.Length)
-                        outputBook = args[++i];
+                        outputEffect = args[++i];
+                    break;
+
+                case "--faction":
+                    if (i + 1 < args.Length)
+                        outputFaction = args[++i];
+                    break;
+
+                case "--ingredient":
+                    if (i + 1 < args.Length)
+                        outputIngredient = args[++i];
                     break;
 
                 case "--miscitem":
                     if (i + 1 < args.Length)
                         outputMiscItem = args[++i];
-                    break;
-
-                case "--clothing":
-                    if (i + 1 < args.Length)
-                        outputClothing = args[++i];
-                    break;
-
-                case "--weapon":
-                    if (i + 1 < args.Length)
-                        outputWeapon = args[++i];
                     break;
 
                 case "--npc":
@@ -90,29 +125,19 @@ class Program
                         outputRace = args[++i];
                     break;
 
+                case "--skill":
+                    if (i + 1 < args.Length)
+                        outputSkill = args[++i];
+                    break;
+
                 case "--spell":
                     if (i + 1 < args.Length)
                         outputSpell = args[++i];
                     break;
 
-                case "--armor":
+                case "--weapon":
                     if (i + 1 < args.Length)
-                        outputArmor = args[++i];
-                    break;
-
-                case "--ingredient":
-                    if (i + 1 < args.Length)
-                        outputIngredient = args[++i];
-                    break;
-
-                case "--creature":
-                    if (i + 1 < args.Length)
-                        outputCreature = args[++i];
-                    break;
-
-                case "--effect":
-                    if (i + 1 < args.Length)
-                        outputEffect = args[++i];
+                        outputWeapon = args[++i];
                     break;
 
                 case "--type":
@@ -161,6 +186,10 @@ class Program
         List<Creature> creatures = new List<Creature>();
         List<Birthsign> birthsigns = new List<Birthsign>();
         List<Race> races = new List<Race>();
+        List<Apparatus> apparatuses = new List<Apparatus>();
+        List<Class> classes = new List<Class>();
+        List<Faction> factions = new List<Faction>();
+        List<Skill> skills = new List<Skill>();
 
         //used to populate the topic of DialogueInfo. DialogInfo related to a specific topic appear of Dialogue object
         string DialogueTopic = "";
@@ -372,6 +401,38 @@ class Program
                                     races.Add(race);
                                 } 
                                 break;
+                            case "Apparatus":
+                                var apparatus = Functions.DeserializeObject<Apparatus>(element);
+                                if (!apparatuses.Any(a => a.id == apparatus.id))
+                                {
+                                    apparatus.expansion = expansionNames[expansionIndex];
+                                    apparatuses.Add(apparatus);
+                                }
+                                break;
+                            case "Class":
+                                var className = Functions.DeserializeObject<Class>(element);
+                                if (!classes.Any(c => c.id == className.id))
+                                {
+                                    className.expansion = expansionNames[expansionIndex];
+                                    classes.Add(className);
+                                }
+                                break;
+                            case "Faction":
+                                var faction = Functions.DeserializeObject<Faction>(element);
+                                if (!factions.Any(f => f.id == faction.id))
+                                {
+                                    faction.expansion = expansionNames[expansionIndex];
+                                    factions.Add(faction);
+                                }
+                                break;
+                            case "Skill":
+                                var skill = Functions.DeserializeObject<Skill>(element);
+                                if (!skills.Any(s => s.id == skill.id))
+                                {
+                                    skill.expansion = expansionNames[expansionIndex];
+                                    skills.Add(skill);
+                                }
+                                break;
                         }
 
                     }
@@ -467,6 +528,10 @@ class Program
         string outputFileCreature = $"{outputCreature}.{outputFileType}";
         string outputFileBirthsign = $"{outputBirthsign}.{outputFileType}";
         string outputFileRace = $"{outputRace}.{outputFileType}";
+        string outputFileApparatus = $"{outputApparatus}.{outputFileType}";
+        string outputFileClass = $"{outputClass}.{outputFileType}";
+        string outputFileFaction = $"{outputFaction}.{outputFileType}";
+        string outputFileSkill = $"{outputSkill}.{outputFileType}";
 
         switch (outputFileType.ToLower())
         {
@@ -487,6 +552,10 @@ class Program
                 FileWriter.WriteCsv(outputFileCreature, creatures, includeColumnHeadings);
                 FileWriter.WriteCsv(outputFileBirthsign, birthsigns, includeColumnHeadings);
                 FileWriter.WriteCsv(outputFileRace, races, includeColumnHeadings);
+                FileWriter.WriteCsv(outputFileApparatus, apparatuses, includeColumnHeadings);
+                FileWriter.WriteCsv(outputFileClass, classes, includeColumnHeadings);
+                FileWriter.WriteCsv(outputFileFaction, factions, includeColumnHeadings);
+                FileWriter.WriteCsv(outputFileSkill, skills, includeColumnHeadings);
                 break;
             case "sql":
                 FileWriter.WriteSql(outputFile, npcs, outputNpc, sqlType);
@@ -505,6 +574,10 @@ class Program
                 FileWriter.WriteSql(outputFileCreature, creatures, outputCreature, sqlType);
                 FileWriter.WriteSql(outputFileBirthsign, birthsigns, outputBirthsign, sqlType);
                 FileWriter.WriteSql(outputFileRace, races, outputRace, sqlType);
+                FileWriter.WriteSql(outputFileApparatus, apparatuses, outputApparatus, sqlType);
+                FileWriter.WriteSql(outputFileClass, classes, outputClass, sqlType);
+                FileWriter.WriteSql(outputFileFaction, factions, outputFaction, sqlType);
+                FileWriter.WriteSql(outputFileSkill, skills, outputSkill, sqlType);
                 break;
             default:
                 Console.WriteLine("Unsupported output file type. Please choose 'csv' or 'sql'.");
@@ -524,17 +597,23 @@ class Program
         Console.WriteLine("  --no-skip                Wont's skip NPCs missing Cell,Region,Attribute or Skill poperties");
         Console.WriteLine("");
         Console.WriteLine("  --alchemy <name>         db Table & output File name for extracted Alchemies (default: alchemy)");
+        Console.WriteLine("  --apparatus <name>       db Table & output File name for extracted Apparatuses (default: apparatus)");
         Console.WriteLine("  --armor <name>           db Table & output File name for extracted Armors (default: armor)");
         Console.WriteLine("  --birthsign <name>       db Table & output File name for extracted Birthsigns (default: birthsign)");
         Console.WriteLine("  --book <name>            db Table & output File name for extracted Books (default: book)");
+        Console.WriteLine("  --class <name>           db Table & output File name for extracted Classes (default: class)");
         Console.WriteLine("  --clothing <name>        db Table & output File name for extracted Clothing (default: clothing)");
         Console.WriteLine("  --creature <name>        db Table & output File name for extracted Creatures (default: creature)");
         Console.WriteLine("  --dialogue <name>        db Table & output File name for extracted Dialogue (default: dialogue)");
         Console.WriteLine("  --dialogueinfo <name>    db Table & output File name for extracted DialogueInfo (default: dialogueinfo)");
+        Console.WriteLine("  --effect <name>          db Table & output File name for extracted Effects (default: effect)");
+        Console.WriteLine("  --enchanting <name>      db Table & output File name for extracted Enchantings (default: enchanting)");
+        Console.WriteLine("  --faction <name>         db Table & output File name for extracted Factions (default: faction)");
         Console.WriteLine("  --ingredient <name>      db Table & output File name for extracted Ingredients (default: ingredient)");
         Console.WriteLine("  --miscitem <name>        db Table & output File name for extracted MiscItems (default: miscitem)");
         Console.WriteLine("  --npc <name>             db Table & output File name for extracted NPCs (default: npc)");  
         Console.WriteLine("  --race <name>            db Table & output File name for extracted Races (default: race)");
+        Console.WriteLine("  --skill <name>           db Table & output File name for extracted Skills (default: skill)");
         Console.WriteLine("  --spell <name>           db Table & output File name for extracted Spells (default: spell)");
         Console.WriteLine("  --weapon <name>          db Table & output File name for extracted Weapons (default: weapon)");
         Console.WriteLine("");

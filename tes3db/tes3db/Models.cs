@@ -543,10 +543,102 @@ public class Models
         }
     }
 
-    //Apparatus
-    //Class
+    public class Apparatus
+    {
+        public string? flags { get; set; }
+        public string? id { get; set; }
+        public string? name { get; set; }
+        public string? mesh { get; set; }
+        public string? icon { get; set; }
+        public string? expansion { get; set; }
+        public ApparatusData? data { get; set; }
+        public class ApparatusData
+        {
+            public string? apparatus_type { get; set; }
+            public double? quality { get; set; }
+            public double? weight { get; set; }
+            public int? value { get; set; }
+           
+        }
+    }
+    public class Class
+    {
+        public string? flags { get; set; }
+        public string? id { get; set; }
+        public string? name { get; set; }
+        public string? description { get; set; }
+        public string? expansion { get; set; }
+        public ClassData? data { get; set; }
+
+        public class ClassData
+        {
+            public string? attribute1 { get; set; }
+            public string? attribute2 { get; set; }
+            public string? specialization { get; set; }
+            public string? minor1 { get; set; }
+            public string? major1 { get; set; }
+            public string? minor2 { get; set; }
+            public string? major2 { get; set; }
+            public string? minor3 { get; set; }
+            public string? major3 { get; set; }
+            public string? minor4 { get; set; }
+            public string? major4 { get; set; }
+            public string? minor5 { get; set; }
+            public string? major5 { get; set; }
+            [JsonPropertyName("flags")]
+            public string? data_flags { get; set; }
+            public string? services { get; set; }
+        }
+    }
+
     //Faction
-    //Skill
+    public class Faction { 
+        public string? flags { get; set; }
+        public string? id { get; set; }
+        public string? name { get; set; }
+        public string[]? rank_names { get; set; }
+        public string? expansion { get; set; }
+        public List<Reaction>? reactions { get; set; }
+        public FactionData? data { get; set; }
+        public class Reaction { 
+            public string? faction { get; set; }
+            public int? reaction { get; set; }
+        }
+        public class FactionData {
+
+            [JsonPropertyName("favored_attributes")]
+            public JsonElement favored_attributesRaw { get; set; }
+            [JsonIgnore]
+            public string? favored_attribute1 => favored_attributesRaw[0].GetString();
+            [JsonIgnore]
+            public string? favored_attribute2 => favored_attributesRaw[1].GetString();
+            public List<Requirement>? requirements { get; set; }
+            public string[]? favored_skills { get; set; }
+            [JsonPropertyName("flags")]
+            public string? flags { get; set; }
+            public class Requirement { 
+                public int[]? attributes { get; set; }
+                public int? primary_skill { get; set; }
+                public int? favored_skill { get; set; }
+                public int? reputation { get; set; }
+            }
+        }
+
+    }
+
+    public class Skill { 
+        public string? flags { get; set; }
+        [JsonPropertyName("skill_id")]
+        public string? id { get; set; }
+        public string? description { get; set; }
+        public string? expansion { get; set; }
+        public class SkillData
+        {
+            public int? governing_attribute { get; set; }
+            public int? specialization { get; set; }
+            public double[]? actions { get; set; }
+        }
+    }
     //Lockpick
     //Probe
 }
