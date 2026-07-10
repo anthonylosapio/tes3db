@@ -640,6 +640,39 @@ public class Models
             public double[]? actions { get; set; }
         }
     }
-    //Lockpick
-    //Probe
+
+    public class Lockpick
+    {
+        public string? flags { get; set; }
+        public string? id { get; set; }
+        public string? name { get; set; }
+        public string? mesh { get; set; }
+        public string? icon { get; set; }
+        public string? expansion { get; set; }
+        public LockpickData? data { get; set; }
+        public class LockpickData
+        {
+            public double? weight { get; set; }
+            public double? quality { get; set; }
+            public int? value { get; set; }
+            public int? uses { get; set; }
+        }
+    }
+    public class Probe
+    {
+        public string? flags { get; set; }
+        public string? id { get; set; }
+        public string? name { get; set; }
+        public string? mesh { get; set; }
+        public string? icon { get; set; }
+        public string? expansion { get; set; }
+        public ProbeData? data { get; set; }
+        public class ProbeData
+        {
+            public double? weight { get; set; }
+            public double? quality { get; set; }
+            public int? value { get; set; }
+            public int? uses { get; set; }
+        }
+    }
 }
