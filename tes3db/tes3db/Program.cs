@@ -25,12 +25,16 @@ class Program
         string outputEnchanting = "enchanting";
         string outputFaction = "faction";
         string outputIngredient = "ingredient";
+        string outputLockpick = "lockpick";
         string outputMiscItem = "miscitem";
         string outputNpc = "npc";
+        string outputProbe = "probe";
         string outputRace = "race";
         string outputSkill = "skill";
         string outputSpell = "spell";
         string outputWeapon = "weapon";
+
+        string prefix = "";
 
         /* only applicable to csv output */
         bool includeColumnHeadings = true;
@@ -39,7 +43,8 @@ class Program
         //mysql or postgresql
         string sqlType = "postgresql";
         bool noSkip = false; //if true, won't skip NPCs missing Cell,Region,Attribute or Skill poperties, and will include them in output with null values for missing properties
-
+        //what to out to the console
+        bool verbose = false; //if true, will display verbose output
         // Parse command-line arguments
         for (int i = 0; i < args.Length; i++)
         {
@@ -110,6 +115,11 @@ class Program
                         outputIngredient = args[++i];
                     break;
 
+                case "--lockpick":
+                    if (i + 1 < args.Length)
+                        outputLockpick = args[++i];
+                    break;
+
                 case "--miscitem":
                     if (i + 1 < args.Length)
                         outputMiscItem = args[++i];
@@ -118,6 +128,11 @@ class Program
                 case "--npc":
                     if (i + 1 < args.Length)
                         outputNpc = args[++i];
+                    break;
+
+                case "--probe":
+                    if (i + 1 < args.Length)
+                        outputProbe = args[++i];
                     break;
 
                 case "--race":
@@ -160,6 +175,15 @@ class Program
                     includeColumnHeadings = false;
                     break;
 
+                case "--verbose":
+                    verbose = true;
+                    break;
+
+                case "--prefix":
+                    if (i + 1 < args.Length)
+                        prefix = args[++i];
+                    break;
+
                 case "--help":
                 case "-help":
                     PrintUsage();
@@ -190,6 +214,8 @@ class Program
         List<Class> classes = new List<Class>();
         List<Faction> factions = new List<Faction>();
         List<Skill> skills = new List<Skill>();
+        List<Probe> probes = new List<Probe>();
+        List<Lockpick> lockpicks = new List<Lockpick>();
 
         //used to populate the topic of DialogueInfo. DialogInfo related to a specific topic appear of Dialogue object
         string DialogueTopic = "";
@@ -217,7 +243,7 @@ class Program
             string fileNameWithoutExt = Path.GetFileNameWithoutExtension(file);
             string stripped = fileNameWithoutExt.TrimStart('0', '1', '2', '3', '4', '5', '6', '7', '8', '9');
             expansionNames.Add(stripped);
-            Console.WriteLine("Expansion name added: " + stripped);
+            if(verbose) Console.WriteLine("Expansion name added: " + stripped);
         }
         /*Check for special npc.json file
          npc.json file can be generated if you need attributes & skills from npc's with autocalculate on.
@@ -229,7 +255,7 @@ class Program
         string npcJsonPath = string.Empty;
         if (hasNpcJson)
         {
-            Console.WriteLine("npc.json file found.");
+            if(verbose) Console.WriteLine("npc.json file found.");
             npcJsonPath = Path.Combine(currentDir, "npc.json");
             jsonFilePaths.Remove(npcJsonPath);
             expansionNames.Remove("npc"); // List<string> containing the extracted expansion file names
@@ -238,12 +264,12 @@ class Program
         }
         else
         {
-            Console.WriteLine("no npc.json file found.");
+            if(verbose) Console.WriteLine("no npc.json file found.");
         }
 
         int expansionIndex = 0;
 
-        Console.WriteLine("Creating NPC - Expansion Map...");
+        if(verbose) Console.WriteLine("Creating NPC - Expansion Map...");
 
         foreach (string expansionFilePath in expansionFilePaths)
         {
@@ -252,7 +278,7 @@ class Program
             JsonElement expansionRoot = expansionDoc.RootElement;
             if (expansionRoot.ValueKind == JsonValueKind.Array)
             {
-                Console.WriteLine($"Reading {expansionNames[expansionIndex]}:");
+                if(verbose) Console.WriteLine($"Reading {expansionNames[expansionIndex]}:");
                 foreach (JsonElement element in expansionRoot.EnumerateArray())
                 {
                     if (element.TryGetProperty("type", out JsonElement type))
@@ -268,7 +294,7 @@ class Program
                                 else
                                 {
                                     string alreadyAddedTo = expansions.Find(x => x.NPCId == expansion.NPCId)?.Name ?? "";
-                                    Console.WriteLine(expansionNames[expansionIndex] + " " + expansion.NPCId + " already added to " + alreadyAddedTo);
+                                    if(verbose) Console.WriteLine(expansionNames[expansionIndex] + " " + expansion.NPCId + " already added to " + alreadyAddedTo);
                                 }
                                 break;
 
@@ -433,6 +459,22 @@ class Program
                                     skills.Add(skill);
                                 }
                                 break;
+                            case "Lockpick":
+                                var lockpick = Functions.DeserializeObject<Lockpick>(element);
+                                if (!lockpicks.Any(l => l.id == lockpick.id))
+                                {
+                                    lockpick.expansion = expansionNames[expansionIndex];
+                                    lockpicks.Add(lockpick);
+                                }
+                                break;
+                            case "Probe":
+                                var probe = Functions.DeserializeObject<Probe>(element);
+                                if (!probes.Any(p => p.id == probe.id))
+                                {
+                                    probe.expansion = expansionNames[expansionIndex];
+                                    probes.Add(probe);
+                                }
+                                break;
                         }
 
                     }
@@ -442,8 +484,14 @@ class Program
             {
                 Console.WriteLine("Expecting an array.");
             }
-            Console.WriteLine($"After Expansion {expansionNames[expansionIndex]}:");
-            Console.WriteLine($"{expansions.Count} NPCs, {dialogues.Count} Dialogues, {books.Count} Books, {miscItems.Count} MiscItems, {clothes.Count} Clothing");
+            if (verbose) {
+                Console.WriteLine($"After Expansion {expansionNames[expansionIndex]}:");
+                Console.WriteLine($"{expansions.Count} NPCs, {dialogues.Count} Dialogues, {books.Count} Books, {miscItems.Count} MiscItems, {clothes.Count} Clothing");
+                Console.WriteLine($"{enchantings.Count} Enchantments, {weapons.Count} Weapons, {spells.Count} Spells, {armors.Count} Armors, {alchemies.Count} Alchemies");
+                Console.WriteLine($"{ingredients.Count} Ingredients, {effects.Count} Effects, {creatures.Count} Creatures, {birthsigns.Count} Birthsigns, {races.Count} Races");
+                Console.WriteLine($"{apparatuses.Count} Apparatuses, {classes.Count} Classes, {factions.Count} Factions, {skills.Count} Skills, {lockpicks.Count} Lockpicks");
+                Console.WriteLine($"{probes.Count} Probes");
+            } 
             expansionIndex++;
         }
 
@@ -481,11 +529,11 @@ class Program
             {
                 Console.WriteLine("Expecting an array.");
             }
-            Console.WriteLine($"After {Path.GetFileName(path)} : {npcs.Count} NPCs found, skipped {skipCount} already added, and {cells.Count} Cells ");
+            if(verbose) Console.WriteLine($"After {Path.GetFileName(path)} : {npcs.Count} NPCs found, skipped {skipCount} already added, and {cells.Count} Cells ");
         }
 
         //populate location & expansion informatin of NPCs
-        Console.WriteLine("Adding Cell & Region to NPCs (takes a long time)...");
+        Console.WriteLine("Adding Cell & Region to NPCs (can take a few minutes)...");
         foreach (var npc in npcs)
         {
             Functions.AddCellLocationInfoToNPC(npc, cells);
@@ -497,10 +545,10 @@ class Program
         {
             foreach (var npc in npcs)
             {
-                if (npc.CellName == null && npc.Region == null) Console.WriteLine("CellName & Region mssing - " + npc.Id);
-                if (npc.Attributes == null) Console.WriteLine($"Attributes missing - {npc.Id}");
-                if (npc.Skills == null) Console.WriteLine($"Skills missing - " + npc.Id);
-                if(npc.Expansion == null) Console.WriteLine($"Expansion missing - " + npc.Id);
+                if (npc.CellName == null && npc.Region == null && verbose) Console.WriteLine("CellName & Region mssing - " + npc.Id);
+                if (npc.Attributes == null && verbose) Console.WriteLine($"Attributes missing - {npc.Id}");
+                if (npc.Skills == null && verbose) Console.WriteLine($"Skills missing - " + npc.Id);
+                if(npc.Expansion == null && verbose) Console.WriteLine($"Expansion missing - " + npc.Id);
             }
 
             // Remove objects from list that we don't want to include
@@ -512,26 +560,28 @@ class Program
 
         Console.WriteLine("Writing output files...");
 
-        string outputFile = $"{outputNpc}.{outputFileType}";
-        string outputFileDialogue = $"{outputDialogue}.{outputFileType}";
-        string outputFileDialogueInfo = $"{outputDialogueInfo}.{outputFileType}";
-        string outputFileBook = $"{outputBook}.{outputFileType}";
-        string outputFileMiscItem = $"{outputMiscItem}.{outputFileType}";
-        string outputFileClothing = $"{outputClothing}.{outputFileType}";
-        string outputFileEnchanting = $"{outputEnchanting}.{outputFileType}";
-        string outputFileWeapon = $"{outputWeapon}.{outputFileType}";
-        string outputFileSpell = $"{outputSpell}.{outputFileType}";
-        string outputFileArmor = $"{outputArmor}.{outputFileType}";
-        string outputFileEffect = $"{outputEffect}.{outputFileType}";
-        string outputFileAlchemy = $"{outputAlchemy}.{outputFileType}";
-        string outputFileIngredient = $"{outputIngredient}.{outputFileType}";
-        string outputFileCreature = $"{outputCreature}.{outputFileType}";
-        string outputFileBirthsign = $"{outputBirthsign}.{outputFileType}";
-        string outputFileRace = $"{outputRace}.{outputFileType}";
-        string outputFileApparatus = $"{outputApparatus}.{outputFileType}";
-        string outputFileClass = $"{outputClass}.{outputFileType}";
-        string outputFileFaction = $"{outputFaction}.{outputFileType}";
-        string outputFileSkill = $"{outputSkill}.{outputFileType}";
+        string outputFile = $"{prefix}{outputNpc}.{outputFileType}";
+        string outputFileDialogue = $"{prefix}{outputDialogue}.{outputFileType}";
+        string outputFileDialogueInfo = $"{prefix}{outputDialogueInfo}.{outputFileType}";
+        string outputFileBook = $"{prefix}{outputBook}.{outputFileType}";
+        string outputFileMiscItem = $"{prefix}{outputMiscItem}.{outputFileType}";
+        string outputFileClothing = $"{prefix}{outputClothing}.{outputFileType}";
+        string outputFileEnchanting = $"{prefix}{outputEnchanting}.{outputFileType}";
+        string outputFileWeapon = $"{prefix}{outputWeapon}.{outputFileType}";
+        string outputFileSpell = $"{prefix}{outputSpell}.{outputFileType}";
+        string outputFileArmor = $"{prefix}{outputArmor}.{outputFileType}";
+        string outputFileEffect = $"{prefix}{outputEffect}.{outputFileType}";
+        string outputFileAlchemy = $"{prefix}{outputAlchemy}.{outputFileType}";
+        string outputFileIngredient = $"{prefix}{outputIngredient}.{outputFileType}";
+        string outputFileCreature = $"{prefix}{outputCreature}.{outputFileType}";
+        string outputFileBirthsign = $"{prefix}{outputBirthsign}.{outputFileType}";
+        string outputFileRace = $"{prefix}{outputRace}.{outputFileType}";
+        string outputFileApparatus = $"{prefix}{outputApparatus}.{outputFileType}";
+        string outputFileClass = $"{prefix}{outputClass}.{outputFileType}";
+        string outputFileFaction = $"{prefix}{outputFaction}.{outputFileType}";
+        string outputFileSkill = $"{prefix}{outputSkill}.{outputFileType}";
+        string outputFileLockpick = $"{prefix}{outputLockpick}.{outputFileType}";
+        string outputFileProbe = $"{prefix}{outputProbe}.{outputFileType}";
 
         switch (outputFileType.ToLower())
         {
@@ -556,6 +606,8 @@ class Program
                 FileWriter.WriteCsv(outputFileClass, classes, includeColumnHeadings);
                 FileWriter.WriteCsv(outputFileFaction, factions, includeColumnHeadings);
                 FileWriter.WriteCsv(outputFileSkill, skills, includeColumnHeadings);
+                FileWriter.WriteCsv(outputFileLockpick, lockpicks, includeColumnHeadings);
+                FileWriter.WriteCsv(outputFileProbe, probes, includeColumnHeadings);
                 break;
             case "sql":
                 FileWriter.WriteSql(outputFile, npcs, outputNpc, sqlType);
@@ -578,6 +630,8 @@ class Program
                 FileWriter.WriteSql(outputFileClass, classes, outputClass, sqlType);
                 FileWriter.WriteSql(outputFileFaction, factions, outputFaction, sqlType);
                 FileWriter.WriteSql(outputFileSkill, skills, outputSkill, sqlType);
+                FileWriter.WriteSql(outputFileLockpick, lockpicks, outputLockpick, sqlType);
+                FileWriter.WriteSql(outputFileProbe, probes, outputProbe, sqlType);
                 break;
             default:
                 Console.WriteLine("Unsupported output file type. Please choose 'csv' or 'sql'.");
@@ -595,6 +649,9 @@ class Program
         Console.WriteLine("  --sql-type, -s <type>    SQL type: mysql or postgresql (default: postgresql)");
         Console.WriteLine("  --no-headers             Exclude column headers in (CSV only)");
         Console.WriteLine("  --no-skip                Wont's skip NPCs missing Cell,Region,Attribute or Skill poperties");
+        Console.WriteLine("  --verbose                Display verbose output");
+        Console.WriteLine("");
+        Console.WriteLine("  --prefix <prefix>        Prefix for output files, helpful if keeping expansions separate (default: none)");
         Console.WriteLine("");
         Console.WriteLine("  --alchemy <name>         db Table & output File name for extracted Alchemies (default: alchemy)");
         Console.WriteLine("  --apparatus <name>       db Table & output File name for extracted Apparatuses (default: apparatus)");
@@ -610,8 +667,10 @@ class Program
         Console.WriteLine("  --enchanting <name>      db Table & output File name for extracted Enchantings (default: enchanting)");
         Console.WriteLine("  --faction <name>         db Table & output File name for extracted Factions (default: faction)");
         Console.WriteLine("  --ingredient <name>      db Table & output File name for extracted Ingredients (default: ingredient)");
+        Console.WriteLine("  --lockpick <name>        db Table & output File name for extracted Lockpicks (default: lockpick)");
         Console.WriteLine("  --miscitem <name>        db Table & output File name for extracted MiscItems (default: miscitem)");
-        Console.WriteLine("  --npc <name>             db Table & output File name for extracted NPCs (default: npc)");  
+        Console.WriteLine("  --npc <name>             db Table & output File name for extracted NPCs (default: npc)");
+        Console.WriteLine("  --probe <name>           db Table & output File name for extracted Probes (default: probe)");
         Console.WriteLine("  --race <name>            db Table & output File name for extracted Races (default: race)");
         Console.WriteLine("  --skill <name>           db Table & output File name for extracted Skills (default: skill)");
         Console.WriteLine("  --spell <name>           db Table & output File name for extracted Spells (default: spell)");
