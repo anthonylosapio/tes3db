@@ -615,7 +615,7 @@ public class Models
             public List<Requirement>? requirements { get; set; }
             public string[]? favored_skills { get; set; }
             [JsonPropertyName("flags")]
-            public string? flags { get; set; }
+            public string? data_flags { get; set; }
             public class Requirement { 
                 public int[]? attributes { get; set; }
                 public int? primary_skill { get; set; }
@@ -635,8 +635,31 @@ public class Models
         public SkillData? data { get; set; }
         public class SkillData
         {
-            public int? governing_attribute { get; set; }
-            public int? specialization { get; set; }
+            [JsonPropertyName("governing_attribute")]
+            public JsonElement governing_attributeRaw { get; set; }
+            [JsonIgnore]
+            public string? governing_attribute => governing_attributeRaw.GetInt32() switch
+            {
+                0 => "Strength",
+                1 => "Intelligence",
+                2 => "Willpower",
+                3 => "Agility",
+                4 => "Speed",
+                5 => "Endurance",
+                6 => "Personality",
+                7 => "Luck",
+                _ => null
+            };
+            [JsonPropertyName("specialization")]
+            public JsonElement specializationRaw { get; set; }
+            [JsonIgnore]
+            public string? specialization => specializationRaw.GetInt32() switch
+            {
+                0 => "Combat",
+                1 => "Magic",
+                2 => "Stealth",
+                _ => "Unknown"
+            };
             public double[]? actions { get; set; }
         }
     }
