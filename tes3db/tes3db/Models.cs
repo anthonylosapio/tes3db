@@ -615,7 +615,7 @@ public class Models
             public List<Requirement>? requirements { get; set; }
             public string[]? favored_skills { get; set; }
             [JsonPropertyName("flags")]
-            public string? flags { get; set; }
+            public string? data_flags { get; set; }
             public class Requirement { 
                 public int[]? attributes { get; set; }
                 public int? primary_skill { get; set; }
