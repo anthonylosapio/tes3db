@@ -1,15 +1,14 @@
 name: Build tes3db
-
 on:
   push:
     branches: [ main ]
+    tags: [ 'v*' ]
   pull_request:
     branches: [ main ]
 
 jobs:
   build:
     runs-on: windows-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -26,14 +25,16 @@ jobs:
         run: dotnet build --configuration Release --no-restore
 
       - name: Publish to folder
-        run: dotnet publish --no-restore --configuration Release --output ./publish
+        run: dotnet publish --no-restore --configuration Release --output ./publish --self-contained false
 
-      - name: Publish
-        run: dotnet publish -c Release -o ./publish --self-contained false
+      - name: Zip published output
+        if: startsWith(github.ref, 'refs/tags/')
+        run: Compress-Archive -Path ./publish/* -DestinationPath ./tes3db.zip
 
-#      - name: Upload artifact
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: release-artifact
-#          path: ./publish
-#          if: success()
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ./tes3db.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
