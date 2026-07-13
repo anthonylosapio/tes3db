@@ -14,8 +14,12 @@ public class FileWriter
     {
         if (string.IsNullOrWhiteSpace(filePath))
             throw new ArgumentException("File path cannot be empty.");
-        if (data == null || data.Count == 0)
-            throw new ArgumentException("No data to write.");
+        if (data == null || data.Count == 0) {
+            Console.WriteLine($"Skipping {filePath}. No data to write.");
+            return;
+        }
+
+
 
         // Use UTF-8 encoding for compatibility
         using (var writer = new StreamWriter(filePath, false, Encoding.UTF8))
@@ -53,7 +57,12 @@ public class FileWriter
 
         if (string.IsNullOrWhiteSpace(filePath))
             throw new ArgumentException("File path cannot be empty.");
-        
+        if (data == null || data.Count == 0)
+        {
+            Console.WriteLine($"Skipping {filePath}. No data to write.");
+            return;
+        }
+
         string q = (sqlType=="postgresql") ? "\"" : "`";
         //Write the start of the INSERT statement with column names
         string queryStart = $"INSERT INTO {q}{tableName}{q} (";
