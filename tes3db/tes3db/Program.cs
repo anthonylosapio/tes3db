@@ -670,7 +670,7 @@ class Program
         Console.WriteLine("  --skip                   Will skip NPCs missing Cell, Region, Attribute or Skill poperties");
         Console.WriteLine("  --verbose                Display verbose output");
         Console.WriteLine("");
-        Console.WriteLine("  --prefix <prefix>        Prefix for output files, helpful if keeping expansions separate (default: none)");
+        Console.WriteLine("  --prefix, -p <prefix>    Prefix for output files, helpful if keeping expansions separate (default: none)");
         Console.WriteLine("");
         Console.WriteLine("  --alchemy <name>         db Table & output File name for extracted Alchemies (default: alchemy)");
         Console.WriteLine("  --apparatus <name>       db Table & output File name for extracted Apparatuses (default: apparatus)");

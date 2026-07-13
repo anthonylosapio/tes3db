@@ -1,7 +1,7 @@
 # tes3db
 
-Command line tool to convert Morrwond json files to database friendly formats (sql or csv). 
-This tool requires you to first use [tes3conv](https://github.com/Greatness7/tes3conv) to convert .esp & .esm files to json.
+Command line tool to convert Morrwond json files to database friendly formats (sql or csv/tsv). 
+This tool requires you to first use [tes3conv](https://github.com/Greatness7/tes3conv) to convert .esm files to json.
 
 
 ## Usage
@@ -22,18 +22,19 @@ tes3db will look for a npc.json file and handle it accordingly so that Expansion
 ### Options
 tes3db.exe [options]
 |||
-|-----------------------|-------------------------------------------------------------------|
-|`--type, -t <type>`      |  Output type: csv or sql (default: csv)                           |
-|`--sql-type, -s <type>`  |  SQL type: mysql or postgresql (default: postgresql)              |
-|`--npc <name>`           |  db Table & output File name for extracted NPCs (default: npc)    |
-|`--no-headers`           |  Exclude column headers in (CSV only)                             |
-|`--no-skip`              |  Wont's skip NPCs missing Cell,Region,Attribute or Skill poperties|
-|`--help`                 |  Show this help message                                           |
+|-------------------------|----------------------------------------------------------------------------------|
+|`--format, -f <format>`  |  Output format: csv, tsv, mysql or postgres (default: csv)						 |
+|`--prefix, -p <type>`    |  Prefix for output files, helpful if keeping expansions separate (default: none)"|
+|`--npc <name>`           |  db Table & output File name for extracted NPCs (default: npc)					 |
+|`--no-headers`           |  Exclude column headers in (csv/tsv only)										 |
+|`--skip`                 |  Will skip NPCs missing Cell,Region,Attribute or Skill poperties				 |
+|`--verbose`              |  Show verbose outut in console													 |
+|`--help -help`           |  Show this help message															 |
 
 
 ## sql
 
-The [sql section](tes3db/sql) contains sql scripts with CREATE TABLE statements for both MySQL and PostgreSQL that match the output so it can be imported easily. I also included a cleanup script that I use to normalize some of the fields to make them more human readable.
+The [sql section](tes3db/sql) contains sql scripts with CREATE TABLE statements for both MySQL and PostgreSQL that match the output so it can be imported easily. There is also a cleanup script that can be use to normalize some of the fields to make them more human readable.
 
 ## Site
 
