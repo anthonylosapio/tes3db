@@ -10,7 +10,7 @@ using static tes3db.Models.Faction.FactionData;
 
 public class FileWriter
 {
-    public static void WriteCsv<T>(string filePath, List<T> data, bool includeColumnHeadings)
+    public static void WriteCsv<T>(string filePath, List<T> data, bool includeColumnHeadings, string format)
     {
         if (string.IsNullOrWhiteSpace(filePath))
             throw new ArgumentException("File path cannot be empty.");
@@ -19,7 +19,12 @@ public class FileWriter
             return;
         }
 
-
+        char delimiter = format.ToLowerInvariant() switch
+        {
+            "csv" => ',',
+            "tsv" => '\t',
+            _ => throw new ArgumentException($"Unsupported format: {format}")
+        };
 
         // Use UTF-8 encoding for compatibility
         using (var writer = new StreamWriter(filePath, false, Encoding.UTF8))
@@ -28,21 +33,22 @@ public class FileWriter
             if (includeColumnHeadings)
             {
                 List<string> cols = GetPropertyNames(typeof(T));
-                string header = $"{string.Join(", ", cols)}";
+                string header = $"{string.Join(delimiter, cols)}";
                 writer.WriteLine(header);
             }
             // Write each record
-            foreach (var npc in data)
+            foreach (var obj in data)
             {
+                List<FieldValueandType> values = GetPropertyValues(obj, typeof(T));
+                var line = new StringBuilder();
 
-                string line = string.Empty;
-                List<FieldValueandType> values = GetPropertyValues(npc, typeof(T));
                 int c = 0;
                 foreach (var value in values)
                 {
                     string item = value.Value?.ToString() ?? "";
-                    line += EscapeCsvField(item);
-                    if (c < values.Count - 1) line += ",";
+//                    line += EscapeCsvField(item);
+                    line.Append(EscapeField(item, delimiter));
+                    if (c < values.Count - 1) line.Append(delimiter);
                     c++;
                 }
                 writer.WriteLine(line);
@@ -63,7 +69,7 @@ public class FileWriter
             return;
         }
 
-        string q = (sqlType=="postgresql") ? "\"" : "`";
+        string q = (sqlType=="postgres") ? "\"" : "`";
         //Write the start of the INSERT statement with column names
         string queryStart = $"INSERT INTO {q}{tableName}{q} (";
         foreach(string col in cols)
@@ -79,10 +85,10 @@ public class FileWriter
             writer.WriteLine(queryStart);
         // Write the values for each rows to insert
             counter = 0;
-            foreach(var npc in data)
+            foreach(var obj in data)
             {
                 string queryLine = "(";
-                List<FieldValueandType> values = GetPropertyValues(npc, typeof(T));
+                List<FieldValueandType> values = GetPropertyValues(obj, typeof(T));
                 int c = 0;
                 foreach (var value in values) {
                     string field = FormatValueForSql(value);
@@ -100,13 +106,12 @@ public class FileWriter
 
         }
     }
-    private static string EscapeCsvField(string field)
+
+    private static string EscapeField(string field, char delimiter)
     {
-        if (field == null) return "";
-        if (field.Contains(",") || field.Contains("\"") || field.Contains("\n"))
+        if (field.Contains(delimiter) || field.Contains('"') || field.Contains('\n') || field.Contains('\r'))
         {
-            field = field.Replace("\"", "\"\""); // Escape quotes
-            return $"\"{field}\""; //Wrap in quotes 
+            return $"\"{field.Replace("\"", "\"\"")}\"";
         }
         return field;
     }
