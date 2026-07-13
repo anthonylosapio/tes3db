@@ -251,6 +251,7 @@ class Program
         set and toggleing autocalculate off for those npc. Save the result as npc.esm then run tes3conv to convert to
         npc.json. If found, npc.json by default will be read before any other json files, but will be excluded from
         Expansion column assignment */
+        expansionFilePaths.AddRange(jsonFilePaths);
         bool hasNpcJson = (expansionNames.Contains("npc")) ? true : false;
         string npcJsonPath = string.Empty;
         if (hasNpcJson)
@@ -259,7 +260,6 @@ class Program
             npcJsonPath = Path.Combine(currentDir, "npc.json");
             jsonFilePaths.Remove(npcJsonPath);
             expansionNames.Remove("npc"); // List<string> containing the extracted expansion file names
-            expansionFilePaths.AddRange(jsonFilePaths);
             jsonFilePaths.Insert(0, npcJsonPath);
         }
         else
