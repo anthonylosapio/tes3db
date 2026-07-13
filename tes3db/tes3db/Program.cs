@@ -10,7 +10,8 @@ class Program
     {
         var sw = Stopwatch.StartNew();
 
-        // Default values
+        /* Default parameter values */
+        // filename/table values
         string outputAlchemy = "alchemy";
         string outputApparatus = "apparatus";
         string outputArmor = "armor";
@@ -36,15 +37,27 @@ class Program
 
         string prefix = "";
 
-        /* only applicable to csv output */
+        // includeColumnHeadings
+        // true/false
+        // only applicable to csv/tsv output
         bool includeColumnHeadings = true;
-        //sql or csv
-        string outputFileType = "csv";
-        //mysql or postgresql
-        string sqlType = "postgresql";
-        bool noSkip = false; //if true, won't skip NPCs missing Cell,Region,Attribute or Skill poperties, and will include them in output with null values for missing properties
-        //what to out to the console
-        bool verbose = false; //if true, will display verbose output
+
+        // outputFormat
+        // string
+        // csv tsv mysql postgres
+        string outputFormat = "csv";
+        string fileExtension = "csv";
+        
+        // noSkip
+        // true/false
+        // if false, NPCs missing Cell, Region, Attribute or Skill poperties will be excluded from output
+        bool noSkip = true;
+
+        // verbose
+        // true/false
+        // if true, more status updates are written to the console while the process runs
+        bool verbose = false;
+
         // Parse command-line arguments
         for (int i = 0; i < args.Length; i++)
         {
@@ -155,20 +168,14 @@ class Program
                         outputWeapon = args[++i];
                     break;
 
-                case "--type":
-                case "-t":
+                case "--format":
+                case "-f":
                     if (i + 1 < args.Length)
-                        outputFileType = args[++i];
+                        outputFormat = args[++i];
                     break;
 
-                case "--sql-type":
-                case "-s":
-                    if (i + 1 < args.Length)
-                        sqlType = args[++i];
-                    break;
-
-                case "--no-skip":
-                    noSkip = true;
+                case "--skip":
+                    noSkip = false;
                     break;
 
                 case "--no-headers":
@@ -180,6 +187,7 @@ class Program
                     break;
 
                 case "--prefix":
+                case "-p":
                     if (i + 1 < args.Length)
                         prefix = args[++i];
                     break;
@@ -190,6 +198,14 @@ class Program
                     return;
             }
         }
+        fileExtension = outputFormat.ToLowerInvariant() switch
+        {
+            "csv" => "csv",
+            "tsv" => "tsv",
+            "mysql" => "sql",
+            "postgres" => "sql",
+            _ => throw new ArgumentException($"Unknown output format: {outputFormat}")
+        };
 
         List<Npc> npcs = new List<Npc>();
         List<Cell> cells = new List<Cell>();
@@ -259,6 +275,7 @@ class Program
             if(verbose) Console.WriteLine("npc.json file found.");
             npcJsonPath = Path.Combine(currentDir, "npc.json");
             jsonFilePaths.Remove(npcJsonPath);
+            expansionFilePaths.Remove(npcJsonPath);
             expansionNames.Remove("npc"); // List<string> containing the extracted expansion file names
             jsonFilePaths.Insert(0, npcJsonPath);
         }
@@ -560,81 +577,84 @@ class Program
 
         Console.WriteLine("Writing output files...");
 
-        string outputFile = $"{prefix}{outputNpc}.{outputFileType}";
-        string outputFileDialogue = $"{prefix}{outputDialogue}.{outputFileType}";
-        string outputFileDialogueInfo = $"{prefix}{outputDialogueInfo}.{outputFileType}";
-        string outputFileBook = $"{prefix}{outputBook}.{outputFileType}";
-        string outputFileMiscItem = $"{prefix}{outputMiscItem}.{outputFileType}";
-        string outputFileClothing = $"{prefix}{outputClothing}.{outputFileType}";
-        string outputFileEnchanting = $"{prefix}{outputEnchanting}.{outputFileType}";
-        string outputFileWeapon = $"{prefix}{outputWeapon}.{outputFileType}";
-        string outputFileSpell = $"{prefix}{outputSpell}.{outputFileType}";
-        string outputFileArmor = $"{prefix}{outputArmor}.{outputFileType}";
-        string outputFileEffect = $"{prefix}{outputEffect}.{outputFileType}";
-        string outputFileAlchemy = $"{prefix}{outputAlchemy}.{outputFileType}";
-        string outputFileIngredient = $"{prefix}{outputIngredient}.{outputFileType}";
-        string outputFileCreature = $"{prefix}{outputCreature}.{outputFileType}";
-        string outputFileBirthsign = $"{prefix}{outputBirthsign}.{outputFileType}";
-        string outputFileRace = $"{prefix}{outputRace}.{outputFileType}";
-        string outputFileApparatus = $"{prefix}{outputApparatus}.{outputFileType}";
-        string outputFileClass = $"{prefix}{outputClass}.{outputFileType}";
-        string outputFileFaction = $"{prefix}{outputFaction}.{outputFileType}";
-        string outputFileSkill = $"{prefix}{outputSkill}.{outputFileType}";
-        string outputFileLockpick = $"{prefix}{outputLockpick}.{outputFileType}";
-        string outputFileProbe = $"{prefix}{outputProbe}.{outputFileType}";
+        string outputFile = $"{prefix}{outputNpc}.{fileExtension}";
+        string outputFileDialogue = $"{prefix}{outputDialogue}.{fileExtension}";
+        string outputFileDialogueInfo = $"{prefix}{outputDialogueInfo}.{fileExtension}";
+        string outputFileBook = $"{prefix}{outputBook}.{fileExtension}";
+        string outputFileMiscItem = $"{prefix}{outputMiscItem}.{fileExtension}";
+        string outputFileClothing = $"{prefix}{outputClothing}.{fileExtension}";
+        string outputFileEnchanting = $"{prefix}{outputEnchanting}.{fileExtension}";
+        string outputFileWeapon = $"{prefix}{outputWeapon}.{fileExtension}";
+        string outputFileSpell = $"{prefix}{outputSpell}.{fileExtension}";
+        string outputFileArmor = $"{prefix}{outputArmor}.{fileExtension}";
+        string outputFileEffect = $"{prefix}{outputEffect}.{fileExtension}";
+        string outputFileAlchemy = $"{prefix}{outputAlchemy}.{fileExtension}";
+        string outputFileIngredient = $"{prefix}{outputIngredient}.{fileExtension}";
+        string outputFileCreature = $"{prefix}{outputCreature}.{fileExtension}";
+        string outputFileBirthsign = $"{prefix}{outputBirthsign}.{fileExtension}";
+        string outputFileRace = $"{prefix}{outputRace}.{fileExtension}";
+        string outputFileApparatus = $"{prefix}{outputApparatus}.{fileExtension}";
+        string outputFileClass = $"{prefix}{outputClass}.{fileExtension}";
+        string outputFileFaction = $"{prefix}{outputFaction}.{fileExtension}";
+        string outputFileSkill = $"{prefix}{outputSkill}.{fileExtension}";
+        string outputFileLockpick = $"{prefix}{outputLockpick}.{fileExtension}";
+        string outputFileProbe = $"{prefix}{outputProbe}.{fileExtension}";
 
-        switch (outputFileType.ToLower())
+        string format = outputFormat.ToLowerInvariant();
+        switch (format)
         {
             case "csv":
-                FileWriter.WriteCsv(outputFile, npcs, includeColumnHeadings);
-                FileWriter.WriteCsv(outputFileDialogue, dialogues, includeColumnHeadings);
-                FileWriter.WriteCsv(outputFileDialogueInfo, dialogueInfos, includeColumnHeadings);
-                FileWriter.WriteCsv(outputFileBook, books, includeColumnHeadings);
-                FileWriter.WriteCsv(outputFileMiscItem, miscItems, includeColumnHeadings);
-                FileWriter.WriteCsv(outputFileClothing, clothes, includeColumnHeadings);
-                FileWriter.WriteCsv(outputFileEnchanting, enchantings, includeColumnHeadings);
-                FileWriter.WriteCsv(outputFileWeapon, weapons, includeColumnHeadings);
-                FileWriter.WriteCsv(outputFileSpell, spells, includeColumnHeadings);
-                FileWriter.WriteCsv(outputFileArmor, armors, includeColumnHeadings);
-                FileWriter.WriteCsv(outputFileEffect, effects, includeColumnHeadings);
-                FileWriter.WriteCsv(outputFileAlchemy, alchemies, includeColumnHeadings);
-                FileWriter.WriteCsv(outputFileIngredient, ingredients, includeColumnHeadings);
-                FileWriter.WriteCsv(outputFileCreature, creatures, includeColumnHeadings);
-                FileWriter.WriteCsv(outputFileBirthsign, birthsigns, includeColumnHeadings);
-                FileWriter.WriteCsv(outputFileRace, races, includeColumnHeadings);
-                FileWriter.WriteCsv(outputFileApparatus, apparatuses, includeColumnHeadings);
-                FileWriter.WriteCsv(outputFileClass, classes, includeColumnHeadings);
-                FileWriter.WriteCsv(outputFileFaction, factions, includeColumnHeadings);
-                FileWriter.WriteCsv(outputFileSkill, skills, includeColumnHeadings);
-                FileWriter.WriteCsv(outputFileLockpick, lockpicks, includeColumnHeadings);
-                FileWriter.WriteCsv(outputFileProbe, probes, includeColumnHeadings);
+            case "tsv":
+                FileWriter.WriteCsv(outputFile, npcs, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileDialogue, dialogues, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileDialogueInfo, dialogueInfos, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileBook, books, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileMiscItem, miscItems, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileClothing, clothes, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileEnchanting, enchantings, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileWeapon, weapons, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileSpell, spells, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileArmor, armors, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileEffect, effects, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileAlchemy, alchemies, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileIngredient, ingredients, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileCreature, creatures, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileBirthsign, birthsigns, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileRace, races, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileApparatus, apparatuses, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileClass, classes, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileFaction, factions, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileSkill, skills, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileLockpick, lockpicks, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileProbe, probes, includeColumnHeadings, format);
                 break;
-            case "sql":
-                FileWriter.WriteSql(outputFile, npcs, outputNpc, sqlType);
-                FileWriter.WriteSql(outputFileDialogue, dialogues, outputDialogue, sqlType);
-                FileWriter.WriteSql(outputFileDialogueInfo, dialogueInfos, outputDialogueInfo, sqlType);
-                FileWriter.WriteSql(outputFileBook, books, outputBook, sqlType);
-                FileWriter.WriteSql(outputFileMiscItem, miscItems, outputMiscItem, sqlType);
-                FileWriter.WriteSql(outputFileClothing, clothes, outputClothing, sqlType);
-                FileWriter.WriteSql(outputFileEnchanting, enchantings, outputEnchanting, sqlType);
-                FileWriter.WriteSql(outputFileWeapon, weapons, outputWeapon, sqlType);
-                FileWriter.WriteSql(outputFileSpell, spells, outputSpell, sqlType);
-                FileWriter.WriteSql(outputFileArmor, armors, outputArmor, sqlType);
-                FileWriter.WriteSql(outputFileEffect, effects, outputEffect, sqlType);
-                FileWriter.WriteSql(outputFileAlchemy, alchemies, outputAlchemy, sqlType);
-                FileWriter.WriteSql(outputFileIngredient, ingredients, outputIngredient, sqlType);
-                FileWriter.WriteSql(outputFileCreature, creatures, outputCreature, sqlType);
-                FileWriter.WriteSql(outputFileBirthsign, birthsigns, outputBirthsign, sqlType);
-                FileWriter.WriteSql(outputFileRace, races, outputRace, sqlType);
-                FileWriter.WriteSql(outputFileApparatus, apparatuses, outputApparatus, sqlType);
-                FileWriter.WriteSql(outputFileClass, classes, outputClass, sqlType);
-                FileWriter.WriteSql(outputFileFaction, factions, outputFaction, sqlType);
-                FileWriter.WriteSql(outputFileSkill, skills, outputSkill, sqlType);
-                FileWriter.WriteSql(outputFileLockpick, lockpicks, outputLockpick, sqlType);
-                FileWriter.WriteSql(outputFileProbe, probes, outputProbe, sqlType);
+            case "mysql":
+            case "postgres":
+                FileWriter.WriteSql(outputFile, npcs, outputNpc, format);
+                FileWriter.WriteSql(outputFileDialogue, dialogues, outputDialogue, format);
+                FileWriter.WriteSql(outputFileDialogueInfo, dialogueInfos, outputDialogueInfo, format);
+                FileWriter.WriteSql(outputFileBook, books, outputBook, format);
+                FileWriter.WriteSql(outputFileMiscItem, miscItems, outputMiscItem, format);
+                FileWriter.WriteSql(outputFileClothing, clothes, outputClothing, format);
+                FileWriter.WriteSql(outputFileEnchanting, enchantings, outputEnchanting, format);
+                FileWriter.WriteSql(outputFileWeapon, weapons, outputWeapon, format);
+                FileWriter.WriteSql(outputFileSpell, spells, outputSpell, format);
+                FileWriter.WriteSql(outputFileArmor, armors, outputArmor, format);
+                FileWriter.WriteSql(outputFileEffect, effects, outputEffect, format);
+                FileWriter.WriteSql(outputFileAlchemy, alchemies, outputAlchemy, format);
+                FileWriter.WriteSql(outputFileIngredient, ingredients, outputIngredient, format);
+                FileWriter.WriteSql(outputFileCreature, creatures, outputCreature, format);
+                FileWriter.WriteSql(outputFileBirthsign, birthsigns, outputBirthsign, format);
+                FileWriter.WriteSql(outputFileRace, races, outputRace, format);
+                FileWriter.WriteSql(outputFileApparatus, apparatuses, outputApparatus, format);
+                FileWriter.WriteSql(outputFileClass, classes, outputClass, format);
+                FileWriter.WriteSql(outputFileFaction, factions, outputFaction, format);
+                FileWriter.WriteSql(outputFileSkill, skills, outputSkill, format);
+                FileWriter.WriteSql(outputFileLockpick, lockpicks, outputLockpick, format);
+                FileWriter.WriteSql(outputFileProbe, probes, outputProbe, format);
                 break;
             default:
-                Console.WriteLine("Unsupported output file type. Please choose 'csv' or 'sql'.");
+                Console.WriteLine("Unsupported output file format.");
                 break;
         }
         sw.Stop();
@@ -645,10 +665,9 @@ class Program
         Console.WriteLine("Usage: tes3db.exe [options]");
         Console.WriteLine();
         Console.WriteLine("Options:");
-        Console.WriteLine("  --type, -t <type>        Output type: csv or sql (default: csv)");
-        Console.WriteLine("  --sql-type, -s <type>    SQL type: mysql or postgresql (default: postgresql)");
-        Console.WriteLine("  --no-headers             Exclude column headers in (CSV only)");
-        Console.WriteLine("  --no-skip                Wont's skip NPCs missing Cell,Region,Attribute or Skill poperties");
+        Console.WriteLine("  --format, -f <type>      Output type: csv tsv mysql postgres (default: csv)");
+        Console.WriteLine("  --no-headers             Exclude column headers in (csv/tsv only)");
+        Console.WriteLine("  --skip                   Will skip NPCs missing Cell, Region, Attribute or Skill poperties");
         Console.WriteLine("  --verbose                Display verbose output");
         Console.WriteLine("");
         Console.WriteLine("  --prefix <prefix>        Prefix for output files, helpful if keeping expansions separate (default: none)");
