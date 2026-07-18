@@ -1,0 +1,23 @@
+CREATE TABLE class (
+    flags             VARCHAR(255),
+    id                VARCHAR(255),
+    name              VARCHAR(255),
+    description       TEXT,
+    expansion         VARCHAR(255),
+    attribute1        VARCHAR(255),
+    attribute2        VARCHAR(255),
+    specialization    VARCHAR(255),
+    minor1            VARCHAR(255),
+    major1            VARCHAR(255),
+    minor2            VARCHAR(255),
+    major2            VARCHAR(255),
+    minor3            VARCHAR(255),
+    major3            VARCHAR(255),
+    minor4            VARCHAR(255),
+    major4            VARCHAR(255),
+    minor5            VARCHAR(255),
+    major5            VARCHAR(255),
+    data_flags        VARCHAR(255),
+    services          VARCHAR(255),
+    PRIMARY KEY (id)
+);
