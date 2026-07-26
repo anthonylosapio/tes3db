@@ -134,7 +134,7 @@ public class FileWriter
                 typeof(List<MagicEffect>),
                 typeof(List<string>),
                 typeof(List<Reaction>),
-                typeof(List<Requirement>)
+                typeof(List<Requirement>),
             };
         var ignoreTypes = new HashSet<Type>
             {
@@ -184,7 +184,7 @@ public class FileWriter
             typeof(string[]),
             typeof(int?[]),
             typeof(List<Reaction>),
-            typeof(List<Requirement>)
+            typeof(List<Requirement>),
         };
 
         var ignoreTypes = new HashSet<Type>

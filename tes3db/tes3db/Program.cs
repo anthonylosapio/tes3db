@@ -35,6 +35,8 @@ class Program
         string outputSpell = "spell";
         string outputWeapon = "weapon";
 
+        string outputHeader = "header";
+
         string prefix = "";
 
         // includeColumnHeadings
@@ -121,6 +123,11 @@ class Program
                 case "--faction":
                     if (i + 1 < args.Length)
                         outputFaction = args[++i];
+                    break;
+
+                case "--header":
+                    if (i + 1 < args.Length)
+                        outputHeader = args[++i];
                     break;
 
                 case "--ingredient":
@@ -232,6 +239,7 @@ class Program
         List<Skill> skills = new List<Skill>();
         List<Probe> probes = new List<Probe>();
         List<Lockpick> lockpicks = new List<Lockpick>();
+        List<Header> headers = new List<Header>();
 
         //used to populate the topic of DialogueInfo. DialogInfo related to a specific topic appear of Dialogue object
         string DialogueTopic = "";
@@ -492,6 +500,11 @@ class Program
                                     probes.Add(probe);
                                 }
                                 break;
+                            case "Header":
+                                var header = Functions.DeserializeObject<Header>(element);
+                                header.expansion = expansionNames[expansionIndex];
+                                headers.Add(header);                                
+                                break;
                         }
 
                     }
@@ -599,6 +612,7 @@ class Program
         string outputFileSkill = $"{prefix}{outputSkill}.{fileExtension}";
         string outputFileLockpick = $"{prefix}{outputLockpick}.{fileExtension}";
         string outputFileProbe = $"{prefix}{outputProbe}.{fileExtension}";
+        string outputFileHeader = $"{prefix}{outputHeader}.{fileExtension}";
 
         string format = outputFormat.ToLowerInvariant();
         switch (format)
@@ -627,6 +641,7 @@ class Program
                 FileWriter.WriteCsv(outputFileSkill, skills, includeColumnHeadings, format);
                 FileWriter.WriteCsv(outputFileLockpick, lockpicks, includeColumnHeadings, format);
                 FileWriter.WriteCsv(outputFileProbe, probes, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileHeader, headers, includeColumnHeadings, format);
                 break;
             case "mysql":
             case "postgres":
@@ -652,6 +667,7 @@ class Program
                 FileWriter.WriteSql(outputFileSkill, skills, outputSkill, format);
                 FileWriter.WriteSql(outputFileLockpick, lockpicks, outputLockpick, format);
                 FileWriter.WriteSql(outputFileProbe, probes, outputProbe, format);
+                FileWriter.WriteSql(outputFileHeader, headers, outputHeader, format);
                 break;
             default:
                 Console.WriteLine("Unsupported output file format.");
