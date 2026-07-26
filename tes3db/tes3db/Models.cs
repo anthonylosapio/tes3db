@@ -698,4 +698,26 @@ public class Models
             public int? uses { get; set; }
         }
     }
+    public class Header
+    {
+        public string? flags { get; set; }
+        public double? version { get; set; }
+        public string? file_type { get; set; }
+        public string? author { get; set; }
+        [JsonPropertyName("description")]
+        public JsonElement descriptionRaw { get; set; }
+        [JsonIgnore]
+        public string? description => descriptionRaw.GetString()?.Replace("\r\n", " ").Replace("\n", " ").Replace("\r", " ");
+        public int? num_objects { get; set; }
+        [JsonPropertyName("masters")]
+        public JsonElement mastersRaw { get; set; }
+        [JsonIgnore]
+        public List<string>? masters => mastersRaw.ValueKind == JsonValueKind.Array
+            ? mastersRaw.EnumerateArray()
+                        .Select(m => $"{m[0].GetString()} ({m[1].GetInt64():N0} bytes)")
+                        .ToList()
+            : null;
+        public string? expansion { get; set; }   
+    }
+
 }
