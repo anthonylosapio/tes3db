@@ -31,6 +31,7 @@ class Program
         string outputNpc = "npc";
         string outputProbe = "probe";
         string outputRace = "race";
+        string outputRepairItem = "repairitem";
         string outputSkill = "skill";
         string outputSpell = "spell";
         string outputWeapon = "weapon";
@@ -160,6 +161,11 @@ class Program
                         outputRace = args[++i];
                     break;
 
+                case "--repairitem":
+                    if (i + 1 < args.Length)
+                        outputRepairItem = args[++i];
+                    break;
+
                 case "--skill":
                     if (i + 1 < args.Length)
                         outputSkill = args[++i];
@@ -240,6 +246,7 @@ class Program
         List<Probe> probes = new List<Probe>();
         List<Lockpick> lockpicks = new List<Lockpick>();
         List<Header> headers = new List<Header>();
+        List<RepairItem> repairItems = new List<RepairItem>();
 
         //used to populate the topic of DialogueInfo. DialogInfo related to a specific topic appear of Dialogue object
         string DialogueTopic = "";
@@ -500,6 +507,14 @@ class Program
                                     probes.Add(probe);
                                 }
                                 break;
+                            case "RepairItem":
+                                var repairItem = Functions.DeserializeObject<RepairItem>(element);
+                                if (!repairItems.Any(r => r.id == repairItem.id))
+                                {
+                                    repairItem.expansion = expansionNames[expansionIndex];
+                                    repairItems.Add(repairItem);
+                                }
+                                break;
                             case "Header":
                                 var header = Functions.DeserializeObject<Header>(element);
                                 header.expansion = expansionNames[expansionIndex];
@@ -613,6 +628,7 @@ class Program
         string outputFileLockpick = $"{prefix}{outputLockpick}.{fileExtension}";
         string outputFileProbe = $"{prefix}{outputProbe}.{fileExtension}";
         string outputFileHeader = $"{prefix}{outputHeader}.{fileExtension}";
+        string outputFileRepairItem = $"{prefix}{outputRepairItem}.{fileExtension}";
 
         string format = outputFormat.ToLowerInvariant();
         switch (format)
@@ -642,6 +658,7 @@ class Program
                 FileWriter.WriteCsv(outputFileLockpick, lockpicks, includeColumnHeadings, format);
                 FileWriter.WriteCsv(outputFileProbe, probes, includeColumnHeadings, format);
                 FileWriter.WriteCsv(outputFileHeader, headers, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileRepairItem, repairItems, includeColumnHeadings, format);
                 break;
             case "mysql":
             case "postgres":
@@ -668,6 +685,7 @@ class Program
                 FileWriter.WriteSql(outputFileLockpick, lockpicks, outputLockpick, format);
                 FileWriter.WriteSql(outputFileProbe, probes, outputProbe, format);
                 FileWriter.WriteSql(outputFileHeader, headers, outputHeader, format);
+                FileWriter.WriteSql(outputFileRepairItem, repairItems, outputRepairItem, format);
                 break;
             default:
                 Console.WriteLine("Unsupported output file format.");
@@ -707,6 +725,7 @@ class Program
         Console.WriteLine("  --npc <name>             db Table & output File name for extracted NPCs (default: npc)");
         Console.WriteLine("  --probe <name>           db Table & output File name for extracted Probes (default: probe)");
         Console.WriteLine("  --race <name>            db Table & output File name for extracted Races (default: race)");
+        Console.WriteLine("  --repairitem <name>      db Table & output File name for extracted RepairItems (default: repairitem)");
         Console.WriteLine("  --skill <name>           db Table & output File name for extracted Skills (default: skill)");
         Console.WriteLine("  --spell <name>           db Table & output File name for extracted Spells (default: spell)");
         Console.WriteLine("  --weapon <name>          db Table & output File name for extracted Weapons (default: weapon)");

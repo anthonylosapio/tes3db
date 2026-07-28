@@ -698,6 +698,23 @@ public class Models
             public int? uses { get; set; }
         }
     }
+    public class RepairItem
+    {
+        public string? flags { get; set; }
+        public string? id { get; set; }
+        public string? name { get; set; }
+        public string? mesh { get; set; }
+        public string? icon { get; set; }
+        public string? expansion { get; set; }
+        public RepairItemData? data { get; set; }
+        public class RepairItemData
+        {
+            public double? weight { get; set; }
+            public double? quality { get; set; }
+            public int? value { get; set; }
+            public int? uses { get; set; }
+        }
+    }
     public class Header
     {
         public string? flags { get; set; }
