@@ -1,4 +1,4 @@
-﻿CREATE TABLE `lockpick` (
+CREATE TABLE `repairitem` (
     `flags`            VARCHAR(255),
     `id`               VARCHAR(255),
     `name`             VARCHAR(255),
