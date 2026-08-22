@@ -20,8 +20,8 @@ public class Functions
         Npc newNpc = new Npc();
         try
         {
-            if (element.TryGetProperty("id", out JsonElement id)) newNpc.Id = id.GetString();
-            if (element.TryGetProperty("name", out JsonElement name)) newNpc.Name = name.GetString();
+            if (element.TryGetProperty("id", out JsonElement id)) newNpc.id = id.GetString();
+            if (element.TryGetProperty("name", out JsonElement name)) newNpc.name = name.GetString();
             //inventory
             if (element.TryGetProperty("inventory", out JsonElement inventory)) newNpc.Inventory = GetInventory(inventory);
             //spells

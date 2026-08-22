@@ -7,8 +7,8 @@ public class Models
 {
     public class Npc
     {
-        public string? Id { get; set; }
-        public string? Name { get; set; }
+        public string? id { get; set; }
+        public string? name { get; set; }
         public string? Race { get; set; }
         public string? Class { get; set; }
         public string? Faction { get; set; }
