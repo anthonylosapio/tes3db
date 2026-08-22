@@ -22,7 +22,7 @@ class Program
         string outputCreature = "creature";
         string outputDialogue = "dialogue";
         string outputDialogueInfo = "dialogueinfo";
-        string outputEffect = "effect";
+        string outputMagicEffect = "magiceffect";
         string outputEnchanting = "enchanting";
         string outputFaction = "faction";
         string outputIngredient = "ingredient";
@@ -116,11 +116,6 @@ class Program
                         outputDialogueInfo = args[++i];
                     break;
 
-                case "--effect":
-                    if (i + 1 < args.Length)
-                        outputEffect = args[++i];
-                    break;
-
                 case "--faction":
                     if (i + 1 < args.Length)
                         outputFaction = args[++i];
@@ -139,6 +134,11 @@ class Program
                 case "--lockpick":
                     if (i + 1 < args.Length)
                         outputLockpick = args[++i];
+                    break;
+
+                case "--magiceffect":
+                    if (i + 1 < args.Length)
+                        outputMagicEffect = args[++i];
                     break;
 
                 case "--miscitem":
@@ -233,7 +233,7 @@ class Program
         List<Weapon> weapons = new List<Weapon>();
         List<Spell> spells = new List<Spell>();
         List<Armor> armors = new List<Armor>();
-        List<Effect> effects = new List<Effect>();
+        List<MagicEffect> effects = new List<MagicEffect>();
         List<Alchemy> alchemies = new List<Alchemy>();
         List<Ingredient> ingredients = new List<Ingredient>();
         List<Creature> creatures = new List<Creature>();
@@ -429,7 +429,7 @@ class Program
                                 break;
 
                             case "MagicEffect":
-                                var effect = Functions.DeserializeObject<Effect>(element);
+                                var effect = Functions.DeserializeObject<MagicEffect>(element);
                                 if (!effects.Any(e => e.id == effect.id))
                                 {
                                     effect.expansion = expansionNames[expansionIndex];
@@ -560,7 +560,7 @@ class Program
                         if (type.GetString() == "Npc")
                         {
                             Models.Npc npc = Functions.newNpc(element);
-                            if (!npcs.Any(p => p.Id == npc.Id)) { npcs.Add(npc); } else { skipCount++; }
+                            if (!npcs.Any(p => p.id == npc.id)) { npcs.Add(npc); } else { skipCount++; }
                         }
                         if (type.GetString() == "Cell")
                         {
@@ -590,10 +590,10 @@ class Program
         {
             foreach (var npc in npcs)
             {
-                if (npc.CellName == null && npc.Region == null && verbose) Console.WriteLine("CellName & Region mssing - " + npc.Id);
-                if (npc.Attributes == null && verbose) Console.WriteLine($"Attributes missing - {npc.Id}");
-                if (npc.Skills == null && verbose) Console.WriteLine($"Skills missing - " + npc.Id);
-                if(npc.Expansion == null && verbose) Console.WriteLine($"Expansion missing - " + npc.Id);
+                if (npc.CellName == null && npc.Region == null && verbose) Console.WriteLine("CellName & Region mssing - " + npc.id);
+                if (npc.Attributes == null && verbose) Console.WriteLine($"Attributes missing - {npc.id}");
+                if (npc.Skills == null && verbose) Console.WriteLine($"Skills missing - " + npc.id);
+                if(npc.Expansion == null && verbose) Console.WriteLine($"Expansion missing - " + npc.id);
             }
 
             // Remove objects from list that we don't want to include
@@ -615,7 +615,7 @@ class Program
         string outputFileWeapon = $"{prefix}{outputWeapon}.{fileExtension}";
         string outputFileSpell = $"{prefix}{outputSpell}.{fileExtension}";
         string outputFileArmor = $"{prefix}{outputArmor}.{fileExtension}";
-        string outputFileEffect = $"{prefix}{outputEffect}.{fileExtension}";
+        string outputFileMagicEffect = $"{prefix}{outputMagicEffect}.{fileExtension}";
         string outputFileAlchemy = $"{prefix}{outputAlchemy}.{fileExtension}";
         string outputFileIngredient = $"{prefix}{outputIngredient}.{fileExtension}";
         string outputFileCreature = $"{prefix}{outputCreature}.{fileExtension}";
@@ -645,7 +645,7 @@ class Program
                 FileWriter.WriteCsv(outputFileWeapon, weapons, includeColumnHeadings, format);
                 FileWriter.WriteCsv(outputFileSpell, spells, includeColumnHeadings, format);
                 FileWriter.WriteCsv(outputFileArmor, armors, includeColumnHeadings, format);
-                FileWriter.WriteCsv(outputFileEffect, effects, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileMagicEffect, effects, includeColumnHeadings, format);
                 FileWriter.WriteCsv(outputFileAlchemy, alchemies, includeColumnHeadings, format);
                 FileWriter.WriteCsv(outputFileIngredient, ingredients, includeColumnHeadings, format);
                 FileWriter.WriteCsv(outputFileCreature, creatures, includeColumnHeadings, format);
@@ -672,7 +672,7 @@ class Program
                 FileWriter.WriteSql(outputFileWeapon, weapons, outputWeapon, format);
                 FileWriter.WriteSql(outputFileSpell, spells, outputSpell, format);
                 FileWriter.WriteSql(outputFileArmor, armors, outputArmor, format);
-                FileWriter.WriteSql(outputFileEffect, effects, outputEffect, format);
+                FileWriter.WriteSql(outputFileMagicEffect, effects, outputMagicEffect, format);
                 FileWriter.WriteSql(outputFileAlchemy, alchemies, outputAlchemy, format);
                 FileWriter.WriteSql(outputFileIngredient, ingredients, outputIngredient, format);
                 FileWriter.WriteSql(outputFileCreature, creatures, outputCreature, format);

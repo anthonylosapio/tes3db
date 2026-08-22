@@ -20,8 +20,8 @@ public class Functions
         Npc newNpc = new Npc();
         try
         {
-            if (element.TryGetProperty("id", out JsonElement id)) newNpc.Id = id.GetString();
-            if (element.TryGetProperty("name", out JsonElement name)) newNpc.Name = name.GetString();
+            if (element.TryGetProperty("id", out JsonElement id)) newNpc.id = id.GetString();
+            if (element.TryGetProperty("name", out JsonElement name)) newNpc.name = name.GetString();
             //inventory
             if (element.TryGetProperty("inventory", out JsonElement inventory)) newNpc.Inventory = GetInventory(inventory);
             //spells
@@ -266,7 +266,7 @@ public class Functions
             {
                 foreach (string reference in cell.CellRefs)
                 {
-                    if (reference == npc.Id)
+                    if (reference == npc.id)
                     {
                         npc.Region = cell.CellRegion;
                         npc.CellName = cell.CellName;
@@ -283,7 +283,7 @@ public class Functions
     {
         foreach (var expansion in expansions)
         {
-            if (expansion.NPCId == npc.Id)
+            if (expansion.NPCId == npc.id)
             {
                 npc.Expansion = expansion.Name;
                 return;

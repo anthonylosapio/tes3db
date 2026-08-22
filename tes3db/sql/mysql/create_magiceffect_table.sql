@@ -1,4 +1,4 @@
-CREATE TABLE `effect` (
+CREATE TABLE `magiceffect` (
     `flags`            VARCHAR(255),
     `id`               VARCHAR(255),
     `name`             VARCHAR(255),

@@ -7,8 +7,8 @@ public class Models
 {
     public class Npc
     {
-        public string? Id { get; set; }
-        public string? Name { get; set; }
+        public string? id { get; set; }
+        public string? name { get; set; }
         public string? Race { get; set; }
         public string? Class { get; set; }
         public string? Faction { get; set; }
@@ -185,7 +185,7 @@ public class Models
 
     public class Enchanting { 
         public string? id { get; set; }
-        public List<MagicEffect>? effects { get; set; }
+        public List<Effect>? effects { get; set; }
         public EnchantingData? data { get; set; }
         public class EnchantingData
         {
@@ -194,7 +194,7 @@ public class Models
             public int? max_charge { get; set; }
         }
     }
-    public class MagicEffect
+    public class Effect
     {
         public string? magic_effect { get; set; }
         public string? skill { get; set; }
@@ -223,9 +223,6 @@ public class Models
             public string? data_flags { get; set; }
         }
     }
-
-
-
     public class Clothing
     {
         public string? flags { get; set; }
@@ -281,7 +278,7 @@ public class Models
         public string? flags { get; set; }
         public string? id { get; set; }
         public string? name { get; set; }
-        public List<MagicEffect>? effects { get; set; }
+        public List<Effect>? effects { get; set; }
         public string? expansion { get; set; }
         public SpellData? data { get; set; }
         public class SpellData
@@ -314,7 +311,7 @@ public class Models
         }
     }
 
-    public class Effect
+    public class MagicEffect
     {
         public string? flags { get; set; }
         [JsonPropertyName("effect_id")]
@@ -353,7 +350,7 @@ public class Models
         public string? mesh { get; set; }
         public string? icon { get; set; }
         public string? expansion { get; set; }
-        public List<MagicEffect>? effects { get; set; }
+        public List<Effect>? effects { get; set; }
         public AlchemyData? data { get; set; }
         public class AlchemyData {
             public double? weight { get; set; }
