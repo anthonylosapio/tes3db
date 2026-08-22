@@ -131,7 +131,7 @@ public class FileWriter
                 typeof(int?[]),
                 typeof(string[]),
                 typeof(List<InventoryItem>),
-                typeof(List<MagicEffect>),
+                typeof(List<Effect>),
                 typeof(List<string>),
                 typeof(List<Reaction>),
                 typeof(List<Requirement>),
@@ -179,7 +179,7 @@ public class FileWriter
         var serializeTypes = new HashSet<Type>
         {
             typeof(List<InventoryItem>),
-            typeof(List<MagicEffect>),
+            typeof(List<Effect>),
             typeof(List<string>),
             typeof(string[]),
             typeof(int?[]),

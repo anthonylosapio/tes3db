@@ -560,7 +560,7 @@ class Program
                         if (type.GetString() == "Npc")
                         {
                             Models.Npc npc = Functions.newNpc(element);
-                            if (!npcs.Any(p => p.Id == npc.Id)) { npcs.Add(npc); } else { skipCount++; }
+                            if (!npcs.Any(p => p.id == npc.id)) { npcs.Add(npc); } else { skipCount++; }
                         }
                         if (type.GetString() == "Cell")
                         {
@@ -590,10 +590,10 @@ class Program
         {
             foreach (var npc in npcs)
             {
-                if (npc.CellName == null && npc.Region == null && verbose) Console.WriteLine("CellName & Region mssing - " + npc.Id);
-                if (npc.Attributes == null && verbose) Console.WriteLine($"Attributes missing - {npc.Id}");
-                if (npc.Skills == null && verbose) Console.WriteLine($"Skills missing - " + npc.Id);
-                if(npc.Expansion == null && verbose) Console.WriteLine($"Expansion missing - " + npc.Id);
+                if (npc.CellName == null && npc.Region == null && verbose) Console.WriteLine("CellName & Region mssing - " + npc.id);
+                if (npc.Attributes == null && verbose) Console.WriteLine($"Attributes missing - {npc.id}");
+                if (npc.Skills == null && verbose) Console.WriteLine($"Skills missing - " + npc.id);
+                if(npc.Expansion == null && verbose) Console.WriteLine($"Expansion missing - " + npc.id);
             }
 
             // Remove objects from list that we don't want to include

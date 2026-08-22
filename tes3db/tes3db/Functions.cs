@@ -266,7 +266,7 @@ public class Functions
             {
                 foreach (string reference in cell.CellRefs)
                 {
-                    if (reference == npc.Id)
+                    if (reference == npc.id)
                     {
                         npc.Region = cell.CellRegion;
                         npc.CellName = cell.CellName;
@@ -283,7 +283,7 @@ public class Functions
     {
         foreach (var expansion in expansions)
         {
-            if (expansion.NPCId == npc.Id)
+            if (expansion.NPCId == npc.id)
             {
                 npc.Expansion = expansion.Name;
                 return;
