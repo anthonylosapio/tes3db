@@ -112,6 +112,7 @@ UPDATE `npc` SET `Location`='None' WHERE `Location` = '';
 
 --/* Fix missing name for Buoyant Armiger class */
 UPDATE `class` SET `Name`='Buoyant Armiger' WHERE `id` = 'Buoyant Armiger';
+UPDATE `npc` SET `Class`='Buoyant Armiger' WHERE `ClassId` = 'Buoyant Armiger';
 
 --/* Set faction to 'none' for NPC's with no faction */
 UPDATE `npc` SET `Faction`='None', `FactionId`='None' WHERE `Faction` = '';
