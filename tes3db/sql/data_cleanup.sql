@@ -114,4 +114,4 @@ UPDATE `npc` SET `Location`='None' WHERE `Location` = '';
 UPDATE `class` SET `Name`='Buoyant Armiger' WHERE `id` = 'Buoyant Armiger';
 
 --/* Set faction to 'none' for NPC's with no faction */
-UPDATE `npc` SET `Faction`='None' WHERE `Faction` = '';
+UPDATE `npc` SET `Faction`='None', `FactionId`='None' WHERE `Faction` = '';
