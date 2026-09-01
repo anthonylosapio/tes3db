@@ -57,7 +57,7 @@ UPDATE `npc` SET `Faction`='Ra-Habi Company' WHERE `Faction` = 'T_Ham_RaHabiComp
 UPDATE `npc` SET `Faction`='Vampirum Order' WHERE `Faction` = 'T_Cyr_VampirumOrder';
 UPDATE `npc` SET `Faction`='Blades' WHERE `Faction` = 'T_Cyr_Blades';
 
-UPDATE `npc` SET `Faction`='None' WHERE `Faction` = '';
+
 
 UPDATE `npc` SET `Class`='Alchemist' WHERE `Class` = 'Alchemist Service';
 UPDATE `npc` SET `Class`='Apothecary' WHERE `Class` IN ( 'Apothecary Service' , 'T_Glb_ApothecaryService');
@@ -105,5 +105,13 @@ UPDATE `npc` SET `Class`='Commoner' WHERE `Class` = 'T_Glb_Commoner';
 UPDATE `npc` SET `Class`='Pauper' WHERE `Class` = 'T_Glb_Pauper';
 UPDATE `npc` SET `Class`='Clever-Man' WHERE `Class` ='T_Sky_Clever-Man';
 
+/* update NPC's with no location to their region, and None for NPC's placed by scripts or who
+do no actaully exist in the game */
 UPDATE `npc` SET `Location`=`Region` WHERE `Location` = '';
 UPDATE `npc` SET `Location`='None' WHERE `Location` = '';
+
+/* Fix missing name for Buoyant Armiger class */
+UPDATE `class` SET `Name`='Buoyant Armiger' WHERE `id` = 'Buoyant Armiger';
+
+/* Set faction to 'none' for NPC's with no faction */
+UPDATE `npc` SET `Faction`='None' WHERE `Faction` = '';

@@ -3,7 +3,7 @@ CREATE TABLE `npc` (
     `name`                    VARCHAR(31),
     `Race`                    VARCHAR(17),
     `Class`                   VARCHAR(24),
-    `Faction`                 VARCHAR(27),
+    `Faction`                 VARCHAR(255),
     `Flags`                   VARCHAR(28),
     `Gender`                  VARCHAR(6),
     `IsEssential`             VARCHAR(5),

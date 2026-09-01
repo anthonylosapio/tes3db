@@ -531,11 +531,28 @@ class Program
             }
             if (verbose) {
                 Console.WriteLine($"After Expansion {expansionNames[expansionIndex]}:");
-                Console.WriteLine($"{expansions.Count} NPCs, {dialogues.Count} Dialogues, {books.Count} Books, {miscItems.Count} MiscItems, {clothes.Count} Clothing");
-                Console.WriteLine($"{enchantings.Count} Enchantments, {weapons.Count} Weapons, {spells.Count} Spells, {armors.Count} Armors, {alchemies.Count} Alchemies");
-                Console.WriteLine($"{ingredients.Count} Ingredients, {effects.Count} Effects, {creatures.Count} Creatures, {birthsigns.Count} Birthsigns, {races.Count} Races");
-                Console.WriteLine($"{apparatuses.Count} Apparatuses, {classes.Count} Classes, {factions.Count} Factions, {skills.Count} Skills, {lockpicks.Count} Lockpicks");
-                Console.WriteLine($"{probes.Count} Probes");
+                Console.WriteLine($" NPCs - {expansions.Count}");
+                Console.WriteLine($" Alchemies - {alchemies.Count}");
+                Console.WriteLine($" Apparatuses - {apparatuses.Count}");
+                Console.WriteLine($" Armors - {armors.Count}");
+                Console.WriteLine($" Birthsigns - {birthsigns.Count}");
+                Console.WriteLine($" Books - {books.Count}");
+                Console.WriteLine($" Classes - {classes.Count}");
+                Console.WriteLine($" Clothing - {clothes.Count}");
+                Console.WriteLine($" Creatures - {creatures.Count}");
+                Console.WriteLine($" Dialogues - {dialogues.Count}");
+                Console.WriteLine($" Enchantments - {enchantings.Count}");
+                Console.WriteLine($" Factions - {factions.Count}");
+                Console.WriteLine($" Ingredients - {ingredients.Count}");
+                Console.WriteLine($" Lockpicks - {lockpicks.Count}");
+                Console.WriteLine($" MagicEffects - {effects.Count}");
+                Console.WriteLine($" MiscItems - {miscItems.Count}");
+                Console.WriteLine($" Probes - {probes.Count}");
+                Console.WriteLine($" Races - {races.Count}");
+                Console.WriteLine($" RepairItems - {repairItems.Count}");
+                Console.WriteLine($" Skills - {skills.Count}");
+                Console.WriteLine($" Spells - {spells.Count}");
+                Console.WriteLine($" Weapons - {weapons.Count}");
             } 
             expansionIndex++;
         }
