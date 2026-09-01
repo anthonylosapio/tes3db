@@ -37,9 +37,9 @@ public class Functions
                 if (ai_data.TryGetProperty("alarm", out JsonElement alarm)) newNpc.Alarm = alarm.GetInt32();
                 if (ai_data.TryGetProperty("services", out JsonElement services)) newNpc = AddServices(newNpc, services.GetString() ?? string.Empty);
             }
-            if (element.TryGetProperty("race", out JsonElement race)) newNpc.Race = race.GetString();
-            if (element.TryGetProperty("class", out JsonElement cl)) newNpc.Class = cl.GetString();
-            if (element.TryGetProperty("faction", out JsonElement faction)) newNpc.Faction = faction.GetString();
+            if (element.TryGetProperty("race", out JsonElement race)) newNpc.RaceId = race.GetString();
+            if (element.TryGetProperty("class", out JsonElement cl)) newNpc.ClassId = cl.GetString();
+            if (element.TryGetProperty("faction", out JsonElement faction)) newNpc.FactionId = faction.GetString();
             if (element.TryGetProperty("npc_flags", out JsonElement npc_flags)) newNpc.Flags = npc_flags.GetString();
             newNpc.Gender = ((newNpc.Flags ?? string.Empty).Contains("FEMALE")) ? "FEMALE" : "MALE";
             newNpc.IsEssential = ((newNpc.Flags ?? string.Empty).Contains("ESSENTIAL ")) ? true : false;
@@ -286,6 +286,42 @@ public class Functions
             if (expansion.NPCId == npc.id)
             {
                 npc.Expansion = expansion.Name;
+                return;
+            }
+        }
+    }
+
+    public static void AddRaceInfoToNPC(Npc npc, List<Race> races)
+    {
+        foreach (var race in races)
+        {
+            if (race.id == npc.RaceId)
+            {
+                npc.Race = race.name;
+                return;
+            }
+        }
+    }
+
+    public static void AddClassInfoToNPC(Npc npc, List<Class> classes)
+    {
+        foreach (var cls in classes)
+        {
+            if (cls.id == npc.ClassId)
+            {
+                npc.Class = cls.name;
+                return;
+            }
+        }
+    }
+
+    public static void AddFactionInfoToNPC(Npc npc, List<Faction> factions)
+    {
+        foreach (var faction in factions)
+        {
+            if (faction.id == npc.FactionId)
+            {
+                npc.Faction = faction.name;
                 return;
             }
         }

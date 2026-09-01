@@ -594,12 +594,15 @@ class Program
             if(verbose) Console.WriteLine($"After {Path.GetFileName(path)} : {npcs.Count} NPCs found, skipped {skipCount} already added, and {cells.Count} Cells ");
         }
 
-        //populate location & expansion informatin of NPCs
+        //populate location, expansion, race, class & faction information for NPCs
         Console.WriteLine("Adding Cell & Region to NPCs (can take a few minutes)...");
         foreach (var npc in npcs)
         {
             Functions.AddCellLocationInfoToNPC(npc, cells);
             Functions.AddExpansionInfoToNPC(npc, expansions);
+            Functions.AddRaceInfoToNPC(npc, races);
+            Functions.AddClassInfoToNPC(npc, classes);
+            Functions.AddFactionInfoToNPC(npc, factions);
         }
 
         // List NPCs missing attributes, skills or cell placement

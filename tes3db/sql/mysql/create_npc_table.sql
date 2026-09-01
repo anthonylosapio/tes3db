@@ -1,8 +1,11 @@
 CREATE TABLE `npc` (
     `id`                      VARCHAR(23) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin,
     `name`                    VARCHAR(31),
-    `Race`                    VARCHAR(17),
-    `Class`                   VARCHAR(24),
+    `RaceId`                  VARCHAR(255),
+    `Race`                    VARCHAR(255),
+    `ClassId`                 VARCHAR(255),
+    `Class`                   VARCHAR(255),
+    `FactionId`               VARCHAR(255),
     `Faction`                 VARCHAR(255),
     `Flags`                   VARCHAR(28),
     `Gender`                  VARCHAR(6),

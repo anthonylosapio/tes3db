@@ -10,8 +10,11 @@ public class Models
         public string? id { get; set; }
         public string? name { get; set; }
         public string? Race { get; set; }
+        public string? RaceId { get; set; }
         public string? Class { get; set; }
+        public string? ClassId { get; set; }
         public string? Faction { get; set; }
+        public string? FactionId { get; set; }
         public string? Flags { get; set; }
         public string? Gender { get; set; }
         public bool? IsEssential { get; set; }
