@@ -22,4 +22,5 @@ CREATE TABLE `dialogueinfo` (
 
 CREATE INDEX `idx_dialogueinfo_next_id` ON `dialogueinfo` (`next_id`, `dialogue_topic`);
 CREATE INDEX `idx_dialogueinfo_topic_id` ON `dialogueinfo` (`dialogue_topic`, `id`);
-CREATE INDEX `idx_dialogueinfo_type_topic` ON `dialogueinfo` (`dialogue_type`, `dialogue_topic`);
+CREATE INDEX `idx_dialogueinfo_speaker_id` ON `dialogueinfo` (`speaker_id`);
+CREATE INDEX `idx_dialogueinfo_id_speaker_id` ON `dialogueinfo` (`id`, `speaker_id`);
