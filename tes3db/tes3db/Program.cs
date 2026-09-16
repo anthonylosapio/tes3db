@@ -318,7 +318,7 @@ class Program
                         switch (type.GetString()) {
 
                             case "Npc":
-                                Models.Expansion expansion = Functions.SetExpansion(expansionNames[expansionIndex], element);
+                                Expansion expansion = Functions.SetExpansion(expansionNames[expansionIndex], element);
                                 if (!expansions.Any(p => p.NPCId == expansion.NPCId))
                                 {
                                     expansions.Add(expansion);
