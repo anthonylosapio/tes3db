@@ -5,71 +5,96 @@ using System.Text.Json.Serialization;
 
 public class Models
 {
-    public class Npc
+    public class  Npc
     {
         public string? id { get; set; }
         public string? name { get; set; }
-        public string? Race { get; set; }
-        public string? RaceId { get; set; }
-        public string? Class { get; set; }
-        public string? ClassId { get; set; }
-        public string? Faction { get; set; }
-        public string? FactionId { get; set; }
-        public string? Flags { get; set; }
-        public string? Gender { get; set; }
-        public bool? IsEssential { get; set; }
-        public bool? IsPersistent { get; set; }
-        public List<InventoryItem>? Inventory { get; set; }
+        public string? flags { get; set; }
+        [JsonPropertyName("inventory")]
+        public JsonElement InventoryRaw { get; set; }
+        [JsonIgnore]
+        public List<InventoryItem> inventory => Functions.GetInventory(InventoryRaw);
         public List<string>? Spells { get; set; }
-        public string? Location { get; set; }
-        public string? SubLocation { get; set; }
-        public string? CellName { get; set; }
-        public string? Region { get; set; }
-        public bool? IsInterior { get; set; }
-        public string? Expansion { get; set; }
-        public int? Level { get; set; }
-        public int? Health { get; set; }
-        public int? Magicka { get; set; }
-        public int? Fatigue { get; set; }
-        public int? Hello { get; set; }
-        public int? Fight { get; set; }
-        public int? Flee { get; set; }
-        public int? Alarm { get; set; }
-        public int? Disposition { get; set; }
-        public int? Reputation { get; set; }
-        public int? Rank { get; set; }
-        public int? Gold { get; set; }
-        public bool? No_Services { get; set; }
-        public bool? BARTERS_WEAPONS { get; set; }
-        public bool? BARTERS_ARMOR { get; set; }
-        public bool? BARTERS_REPAIR_ITEMS { get; set; }
-        public bool? BARTERS_INGREDIENTS { get; set; }
-        public bool? BARTERS_ALCHEMY { get; set; }
-        public bool? BARTERS_BOOKS { get; set; }
-        public bool? BARTERS_CLOTHING { get; set; }
-        public bool? BARTERS_LIGHTS { get; set; }
-        public bool? BARTERS_MISC_ITEMS { get; set; }
-        public bool? BARTERS_LOCKPICKS { get; set; }
-        public bool? BARTERS_PROBES { get; set; }
-        public bool? BARTERS_APPARATUS { get; set; }
-        public bool? BARTERS_ENCHANTED_ITEMS { get; set; }
-        public bool? OFFERS_SPELLMAKING { get; set; }
-        public bool? OFFERS_SPELLS { get; set; }
-        public bool? OFFERS_REPAIRS { get; set; }
-        public bool? OFFERS_ENCHANTING { get; set; }
-        public bool? OFFERS_TRAINING { get; set; }
-        public bool? OFFERS_TRAVEL { get; set; }
-        public Attributes Attributes { get; set; } = new Attributes();
-        public Skills Skills { get; set; } = new Skills();
+        public AIData? ai_data { get; set; }
+        public List<TravelDestination>? travel_destinations { get; set; }
+        public string? race { get; set; }
+        public string? race_id { get; set; }
+        [JsonPropertyName("class")]
+        public string? classs { get; set; }
+        public string? class_id { get; set; }
+        public string? faction { get; set; }
+        public string? faction_id { get; set; }
+        public string? head { get; set; }
+        public string? hair { get; set; }
+        public string? npc_flags { get; set; }
+        public int? blood_type { get; set; }
+        public string? expansion { get; set; }
+        public NpcData? data { get; set; }
+        public string? cell { get; set; }
+        public string? region { get; set; }
+        public string? location { get; set; }
+        public string? sub_location { get; set; }
+        public class TravelDestination
+        {
+            [JsonPropertyName("translation")]
+            public JsonElement? translationRaw { get; set; }
+            [JsonPropertyName("rotation")]
+            public JsonElement? rotationRaw { get; set; }
+            [JsonIgnore]
+            public Translation? translation => translationRaw.HasValue ? new Translation
+            {
+                x = translationRaw.Value[0].GetDouble(),
+                y = translationRaw.Value[1].GetDouble(),
+                z = translationRaw.Value[2].GetDouble()
+            } : null;
+            [JsonIgnore]
+            public Translation? rotation => rotationRaw.HasValue ? new Translation
+            {
+                x = rotationRaw.Value[0].GetDouble(),
+                y = rotationRaw.Value[1].GetDouble(),
+                z = rotationRaw.Value[2].GetDouble()
+            } : null;
+            public string? cell { get; set; }
+
+            public class Translation
+            {
+                public double? x { get; set; }
+                public double? y { get; set; }
+                public double? z { get; set; }
+            }
+        }
+        public class NpcData
+        {
+            public int? level { get; set; }
+            public NpcStats? stats { get; set; }
+            public int? dispostion { get; set; }
+            public int? reputation { get; set; }
+            public int? rank { get; set; }
+            public int? gold { get; set; }
+            public class NpcStats
+            {
+                [JsonPropertyName("attributes")]
+                public JsonElement attributesRaw { get; set; }
+                [JsonIgnore]
+                public Attributes? attributes => Functions.SetAttributes(attributesRaw);
+                [JsonPropertyName("skills")]
+                public JsonElement skillsRaw { get; set; }
+                [JsonIgnore]
+                public Skills? skills => Functions.SetSkills(skillsRaw);
+                public int? health { get; set; }
+                public int? magicka { get; set; }
+                public int? fatigue { get; set; }
+            }
+        }
 
     }
-
 
     public class InventoryItem
     {
         public int? Quantity { get; set; }
         public string? ItemId { get; set; }
     }
+    
     public class Attributes
     {
         public int? Strength { get; set; }
@@ -81,6 +106,7 @@ public class Models
         public int? Personality { get; set; }
         public int? Luck { get; set; }
     }
+    
     public class Skills
     {
         public int? Acrobatics { get; set; } = 0; // 20
@@ -111,24 +137,45 @@ public class Models
         public int? Speechcraft { get; set; } // 25
         public int? Unarmored { get; set; } // 17
     }
-    public class Expansion
-    {
-        public string? Name { get; set; }
-        public string? NPCId { get; set; }
-    }
-    public class Cell
-    {
-        public string? CellName { get; set; }
-        public bool? IsInterior { get; set; }
-        public string? CellRegion { get; set; }
-        public string? Location { get; set; }
-        public string? SubLocation { get; set; }
-        public List<string>? CellRefs { get; set; }
-    }
+    
+    public class Cell { 
+        public string? flags { get; set; }
+        public string? name { get; set; }
+        public CellData? data { get; set; }
+        public string? region { get; set; }
+        [JsonPropertyName("references")]
+        public JsonElement referencesRaw { get; set; }
+        [JsonIgnore]
+        public List<string>? references => Functions.GetCellRefs(referencesRaw);
+        public string? expansion { get; set; }
+        public class CellData {
+            [JsonPropertyName("flags")]
+            public string? data_flags { get; set; }
+            public int[]? grid { get; set; }
+        }
+        public string? location
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(name) && name.Contains(','))
+                    return name.Split(',')[0].Trim();
+                return name;
+            }
+        }
 
+        [JsonIgnore]
+        public string? sub_location
+        {
+            get
+            {
+                if (!string.IsNullOrEmpty(name) && name.Contains(','))
+                    return name.Split(',')[1].Trim();
+                return null;
+            }
+        }
+    }
     public class FieldValueandType
     {
-
         public object? Value { get; set; }
         public Type? Type { get; set; }
     }
@@ -197,6 +244,7 @@ public class Models
             public int? max_charge { get; set; }
         }
     }
+
     public class Effect
     {
         public string? magic_effect { get; set; }
@@ -226,6 +274,7 @@ public class Models
             public string? data_flags { get; set; }
         }
     }
+
     public class Clothing
     {
         public string? flags { get; set; }
@@ -274,7 +323,6 @@ public class Models
             public string? data_flags { get; set; }
         }
     }
-
 
     public class Spell
     {
@@ -338,7 +386,7 @@ public class Models
             public double? base_cost { get; set; }
             [JsonPropertyName("flags")]
             public string? data_flags { get; set; }
-            public int?[] color { get; set; }
+            public int[]? color { get; set; }
             public double? speed { get; set; }
             public double? size { get; set; }
             public double? size_cap { get; set; }
@@ -382,6 +430,7 @@ public class Models
             public string[]? attributes { get; set; }
         }
     }
+
     public class Creature {
         public string? flags { get; set; }
         public string? id { get; set; }
@@ -396,14 +445,6 @@ public class Models
         public string? creature_flags { get; set; }
         public string? expansion { get; set; }
         public CreatureData? data { get; set; }
-
-        public class AIData { 
-            public int? hello { get; set; }
-            public int? fight { get; set; }
-            public int? flee { get; set; }
-            public int? alarm { get; set; }
-            public string? services { get; set; }
-        }
         public class CreatureData
         {
             public string? creature_type { get; set; }
@@ -428,6 +469,15 @@ public class Models
             public int[]? attack3 { get; set; }
             public int? gold { get; set; }
         }
+    }
+
+    public class AIData
+    {
+        public int? hello { get; set; }
+        public int? fight { get; set; }
+        public int? flee { get; set; }
+        public int? alarm { get; set; }
+        public string? services { get; set; }
     }
 
     public class Birthsign {
@@ -561,6 +611,7 @@ public class Models
            
         }
     }
+
     public class Class
     {
         public string? flags { get; set; }
@@ -591,7 +642,6 @@ public class Models
         }
     }
 
-    //Faction
     public class Faction { 
         public string? flags { get; set; }
         public string? id { get; set; }

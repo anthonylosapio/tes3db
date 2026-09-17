@@ -7,6 +7,7 @@ using System.Text.Json;
 using static tes3db.Models;
 using static tes3db.Models.Faction;
 using static tes3db.Models.Faction.FactionData;
+using static tes3db.Models.Npc;
 
 public class FileWriter
 {
@@ -116,7 +117,11 @@ public class FileWriter
         return field;
     }
 
-
+    /// <summary>
+    /// Retrieves property names from the passed in model
+    /// </summary>
+    /// <param name="type">The type of the model. typeof(T).</param>
+    /// <returns>The property names of the passed-in model as a list of strings.</returns>
     private static List<string> GetPropertyNames(Type type)
     {
         var propertyNames = new List<string>();
@@ -135,6 +140,7 @@ public class FileWriter
                 typeof(List<string>),
                 typeof(List<Reaction>),
                 typeof(List<Requirement>),
+                typeof(List<TravelDestination>),
             };
         var ignoreTypes = new HashSet<Type>
             {
@@ -145,6 +151,7 @@ public class FileWriter
         {
             if (!ignoreTypes.Contains(property.PropertyType)) {
                 string propertyName = property.Name;
+                if (propertyName == "classs") propertyName = "class";
                 if (targetTypes.Contains(property.PropertyType))
                 {
                     propertyNames.Add(propertyName);
@@ -185,6 +192,7 @@ public class FileWriter
             typeof(int?[]),
             typeof(List<Reaction>),
             typeof(List<Requirement>),
+            typeof(List<TravelDestination>),
         };
 
         var ignoreTypes = new HashSet<Type>
