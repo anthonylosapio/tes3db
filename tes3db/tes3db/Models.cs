@@ -208,7 +208,7 @@ public class Models
         public string? dialogue_topic { get; set; }
         public int? dialogue_id { get; set; }
         [JsonPropertyName("quest_state")]
-        public DialogueInfoQuestState? dialogueInfoQuestState { get; set; }
+        public DialogueInfoQuestState? dialogueInfoQuestState { get; set; } = new DialogueInfoQuestState();
         public DialogueInfoData? data { get; set; }
         public class DialogueInfoData
         {
@@ -221,7 +221,7 @@ public class Models
         public class DialogueInfoQuestState
         {
             [JsonPropertyName("type")]
-            public string? quest_state { get; set; }
+            public string? quest_state { get; set; } = "";
         }
     }
 
