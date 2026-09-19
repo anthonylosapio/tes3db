@@ -10,6 +10,10 @@ public class Functions
     public static Attributes SetAttributes(JsonElement element)
     {
         Attributes attributes = new Attributes();
+        if (element.ValueKind != JsonValueKind.Array)
+        {
+            return attributes;
+        }
         attributes.Strength = element[0].GetInt32();
         attributes.Intelligence = element[1].GetInt32();
         attributes.Willpower = element[2].GetInt32();
@@ -40,7 +44,10 @@ public class Functions
     public static Skills SetSkills(JsonElement element)
     {
         Skills skills = new Skills();
-
+        if (element.ValueKind != JsonValueKind.Array)
+        {
+            return skills; // missing/null "attributes" -> defaults (all zero)
+        }
         skills.Block = element[0].GetInt32();
         skills.Armorer = element[1].GetInt32();
         skills.MediumArmor = element[2].GetInt32();

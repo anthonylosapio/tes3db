@@ -673,6 +673,9 @@ class Program
         string outputFileHeader = $"{prefix}{outputHeader}.{fileExtension}";
         string outputFileRepairItem = $"{prefix}{outputRepairItem}.{fileExtension}";
 
+        object[] listsObject = { npcs, dialogues, dialogueInfos, books, miscItems, clothes, enchantings, weapons, spells, armors, effects, alchemies, ingredients, creatures, birthsigns, races, apparatuses, classes, factions, skills, lockpicks, probes, headers, repairItems };
+        string[] tableNames = { outputNpc, outputDialogue, outputDialogueInfo, outputBook, outputMiscItem, outputClothing, outputEnchanting, outputWeapon, outputSpell, outputArmor, outputMagicEffect, outputAlchemy, outputIngredient, outputCreature, outputBirthsign, outputRace, outputApparatus, outputClass, outputFaction, outputSkill, outputLockpick, outputProbe, outputHeader, outputRepairItem };
+        
         string format = outputFormat.ToLowerInvariant();
         switch (format)
         {
@@ -731,6 +734,9 @@ class Program
                 FileWriter.WriteSql(outputFileHeader, headers, outputHeader, format);
                 FileWriter.WriteSql(outputFileRepairItem, repairItems, outputRepairItem, format);
                 FileWriter.WriteSql(outputFileCell, cells, outputCell, format);
+
+                FileWriter.WriteSqlCreateTableFile("tes3db.sql", listsObject, tableNames, format);
+
                 break;
             default:
                 Console.WriteLine("Unsupported output file format.");

@@ -1,9 +1,12 @@
 ﻿namespace tes3db;
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Text;
 using System.Text.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static tes3db.Models;
 using static tes3db.Models.Faction;
 using static tes3db.Models.Faction.FactionData;
@@ -33,8 +36,8 @@ public class FileWriter
             // Write header
             if (includeColumnHeadings)
             {
-                List<string> cols = GetPropertyNames(typeof(T));
-                string header = $"{string.Join(delimiter, cols)}";
+                List<PropertyNameandType> cols = GetPropertyNames(typeof(T));
+                string header = $"{string.Join(delimiter, cols.Select(c => c.Name))}";
                 writer.WriteLine(header);
             }
             // Write each record
@@ -47,7 +50,6 @@ public class FileWriter
                 foreach (var value in values)
                 {
                     string item = value.Value?.ToString() ?? "";
-//                    line += EscapeCsvField(item);
                     line.Append(EscapeField(item, delimiter));
                     if (c < values.Count - 1) line.Append(delimiter);
                     c++;
@@ -59,8 +61,8 @@ public class FileWriter
 
     public static void WriteSql<T>(string filePath, List<T> data, string tableName, string sqlType)
     {
-        List<string> cols = GetPropertyNames(typeof(T));
-        int counter =0;
+        List<PropertyNameandType> cols = GetPropertyNames(typeof(T));
+        int counter = 0;
 
         if (string.IsNullOrWhiteSpace(filePath))
             throw new ArgumentException("File path cannot be empty.");
@@ -70,37 +72,38 @@ public class FileWriter
             return;
         }
 
-        string q = (sqlType=="postgres") ? "\"" : "`";
+        string q = (sqlType == "postgres") ? "\"" : "`";
         //Write the start of the INSERT statement with column names
         string queryStart = $"INSERT INTO {q}{tableName}{q} (";
-        foreach(string col in cols)
+        foreach (var col in cols)
         {
-            queryStart+= $"{q}{col}{q}";
-            if(counter < cols.Count - 1) queryStart += ", ";
+            queryStart += $"{q}{col.Name}{q}";
+            if (counter < cols.Count - 1) queryStart += ", ";
             counter++;
         }
         queryStart += ") VALUES ";
-        
+
         using (var writer = new StreamWriter(filePath, false, Encoding.UTF8))
         {
             writer.WriteLine(queryStart);
-        // Write the values for each rows to insert
+            // Write the values for each rows to insert
             counter = 0;
-            foreach(var obj in data)
+            foreach (var obj in data)
             {
                 string queryLine = "(";
                 List<FieldValueandType> values = GetPropertyValues(obj, typeof(T));
                 int c = 0;
-                foreach (var value in values) {
+                foreach (var value in values)
+                {
                     string field = FormatValueForSql(value);
                     queryLine += field;
-                    if(c < values.Count - 1) queryLine += ",";
+                    if (c < values.Count - 1) queryLine += ",";
                     c++;
                 }
                 queryLine += ")";
-                
-                if(counter < data.Count - 1) queryLine += ",";
-                
+
+                if (counter < data.Count - 1) queryLine += ",";
+
                 writer.WriteLine(queryLine);
                 counter++;
             }
@@ -122,9 +125,9 @@ public class FileWriter
     /// </summary>
     /// <param name="type">The type of the model. typeof(T).</param>
     /// <returns>The property names of the passed-in model as a list of strings.</returns>
-    private static List<string> GetPropertyNames(Type type)
+    private static List<PropertyNameandType> GetPropertyNames(Type type)
     {
-        var propertyNames = new List<string>();
+        var propertyNameandType = new List<PropertyNameandType>();
         var properties = type.GetProperties();
 
         var targetTypes = new HashSet<Type>
@@ -154,18 +157,18 @@ public class FileWriter
                 if (propertyName == "classs") propertyName = "class";
                 if (targetTypes.Contains(property.PropertyType))
                 {
-                    propertyNames.Add(propertyName);
+                    propertyNameandType.Add(new PropertyNameandType { Name = propertyName, Type = property.PropertyType });
                 }
                 else
                 {
                     var nestedProperties = GetPropertyNames(property.PropertyType);
-                    propertyNames.AddRange(nestedProperties);
+                    propertyNameandType.AddRange(nestedProperties);
                 }
             }
 
         }
 
-        return propertyNames;
+        return propertyNameandType;
     }
 
     private static List<FieldValueandType> GetPropertyValues(object instance, Type type)
@@ -182,7 +185,7 @@ public class FileWriter
             typeof(bool?),
             typeof(double?)
         };
-
+        //Types that will be started as serialized JSON strings in the SQL output
         var serializeTypes = new HashSet<Type>
         {
             typeof(List<InventoryItem>),
@@ -254,6 +257,147 @@ public class FileWriter
 
         string s = obj.Value?.ToString() ?? "";
         return $"'{s.Replace("'", "''")}'";
+    }
+
+    private static string TypeToSql(Type t, string sqlType, int max)
+    {
+        switch (sqlType.ToLowerInvariant())
+        {
+            case "mysql":
+                if (t == typeof(int?) || t == typeof(long)) { 
+                    if(max < 255) return "TINYINT";
+                    if (max < 65535) return "SMALLINT";
+                    return "INT"; 
+                }
+                if (t == typeof(bool?)) return "BOOL";
+                if (t == typeof(double?) || t == typeof(float)) return "DOUBLE";
+                if (t == typeof(string))
+                {
+                    if(max < 32000) return $"VARCHAR({max})";
+                    return "TEXT";
+                }
+                return "TEXT";
+            case "postgres":
+                if (t == typeof(int?) || t == typeof(long)) return "BIGINT";
+                if (t == typeof(bool?)) return "BOOLEAN";
+                if (t == typeof(double?) || t == typeof(float)) return "DOUBLE PRECISION";
+                if (t == typeof(string)) return "VARCHAR(255)"; // will be updated later
+                return "TEXT";
+            default:
+                throw new ArgumentException($"Unsupported SQL type: {sqlType}");
+        }
+        
+    }
+
+    public static void WriteSqlCreateTableFile(string filePath, object[] listsObject, string[] tableNames, string sqlType)
+    {
+        if (string.IsNullOrWhiteSpace(filePath))
+            throw new ArgumentException("File path cannot be empty.");
+
+        string q = (sqlType == "mysql") ? "`" : "";
+        
+        using (var writer = new StreamWriter(filePath, false, Encoding.UTF8))
+        {
+            //begin iterating through the list objects
+            foreach (var list in listsObject)
+            {
+
+                //iterate through the values of each object and store the maximum length/size of each property
+                //Type type = list.GetType();
+                Type t = list.GetType().GetGenericArguments()[0];
+                List<int> max = new List<int>();
+
+                foreach (var obj in (IEnumerable)list)
+                {
+                    List<FieldValueandType> values = GetPropertyValues(obj, t);
+                    int j = 0;
+                    foreach (var value in values)
+                    {
+                        switch (value.Value)
+                        {
+                            case string s:
+                                int length = s.Length;
+                                if (max.Count > j) {
+                                    if (max[j] < length)
+                                    {
+                                        max[j] = length;
+                                    }
+                                } else { 
+                                    max.Add(length); 
+                                }
+                                break;
+                            case int n:
+                                if (max.Count > j)
+                                {
+                                    if (max[j] < n)
+                                    {
+                                        max[j] = n;
+                                    }
+                                }
+                                else
+                                {
+                                    max.Add(n);
+                                }
+                                break;
+                            case bool b:
+                            case double d:
+                                if (max.Count > j)
+                                {
+                                    max[j] = 0;
+                                }
+                                else
+                                {
+                                    max.Add(0);
+                                }
+                                break;
+                            default:
+                                if (max.Count > j)
+                                {
+                                    max[j] = 1;
+                                }
+                                else
+                                {
+                                    max.Add(1);
+                                }
+                                break;
+                        }
+                        j++;
+                    }
+                }
+
+                List<PropertyNameandType> cols = GetPropertyNames(t);
+
+                bool hasIdColumn = false;
+                int i = 0;
+                int rowLength = cols.Count;
+
+                string start = $"CREATE TABLE `{tableNames[Array.IndexOf(listsObject, list)]}` (";
+                writer.WriteLine(start);
+                
+                foreach (var col in cols)
+                {
+                    string comma = (i < rowLength - 1) ? "," : "";
+                    string idCollation = "";
+                    if (col.Name == "id") {
+                        hasIdColumn = true;
+                        idCollation = " CHARACTER SET utf8mb4 COLLATE utf8mb4_bin";
+                    }
+                    if(hasIdColumn) comma = ",";//include a comma because the PRIMARY KEY line will be added after this line
+                    string output = $"{q}{col.Name}{q} {TypeToSql(col.Type, sqlType, max[i])}{idCollation}{comma}";
+                    writer.WriteLine(output);
+                    i++;
+                }
+
+                if (hasIdColumn)
+                {
+                    writer.WriteLine($"PRIMARY KEY ({q}id{q})");
+                }
+                string closing = (sqlType == "mysql") ? ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;" : ");";
+                writer.WriteLine(closing);
+                writer.WriteLine();
+            }
+        }
+        
     }
 
 }

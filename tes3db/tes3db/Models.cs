@@ -66,7 +66,7 @@ public class Models
         public class NpcData
         {
             public int? level { get; set; }
-            public NpcStats? stats { get; set; }
+            public NpcStats? stats { get; set; } = new NpcStats();
             public int? dispostion { get; set; }
             public int? reputation { get; set; }
             public int? rank { get; set; }
@@ -97,14 +97,14 @@ public class Models
     
     public class Attributes
     {
-        public int? Strength { get; set; }
-        public int? Intelligence { get; set; }
-        public int? Willpower { get; set; }
-        public int? Agility { get; set; }
-        public int? Speed { get; set; }
-        public int? Endurance { get; set; }
-        public int? Personality { get; set; }
-        public int? Luck { get; set; }
+        public int? Strength { get; set; } = 0;
+        public int? Intelligence { get; set; } = 0;
+        public int? Willpower { get; set; } = 0;
+        public int? Agility { get; set; } = 0;
+        public int? Speed { get; set; } = 0;
+        public int? Endurance { get; set; } = 0;
+        public int? Personality { get; set; } = 0;
+        public int? Luck { get; set; } = 0;
     }
     
     public class Skills
@@ -115,27 +115,27 @@ public class Models
         public int? Armorer { get; set; } = 0; // 1
         public int? Athletics { get; set; } = 0; // 8
         public int? Axe { get; set; } = 0; // 6
-        public int? Block { get; set; } // 0
-        public int? BluntWeapon { get; set; } // 4
-        public int? Conjuration { get; set; } // 13
-        public int? Destruction { get; set; } // 10
-        public int? Enchant { get; set; } // 9
-        public int? HandToHand { get; set; } // 26
-        public int? HeavyArmor { get; set; } // 3
-        public int? Illusion { get; set; } // 12
-        public int? LightArmor { get; set; } // 21
-        public int? LongBlade { get; set; } // 5
-        public int? Marksman { get; set; } // 23
-        public int? MediumArmor { get; set; } // 2
-        public int? Mercantile { get; set; } // 24
-        public int? Mysticism { get; set; } // 14
-        public int? Restoration { get; set; } // 15
-        public int? Security { get; set; } // 18
-        public int? ShortBlade { get; set; } // 22
-        public int? Sneak { get; set; } // 19
-        public int? Spear { get; set; } // 7
-        public int? Speechcraft { get; set; } // 25
-        public int? Unarmored { get; set; } // 17
+        public int? Block { get; set; } = 0; // 0
+        public int? BluntWeapon { get; set; } = 0; // 4
+        public int? Conjuration { get; set; } = 0; // 13
+        public int? Destruction { get; set; } = 0; // 10
+        public int? Enchant { get; set; } = 0; // 9
+        public int? HandToHand { get; set; } = 0; // 26
+        public int? HeavyArmor { get; set; } = 0; // 3
+        public int? Illusion { get; set; } = 0; // 12
+        public int? LightArmor { get; set; } = 0; // 21
+        public int? LongBlade { get; set; } = 0; // 5
+        public int? Marksman { get; set; } = 0; // 23
+        public int? MediumArmor { get; set; } = 0; // 2
+        public int? Mercantile { get; set; } = 0; // 24
+        public int? Mysticism { get; set; } = 0; // 14
+        public int? Restoration { get; set; } = 0; // 15
+        public int? Security { get; set; } = 0; // 18
+        public int? ShortBlade { get; set; } = 0; // 22
+        public int? Sneak { get; set; } = 0; // 19
+        public int? Spear { get; set; } = 0; // 7
+        public int? Speechcraft { get; set; } = 0; // 25
+        public int? Unarmored { get; set; } = 0; // 17
     }
     
     public class Cell { 
@@ -177,6 +177,11 @@ public class Models
     public class FieldValueandType
     {
         public object? Value { get; set; }
+        public Type? Type { get; set; }
+    }
+    public class PropertyNameandType
+    {
+        public string? Name { get; set; }
         public Type? Type { get; set; }
     }
 
