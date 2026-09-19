@@ -17,6 +17,7 @@ class Program
         string outputArmor = "armor";
         string outputBirthsign = "birthsign";
         string outputBook = "book";
+        string outputCell = "cell";
         string outputClass = "class";
         string outputClothing = "clothing";
         string outputCreature = "creature";
@@ -222,8 +223,6 @@ class Program
 
         List<Npc> npcs = new List<Npc>();
         List<Cell> cells = new List<Cell>();
-        List<Expansion> expansions = new List<Expansion>(); //tracks which JSON file an NPC came from
-
         List<Dialogue> dialogues = new List<Dialogue>();
         List<DialogueInfo> dialogueInfos = new List<DialogueInfo>();
         List<Book> books = new List<Book>();
@@ -292,7 +291,7 @@ class Program
             jsonFilePaths.Remove(npcJsonPath);
             expansionFilePaths.Remove(npcJsonPath);
             expansionNames.Remove("npc"); // List<string> containing the extracted expansion file names
-            jsonFilePaths.Insert(0, npcJsonPath);
+            jsonFilePaths.Insert(0, npcJsonPath); //move the npc.json file to the front of the list
         }
         else
         {
@@ -301,7 +300,29 @@ class Program
 
         int expansionIndex = 0;
 
-        if(verbose) Console.WriteLine("Creating NPC - Expansion Map...");
+        if(verbose) Console.WriteLine("Reading npc.json...");
+        using FileStream npcFs = File.OpenRead(npcJsonPath);
+        using JsonDocument npcDoc = JsonDocument.Parse(npcFs);
+        JsonElement npcRoot = npcDoc.RootElement;
+        if (npcRoot.ValueKind == JsonValueKind.Array)
+        {
+            foreach (JsonElement element in npcRoot.EnumerateArray())
+            {
+                if (element.TryGetProperty("type", out JsonElement type))
+                {
+                    if (type.GetString() == "Npc")
+                    {
+                        var npc = Functions.DeserializeObject<Npc>(element);
+                        if (!npcs.Any(n => n.id == npc.id))
+                        {
+                            npcs.Add(npc);
+                            Console.Write($"\r {npc.id}");
+                        }
+                    }
+                }
+            }
+        }
+        if (verbose) Console.WriteLine($"Found {npcs.Count} NPCs in npc.json.");
 
         foreach (string expansionFilePath in expansionFilePaths)
         {
@@ -317,16 +338,24 @@ class Program
                     {
                         switch (type.GetString()) {
 
-                            case "Npc":
-                                Models.Expansion expansion = Functions.SetExpansion(expansionNames[expansionIndex], element);
-                                if (!expansions.Any(p => p.NPCId == expansion.NPCId))
+                            case "Cell":
+                                var cell = Functions.DeserializeObject<Cell>(element);
+                                if (!cells.Any(c => c.name == cell.name))
                                 {
-                                    expansions.Add(expansion);
+                                    cell.expansion = expansionNames[expansionIndex];
+                                    cells.Add(cell);
                                 }
-                                else
+                                break;
+                            case "Npc":
+                                var npc = Functions.DeserializeObject<Npc>(element);
+                                if (!npcs.Any(n => n.id == npc.id))
                                 {
-                                    string alreadyAddedTo = expansions.Find(x => x.NPCId == expansion.NPCId)?.Name ?? "";
-                                    if(verbose) Console.WriteLine(expansionNames[expansionIndex] + " " + expansion.NPCId + " already added to " + alreadyAddedTo);
+                                    npc.expansion = expansionNames[expansionIndex];
+                                    npcs.Add(npc);
+                                }else{
+                                    var existingNpc = npcs.FirstOrDefault(n => n.id == npc.id);
+                                    //if the npc was added from npc.json, it will not have an expansion assigned. Assign it now.
+                                    if(existingNpc.expansion == null) existingNpc.expansion = expansionNames[expansionIndex];
                                 }
                                 break;
 
@@ -531,105 +560,99 @@ class Program
             }
             if (verbose) {
                 Console.WriteLine($"After Expansion {expansionNames[expansionIndex]}:");
-                Console.WriteLine($" NPCs - {expansions.Count}");
-                Console.WriteLine($" Alchemies - {alchemies.Count}");
-                Console.WriteLine($" Apparatuses - {apparatuses.Count}");
-                Console.WriteLine($" Armors - {armors.Count}");
-                Console.WriteLine($" Birthsigns - {birthsigns.Count}");
-                Console.WriteLine($" Books - {books.Count}");
-                Console.WriteLine($" Classes - {classes.Count}");
-                Console.WriteLine($" Clothing - {clothes.Count}");
-                Console.WriteLine($" Creatures - {creatures.Count}");
-                Console.WriteLine($" Dialogues - {dialogues.Count}");
-                Console.WriteLine($" Enchantments - {enchantings.Count}");
-                Console.WriteLine($" Factions - {factions.Count}");
-                Console.WriteLine($" Ingredients - {ingredients.Count}");
-                Console.WriteLine($" Lockpicks - {lockpicks.Count}");
-                Console.WriteLine($" MagicEffects - {effects.Count}");
-                Console.WriteLine($" MiscItems - {miscItems.Count}");
-                Console.WriteLine($" Probes - {probes.Count}");
-                Console.WriteLine($" Races - {races.Count}");
-                Console.WriteLine($" RepairItems - {repairItems.Count}");
-                Console.WriteLine($" Skills - {skills.Count}");
-                Console.WriteLine($" Spells - {spells.Count}");
-                Console.WriteLine($" Weapons - {weapons.Count}");
+                Console.WriteLine($" NPCs:         {npcs.Count, 10} | Cells:        {cells.Count, 10} | Weapons:      {weapons.Count,10}");
+                Console.WriteLine($" Alchemies:    {alchemies.Count, 10} | Apparatuses:  {apparatuses.Count, 10} | Armors:       {armors.Count, 10}");
+                Console.WriteLine($" Birthsigns:   {birthsigns.Count, 10} | Books:        {books.Count, 10} | Classes:      {classes.Count, 10}");
+                Console.WriteLine($" Clothing:     {clothes.Count, 10} | Creatures:    {creatures.Count, 10} | Enchantments: {enchantings.Count, 10}");
+                Console.WriteLine($" Factions:     {factions.Count, 10} | Ingredients:  {ingredients.Count, 10} | Lockpicks:    {lockpicks.Count, 10}");
+                Console.WriteLine($" MagicEffects: {effects.Count, 10} | MiscItems:    {miscItems.Count, 10} | Probes:       {probes.Count, 10}");
+                Console.WriteLine($" Races:        {races.Count, 10} | RepairItems:  {repairItems.Count, 10} | Skills:       {skills.Count, 10}");
+                Console.WriteLine($" Spells:       {spells.Count, 10} |");
             } 
             expansionIndex++;
         }
 
-        /* Get The NPC Data  */
-        Console.WriteLine("Extracting NPC & Cell Data...");
-
-        foreach (string path in jsonFilePaths)
-        {
-            using FileStream fs = File.OpenRead(path);
-            using JsonDocument doc = JsonDocument.Parse(fs);
-            JsonElement root = doc.RootElement;
-
-            int skipCount = 0;
-
-            if (root.ValueKind == JsonValueKind.Array)
-            {
-                foreach (JsonElement element in root.EnumerateArray())
-                {
-                    if (element.TryGetProperty("type", out JsonElement type))
-                    {
-                        if (type.GetString() == "Npc")
-                        {
-                            Models.Npc npc = Functions.newNpc(element);
-                            if (!npcs.Any(p => p.id == npc.id)) { npcs.Add(npc); } else { skipCount++; }
-                        }
-                        if (type.GetString() == "Cell")
-                        {
-                            Models.Cell cell = Functions.GetCell(element);
-                            cells.Add(cell);
-                        }
-                    }
-                }
-            }
-            else
-            {
-                Console.WriteLine("Expecting an array.");
-            }
-            if(verbose) Console.WriteLine($"After {Path.GetFileName(path)} : {npcs.Count} NPCs found, skipped {skipCount} already added, and {cells.Count} Cells ");
-        }
+        //Remove orphaned npcs
+        npcs.RemoveAll(item => (item.expansion == null));
 
         //populate location, expansion, race, class & faction information for NPCs
-        Console.WriteLine("Adding Cell & Region to NPCs (can take a few minutes)...");
+        int npcTotal = npcs.Count;
+        int npcCount = 0;
+        if (verbose) Console.WriteLine("Adding race info to NPCs...");
         foreach (var npc in npcs)
         {
-            Functions.AddCellLocationInfoToNPC(npc, cells);
-            Functions.AddExpansionInfoToNPC(npc, expansions);
             Functions.AddRaceInfoToNPC(npc, races);
+            npcCount++;
+            if (verbose) Console.Write($"\r {npcCount}/{npcTotal}");
+        }
+
+        npcCount = 0;
+        if (verbose) Console.WriteLine("");
+        if (verbose) Console.WriteLine("Adding Class info to NPCs...");
+        foreach (var npc in npcs)
+        {
             Functions.AddClassInfoToNPC(npc, classes);
+            npcCount++;
+            if (verbose) Console.Write($"\r {npcCount}/{npcTotal}");
+        }
+
+        npcCount = 0;
+        if (verbose) Console.WriteLine("");
+        if (verbose) Console.WriteLine("Adding Faction info to NPCs...");
+        foreach (var npc in npcs)
+        {
             Functions.AddFactionInfoToNPC(npc, factions);
+            npcCount++;
+            if (verbose) Console.Write($"\r {npcCount}/{npcTotal}");
+        }
+        
+        npcCount = 0;
+        if (verbose) Console.WriteLine("");
+        if (verbose) Console.WriteLine("Adding Cell, Region, & Location to NPCs...");
+
+        var cellRefExpansionDictionary = new Dictionary<string, Dictionary<string, Cell>>();
+        foreach (var expansion in expansionNames) {
+            var index = Functions.BuildReferenceIndex(cells, expansion);
+            cellRefExpansionDictionary[expansion] = index;
+        }
+        foreach(var npc in npcs)
+        {
+            if (npc.expansion == null)
+            {
+                Console.WriteLine($"Warning: NPC {npc.id} has no expansion assigned. This may cause issues with cell placement.");
+            }
+        }
+        foreach (var npc in npcs)
+        {
+            Functions.AddCellLocationInfoToNPC(npc, cellRefExpansionDictionary[npc.expansion]);
+            npcCount++;
+            if (verbose) Console.Write($"\r {npc.expansion}: {npcCount}/{npcTotal}");
         }
 
         // List NPCs missing attributes, skills or cell placement
-        if(!noSkip)
+        if (!noSkip)
         {
             foreach (var npc in npcs)
             {
-                if (npc.CellName == null && npc.Region == null && verbose) Console.WriteLine("CellName & Region mssing - " + npc.id);
-                if (npc.Attributes == null && verbose) Console.WriteLine($"Attributes missing - {npc.id}");
-                if (npc.Skills == null && verbose) Console.WriteLine($"Skills missing - " + npc.id);
-                if(npc.Expansion == null && verbose) Console.WriteLine($"Expansion missing - " + npc.id);
+                if(npc.cell == null && npc.region == null && verbose) Console.WriteLine("CellName & Region mssing - " + npc.id);
+                if(npc.data.stats.attributes == null && verbose) Console.WriteLine($"Attributes missing - {npc.id}");
+                if(npc.data.stats.skills == null && verbose) Console.WriteLine($"Skills missing - " + npc.id);
+                if(npc.expansion == null && verbose) Console.WriteLine($"Expansion missing - " + npc.id);
             }
 
             // Remove objects from list that we don't want to include
-            npcs.RemoveAll(item => item.Attributes == null);
-            npcs.RemoveAll(item => (item.CellName == null && item.Region == null));
+            npcs.RemoveAll(item => item.data.stats.attributes == null);
+            npcs.RemoveAll(item => (item.cell == null && item.region == null));
         }
-        //Remove template npcs
-        npcs.RemoveAll(item => (item.Expansion == null));
 
         Console.WriteLine("Writing output files...");
 
         string outputFile = $"{prefix}{outputNpc}.{fileExtension}";
-        string outputFileDialogue = $"{prefix}{outputDialogue}.{fileExtension}";
+        //string outputFileDialogue = $"{prefix}{outputDialogue}.{fileExtension}";
         string outputFileDialogueInfo = $"{prefix}{outputDialogueInfo}.{fileExtension}";
         string outputFileBook = $"{prefix}{outputBook}.{fileExtension}";
         string outputFileMiscItem = $"{prefix}{outputMiscItem}.{fileExtension}";
+        string outputFileCell = $"{prefix}{outputCell}.{fileExtension}";
         string outputFileClothing = $"{prefix}{outputClothing}.{fileExtension}";
         string outputFileEnchanting = $"{prefix}{outputEnchanting}.{fileExtension}";
         string outputFileWeapon = $"{prefix}{outputWeapon}.{fileExtension}";
@@ -650,13 +673,16 @@ class Program
         string outputFileHeader = $"{prefix}{outputHeader}.{fileExtension}";
         string outputFileRepairItem = $"{prefix}{outputRepairItem}.{fileExtension}";
 
+        object[] listsObject = { npcs, /*dialogues,*/ dialogueInfos, books, miscItems, cells, clothes, enchantings, weapons, spells, armors, effects, alchemies, ingredients, creatures, birthsigns, races, apparatuses, classes, factions, skills, lockpicks, probes, headers, repairItems };
+        string[] tableNames = { outputNpc,/* outputDialogue, */outputDialogueInfo, outputBook, outputMiscItem, outputCell, outputClothing, outputEnchanting, outputWeapon, outputSpell, outputArmor, outputMagicEffect, outputAlchemy, outputIngredient, outputCreature, outputBirthsign, outputRace, outputApparatus, outputClass, outputFaction, outputSkill, outputLockpick, outputProbe, outputHeader, outputRepairItem };
+        
         string format = outputFormat.ToLowerInvariant();
         switch (format)
         {
             case "csv":
             case "tsv":
                 FileWriter.WriteCsv(outputFile, npcs, includeColumnHeadings, format);
-                FileWriter.WriteCsv(outputFileDialogue, dialogues, includeColumnHeadings, format);
+                //FileWriter.WriteCsv(outputFileDialogue, dialogues, includeColumnHeadings, format);
                 FileWriter.WriteCsv(outputFileDialogueInfo, dialogueInfos, includeColumnHeadings, format);
                 FileWriter.WriteCsv(outputFileBook, books, includeColumnHeadings, format);
                 FileWriter.WriteCsv(outputFileMiscItem, miscItems, includeColumnHeadings, format);
@@ -679,11 +705,12 @@ class Program
                 FileWriter.WriteCsv(outputFileProbe, probes, includeColumnHeadings, format);
                 FileWriter.WriteCsv(outputFileHeader, headers, includeColumnHeadings, format);
                 FileWriter.WriteCsv(outputFileRepairItem, repairItems, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileCell, cells, includeColumnHeadings, format);
                 break;
             case "mysql":
             case "postgres":
                 FileWriter.WriteSql(outputFile, npcs, outputNpc, format);
-                FileWriter.WriteSql(outputFileDialogue, dialogues, outputDialogue, format);
+                //FileWriter.WriteSql(outputFileDialogue, dialogues, outputDialogue, format);
                 FileWriter.WriteSql(outputFileDialogueInfo, dialogueInfos, outputDialogueInfo, format);
                 FileWriter.WriteSql(outputFileBook, books, outputBook, format);
                 FileWriter.WriteSql(outputFileMiscItem, miscItems, outputMiscItem, format);
@@ -706,6 +733,10 @@ class Program
                 FileWriter.WriteSql(outputFileProbe, probes, outputProbe, format);
                 FileWriter.WriteSql(outputFileHeader, headers, outputHeader, format);
                 FileWriter.WriteSql(outputFileRepairItem, repairItems, outputRepairItem, format);
+                FileWriter.WriteSql(outputFileCell, cells, outputCell, format);
+
+                FileWriter.WriteSqlCreateTableFile("tes3db.sql", listsObject, tableNames, format, "tes3db");
+
                 break;
             default:
                 Console.WriteLine("Unsupported output file format.");

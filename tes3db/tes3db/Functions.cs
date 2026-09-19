@@ -7,73 +7,13 @@ using static tes3db.Models;
 
 public class Functions
 {
-    public static Expansion SetExpansion(string expansionName, JsonElement element)
-    {
-        Expansion expansion = new Expansion();
-        expansion.Name = expansionName;
-        if (element.TryGetProperty("id", out JsonElement id)) expansion.NPCId = id.GetString();
-        return expansion;
-    }
-
-    public static Npc newNpc(JsonElement element)
-    {
-        Npc newNpc = new Npc();
-        try
-        {
-            if (element.TryGetProperty("id", out JsonElement id)) newNpc.id = id.GetString();
-            if (element.TryGetProperty("name", out JsonElement name)) newNpc.name = name.GetString();
-            //inventory
-            if (element.TryGetProperty("inventory", out JsonElement inventory)) newNpc.Inventory = GetInventory(inventory);
-            //spells
-            if (element.TryGetProperty("spells", out JsonElement spells)) newNpc.Spells = GetSpells(spells);
-            //travel destinations
-            if (element.TryGetProperty("travel_destinations", out JsonElement travel)) newNpc.OFFERS_TRAVEL = (travel.ValueKind == JsonValueKind.Array && travel.GetArrayLength() == 0) ? false : true;
-            //ai data
-            if (element.TryGetProperty("ai_data", out JsonElement ai_data))
-            {
-                if (ai_data.TryGetProperty("hello", out JsonElement hello)) newNpc.Hello = hello.GetInt32();
-                if (ai_data.TryGetProperty("fight", out JsonElement fight)) newNpc.Fight = fight.GetInt32();
-                if (ai_data.TryGetProperty("flee", out JsonElement flee)) newNpc.Flee = flee.GetInt32();
-                if (ai_data.TryGetProperty("alarm", out JsonElement alarm)) newNpc.Alarm = alarm.GetInt32();
-                if (ai_data.TryGetProperty("services", out JsonElement services)) newNpc = AddServices(newNpc, services.GetString() ?? string.Empty);
-            }
-            if (element.TryGetProperty("race", out JsonElement race)) newNpc.RaceId = race.GetString();
-            if (element.TryGetProperty("class", out JsonElement cl)) newNpc.ClassId = cl.GetString();
-            if (element.TryGetProperty("faction", out JsonElement faction)) newNpc.FactionId = faction.GetString();
-            if (element.TryGetProperty("npc_flags", out JsonElement npc_flags)) newNpc.Flags = npc_flags.GetString();
-            newNpc.Gender = ((newNpc.Flags ?? string.Empty).Contains("FEMALE")) ? "FEMALE" : "MALE";
-            newNpc.IsEssential = ((newNpc.Flags ?? string.Empty).Contains("ESSENTIAL ")) ? true : false;
-            if (element.TryGetProperty("flags", out JsonElement flags)) newNpc.IsPersistent = ((flags.GetString() ?? string.Empty).Contains("PERSISTENT")) ? true : false;
-            //data
-            if (element.TryGetProperty("data", out JsonElement data))
-            {
-                if (data.TryGetProperty("level", out JsonElement level)) newNpc.Level = level.GetInt32();
-                //stats
-                if (data.TryGetProperty("stats", out JsonElement stats))
-                {
-                    if (stats.TryGetProperty("attributes", out JsonElement attributes)) newNpc.Attributes = SetAttributes(attributes);
-                    //skills
-                    if (stats.TryGetProperty("skills", out JsonElement skills)) newNpc.Skills = SetSkills(skills);
-                    if (stats.TryGetProperty("health", out JsonElement health)) newNpc.Health = health.GetInt32();
-                    if (stats.TryGetProperty("magicka", out JsonElement magicka)) newNpc.Magicka = magicka.GetInt32();
-                    if (stats.TryGetProperty("fatigue", out JsonElement fatigue)) newNpc.Fatigue = fatigue.GetInt32();
-                }
-                if (data.TryGetProperty("disposition", out JsonElement disposition)) newNpc.Disposition = disposition.GetInt32();
-                if (data.TryGetProperty("reputation", out JsonElement reputation)) newNpc.Reputation = reputation.GetInt32();
-                if (data.TryGetProperty("rank", out JsonElement rank)) newNpc.Rank = rank.GetInt32();
-                if (data.TryGetProperty("gold", out JsonElement gold)) newNpc.Gold = gold.GetInt32();
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error creating NPC: {ex.Message}");
-        }
-        return newNpc;
-    }
-
     public static Attributes SetAttributes(JsonElement element)
     {
         Attributes attributes = new Attributes();
+        if (element.ValueKind != JsonValueKind.Array)
+        {
+            return attributes;
+        }
         attributes.Strength = element[0].GetInt32();
         attributes.Intelligence = element[1].GetInt32();
         attributes.Willpower = element[2].GetInt32();
@@ -83,54 +23,6 @@ public class Functions
         attributes.Personality = element[6].GetInt32();
         attributes.Luck = element[7].GetInt32();
         return attributes;
-    }
-
-    public static Npc AddServices(Npc npc, string services)
-    {
-        npc.BARTERS_WEAPONS = (services.Contains("BARTERS_WEAPONS")) ? true : false;
-        npc.BARTERS_ARMOR = (services.Contains("BARTERS_ARMOR")) ? true : false;
-        npc.BARTERS_REPAIR_ITEMS = (services.Contains("BARTERS_REPAIR_ITEMS")) ? true : false;
-        npc.BARTERS_INGREDIENTS = (services.Contains("BARTERS_INGREDIENTS")) ? true : false;
-        npc.BARTERS_ALCHEMY = (services.Contains("BARTERS_ALCHEMY")) ? true : false;
-        npc.BARTERS_BOOKS = (services.Contains("BARTERS_BOOKS")) ? true : false;
-        npc.BARTERS_CLOTHING = (services.Contains("BARTERS_CLOTHING")) ? true : false;
-        npc.BARTERS_LIGHTS = (services.Contains("BARTERS_LIGHTS")) ? true : false;
-        npc.BARTERS_MISC_ITEMS = (services.Contains("BARTERS_MISC_ITEMS")) ? true : false;
-        npc.BARTERS_LOCKPICKS = (services.Contains("BARTERS_LOCKPICKS")) ? true : false;
-        npc.BARTERS_PROBES = (services.Contains("BARTERS_PROBES")) ? true : false;
-        npc.BARTERS_APPARATUS = (services.Contains("BARTERS_APPARATUS")) ? true : false;
-        npc.BARTERS_ENCHANTED_ITEMS = (services.Contains("BARTERS_ENCHANTED_ITEMS")) ? true : false;
-        npc.OFFERS_SPELLMAKING = (services.Contains("OFFERS_SPELLMAKING")) ? true : false;
-        npc.OFFERS_SPELLS = (services.Contains("OFFERS_SPELLS")) ? true : false;
-        npc.OFFERS_REPAIRS = (services.Contains("OFFERS_REPAIRS")) ? true : false;
-        npc.OFFERS_ENCHANTING = (services.Contains("OFFERS_ENCHANTING")) ? true : false;
-        npc.OFFERS_TRAINING = (services.Contains("OFFERS_TRAINING")) ? true : false;
-
-        bool hasAnyService =
-            npc.BARTERS_WEAPONS == true ||
-            npc.BARTERS_ARMOR == true ||
-            npc.BARTERS_REPAIR_ITEMS == true ||
-            npc.BARTERS_INGREDIENTS == true ||
-            npc.BARTERS_ALCHEMY == true ||
-            npc.BARTERS_BOOKS == true ||
-            npc.BARTERS_CLOTHING == true ||
-            npc.BARTERS_LIGHTS == true ||
-            npc.BARTERS_MISC_ITEMS == true ||
-            npc.BARTERS_LOCKPICKS == true ||
-            npc.BARTERS_PROBES == true ||
-            npc.BARTERS_APPARATUS == true ||
-            npc.BARTERS_ENCHANTED_ITEMS == true ||
-            npc.OFFERS_SPELLMAKING == true ||
-            npc.OFFERS_SPELLS == true ||
-            npc.OFFERS_REPAIRS == true ||
-            npc.OFFERS_ENCHANTING == true ||
-            npc.OFFERS_TRAINING == true ||
-            npc.OFFERS_TRAVEL == true;
-
-        npc.No_Services = !hasAnyService;
-
-        return npc;
-
     }
 
     public static List<InventoryItem> GetInventory(JsonElement element)
@@ -148,23 +40,14 @@ public class Functions
         }
         return inventory;
     }
-    public static List<string> GetSpells(JsonElement element)
-    {
-        List<string> spells = new List<string>();
-        if (element.ValueKind == JsonValueKind.Array)
-        {
-            foreach (JsonElement item in element.EnumerateArray())
-            {
-                var spell = item.GetString();
-                if (!string.IsNullOrEmpty(spell)) spells.Add(spell);
-            }
-        }
-        return spells;
-    }
+
     public static Skills SetSkills(JsonElement element)
     {
         Skills skills = new Skills();
-
+        if (element.ValueKind != JsonValueKind.Array)
+        {
+            return skills; // missing/null "attributes" -> defaults (all zero)
+        }
         skills.Block = element[0].GetInt32();
         skills.Armorer = element[1].GetInt32();
         skills.MediumArmor = element[2].GetInt32();
@@ -196,31 +79,6 @@ public class Functions
         return skills;
     }
 
-    public static Models.Cell GetCell(JsonElement element)
-    {
-        Cell cell = new Cell();
-        if (element.TryGetProperty("name", out JsonElement name)) cell.CellName = name.GetString();
-        if (element.TryGetProperty("data", out JsonElement data)) cell = SetCellFlags(data, cell);
-        if (element.TryGetProperty("region", out JsonElement region)) cell.CellRegion = region.GetString();
-        if (!string.IsNullOrEmpty(cell.CellName) && cell.CellName.Contains(","))
-        {
-            cell.Location = cell.CellName.Split(',')[0].Trim();
-            cell.SubLocation = cell.CellName.Split(',')[1].Trim();
-        }
-        else
-        {
-            cell.Location = cell.CellName;
-        }
-        if (element.TryGetProperty("references", out JsonElement references)) cell.CellRefs = GetCellRefs(references);
-        return cell;
-    }
-    public static Cell SetCellFlags(JsonElement element, Cell cell)
-    {
-        string flags = "";
-        if (element.TryGetProperty("flags", out JsonElement flag)) flags = flag.GetString() ?? string.Empty;
-        cell.IsInterior = (flags.Contains("IS_INTERIOR") && !flags.Contains("BEHAVES_LIKE_EXTERIOR")) ? true : false;
-        return cell;
-    }
     public static List<string> GetCellRefs(JsonElement element)
     {
         List<string> refs = new List<string>();
@@ -257,37 +115,31 @@ public class Functions
         }
     }
 
-
-    public static void AddCellLocationInfoToNPC(Npc npc, List<Cell> cells)
+    public static Dictionary<string, Cell> BuildReferenceIndex(List<Cell> cells, string expansion)
     {
+        var index = new Dictionary<string, Cell>();
         foreach (var cell in cells)
         {
-            if (cell.CellRefs != null)
+            if (cell.expansion != expansion || cell.references == null)
+                continue;
+
+            foreach (var reference in cell.references)
             {
-                foreach (string reference in cell.CellRefs)
-                {
-                    if (reference == npc.id)
-                    {
-                        npc.Region = cell.CellRegion;
-                        npc.CellName = cell.CellName;
-                        npc.IsInterior = cell.IsInterior;
-                        npc.Location = cell.Location;
-                        npc.SubLocation = cell.SubLocation;
-                        return;
-                    }
-                }
+                // last cell wins on duplicate references; adjust if you need first-wins instead
+                index[reference] = cell;
             }
         }
+        return index;
     }
-    public static void AddExpansionInfoToNPC(Npc npc, List<Expansion> expansions)
+
+    public static void AddCellLocationInfoToNPC(Npc npc, Dictionary<string, Cell> referenceIndex)
     {
-        foreach (var expansion in expansions)
+        if (referenceIndex.TryGetValue(npc.id, out var cell))
         {
-            if (expansion.NPCId == npc.id)
-            {
-                npc.Expansion = expansion.Name;
-                return;
-            }
+            npc.region = cell.region;
+            npc.cell = cell.name;
+            npc.location = cell.location;
+            npc.sub_location = cell.sub_location;
         }
     }
 
@@ -295,9 +147,9 @@ public class Functions
     {
         foreach (var race in races)
         {
-            if (race.id == npc.RaceId)
+            if (race.id == npc.race_id)
             {
-                npc.Race = race.name;
+                npc.race = race.name;
                 return;
             }
         }
@@ -307,9 +159,9 @@ public class Functions
     {
         foreach (var cls in classes)
         {
-            if (cls.id == npc.ClassId)
+            if (cls.id == npc.class_id)
             {
-                npc.Class = cls.name;
+                npc.classs = cls.name;
                 return;
             }
         }
@@ -319,9 +171,9 @@ public class Functions
     {
         foreach (var faction in factions)
         {
-            if (faction.id == npc.FactionId)
+            if (faction.id == npc.faction_id)
             {
-                npc.Faction = faction.name;
+                npc.faction = faction.name;
                 return;
             }
         }
