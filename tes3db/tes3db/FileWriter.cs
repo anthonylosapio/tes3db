@@ -157,7 +157,7 @@ public class FileWriter
                 if (propertyName == "classs") propertyName = "class";
                 if (targetTypes.Contains(property.PropertyType))
                 {
-                    propertyNameandType.Add(new PropertyNameandType { Name = propertyName, Type = property.PropertyType });
+                    propertyNameandType.Add(new PropertyNameandType { Name = propertyName.ToLowerInvariant(), Type = property.PropertyType });
                 }
                 else
                 {
