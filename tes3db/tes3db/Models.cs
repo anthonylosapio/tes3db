@@ -27,6 +27,7 @@ public class Models
         public string? head { get; set; }
         public string? hair { get; set; }
         public string? npc_flags { get; set; }
+        public string? gender { get { return (npc_flags?.Contains("FEMALE") == true) ? "Female" : "Male"; } } 
         public int? blood_type { get; set; }
         public string? expansion { get; set; }
         public NpcData? data { get; set; }
