@@ -560,14 +560,14 @@ class Program
             }
             if (verbose) {
                 Console.WriteLine($"After Expansion {expansionNames[expansionIndex]}:");
-                Console.WriteLine($" NPCs:         {npcs.Count, 10} | Cells:        {cells.Count, 10} | Dialogues:    {dialogues.Count, 10}");
+                Console.WriteLine($" NPCs:         {npcs.Count, 10} | Cells:        {cells.Count, 10} | Weapons:      {weapons.Count,10}");
                 Console.WriteLine($" Alchemies:    {alchemies.Count, 10} | Apparatuses:  {apparatuses.Count, 10} | Armors:       {armors.Count, 10}");
                 Console.WriteLine($" Birthsigns:   {birthsigns.Count, 10} | Books:        {books.Count, 10} | Classes:      {classes.Count, 10}");
                 Console.WriteLine($" Clothing:     {clothes.Count, 10} | Creatures:    {creatures.Count, 10} | Enchantments: {enchantings.Count, 10}");
                 Console.WriteLine($" Factions:     {factions.Count, 10} | Ingredients:  {ingredients.Count, 10} | Lockpicks:    {lockpicks.Count, 10}");
                 Console.WriteLine($" MagicEffects: {effects.Count, 10} | MiscItems:    {miscItems.Count, 10} | Probes:       {probes.Count, 10}");
                 Console.WriteLine($" Races:        {races.Count, 10} | RepairItems:  {repairItems.Count, 10} | Skills:       {skills.Count, 10}");
-                Console.WriteLine($" Spells:       {spells.Count, 10} | Weapons:      {weapons.Count, 10}");
+                Console.WriteLine($" Spells:       {spells.Count, 10} |");
             } 
             expansionIndex++;
         }
@@ -648,7 +648,7 @@ class Program
         Console.WriteLine("Writing output files...");
 
         string outputFile = $"{prefix}{outputNpc}.{fileExtension}";
-        string outputFileDialogue = $"{prefix}{outputDialogue}.{fileExtension}";
+        //string outputFileDialogue = $"{prefix}{outputDialogue}.{fileExtension}";
         string outputFileDialogueInfo = $"{prefix}{outputDialogueInfo}.{fileExtension}";
         string outputFileBook = $"{prefix}{outputBook}.{fileExtension}";
         string outputFileMiscItem = $"{prefix}{outputMiscItem}.{fileExtension}";
@@ -673,8 +673,8 @@ class Program
         string outputFileHeader = $"{prefix}{outputHeader}.{fileExtension}";
         string outputFileRepairItem = $"{prefix}{outputRepairItem}.{fileExtension}";
 
-        object[] listsObject = { npcs, dialogues, dialogueInfos, books, miscItems, cells, clothes, enchantings, weapons, spells, armors, effects, alchemies, ingredients, creatures, birthsigns, races, apparatuses, classes, factions, skills, lockpicks, probes, headers, repairItems };
-        string[] tableNames = { outputNpc, outputDialogue, outputDialogueInfo, outputBook, outputMiscItem, outputCell, outputClothing, outputEnchanting, outputWeapon, outputSpell, outputArmor, outputMagicEffect, outputAlchemy, outputIngredient, outputCreature, outputBirthsign, outputRace, outputApparatus, outputClass, outputFaction, outputSkill, outputLockpick, outputProbe, outputHeader, outputRepairItem };
+        object[] listsObject = { npcs, /*dialogues,*/ dialogueInfos, books, miscItems, cells, clothes, enchantings, weapons, spells, armors, effects, alchemies, ingredients, creatures, birthsigns, races, apparatuses, classes, factions, skills, lockpicks, probes, headers, repairItems };
+        string[] tableNames = { outputNpc,/* outputDialogue, */outputDialogueInfo, outputBook, outputMiscItem, outputCell, outputClothing, outputEnchanting, outputWeapon, outputSpell, outputArmor, outputMagicEffect, outputAlchemy, outputIngredient, outputCreature, outputBirthsign, outputRace, outputApparatus, outputClass, outputFaction, outputSkill, outputLockpick, outputProbe, outputHeader, outputRepairItem };
         
         string format = outputFormat.ToLowerInvariant();
         switch (format)
@@ -682,7 +682,7 @@ class Program
             case "csv":
             case "tsv":
                 FileWriter.WriteCsv(outputFile, npcs, includeColumnHeadings, format);
-                FileWriter.WriteCsv(outputFileDialogue, dialogues, includeColumnHeadings, format);
+                //FileWriter.WriteCsv(outputFileDialogue, dialogues, includeColumnHeadings, format);
                 FileWriter.WriteCsv(outputFileDialogueInfo, dialogueInfos, includeColumnHeadings, format);
                 FileWriter.WriteCsv(outputFileBook, books, includeColumnHeadings, format);
                 FileWriter.WriteCsv(outputFileMiscItem, miscItems, includeColumnHeadings, format);
@@ -710,7 +710,7 @@ class Program
             case "mysql":
             case "postgres":
                 FileWriter.WriteSql(outputFile, npcs, outputNpc, format);
-                FileWriter.WriteSql(outputFileDialogue, dialogues, outputDialogue, format);
+                //FileWriter.WriteSql(outputFileDialogue, dialogues, outputDialogue, format);
                 FileWriter.WriteSql(outputFileDialogueInfo, dialogueInfos, outputDialogueInfo, format);
                 FileWriter.WriteSql(outputFileBook, books, outputBook, format);
                 FileWriter.WriteSql(outputFileMiscItem, miscItems, outputMiscItem, format);

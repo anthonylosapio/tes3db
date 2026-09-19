@@ -207,6 +207,8 @@ public class Models
         public string? expansion { get; set; }
         public string? dialogue_topic { get; set; }
         public int? dialogue_id { get; set; }
+        [JsonPropertyName("quest_state")]
+        public DialogueInfoQuestState? dialogueInfoQuestState { get; set; }
         public DialogueInfoData? data { get; set; }
         public class DialogueInfoData
         {
@@ -215,6 +217,11 @@ public class Models
             public int? speaker_rank { get; set; }
             public string? speaker_sex { get; set; }
             public int? player_rank { get; set; }
+        }
+        public class DialogueInfoQuestState
+        {
+            [JsonPropertyName("type")]
+            public string? quest_state { get; set; }
         }
     }
 
