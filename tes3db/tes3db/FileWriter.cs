@@ -265,8 +265,8 @@ public class FileWriter
         {
             case "mysql":
                 if (t == typeof(int?) || t == typeof(long)) { 
-                    if(max < 255) return "TINYINT";
-                    if (max < 65535) return "SMALLINT";
+                    if(max < 128) return "TINYINT";
+                    if (max < 32768) return "SMALLINT";
                     return "INT"; 
                 }
                 if (t == typeof(bool?)) return "BOOL";
@@ -341,21 +341,13 @@ public class FileWriter
                                 break;
                             case bool b:
                             case double d:
-                                if (max.Count > j)
-                                {
-                                    max[j] = 0;
-                                }
-                                else
+                                if (max.Count <= j)
                                 {
                                     max.Add(0);
                                 }
                                 break;
                             default:
-                                if (max.Count > j)
-                                {
-                                    max[j] = 1;
-                                }
-                                else
+                                if (max.Count <= j)
                                 {
                                     max.Add(1);
                                 }
