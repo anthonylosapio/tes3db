@@ -735,7 +735,7 @@ class Program
                 FileWriter.WriteSql(outputFileRepairItem, repairItems, outputRepairItem, format);
                 FileWriter.WriteSql(outputFileCell, cells, outputCell, format);
 
-                FileWriter.WriteSqlCreateTableFile("tes3db.sql", listsObject, tableNames, format);
+                FileWriter.WriteSqlCreateTableFile("tes3db.sql", listsObject, tableNames, format, "tes3db");
 
                 break;
             default:

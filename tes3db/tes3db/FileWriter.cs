@@ -289,15 +289,31 @@ public class FileWriter
         
     }
 
-    public static void WriteSqlCreateTableFile(string filePath, object[] listsObject, string[] tableNames, string sqlType)
+    public static void WriteSqlCreateTableFile(string filePath, object[] listsObject, string[] tableNames, string sqlType, string dbName)
     {
         if (string.IsNullOrWhiteSpace(filePath))
             throw new ArgumentException("File path cannot be empty.");
+
+        if (string.IsNullOrWhiteSpace(dbName))
+            throw new ArgumentException("Database name cannot be empty.");
 
         string q = (sqlType == "mysql") ? "`" : "";
         
         using (var writer = new StreamWriter(filePath, false, Encoding.UTF8))
         {
+            //create the database if it doesn't exist, and use it
+            if (sqlType == "mysql")
+            {
+                writer.WriteLine($"CREATE DATABASE IF NOT EXISTS `{dbName}`;");
+                writer.WriteLine($"USE `{dbName}`;");
+                writer.WriteLine();
+            }
+            else if (sqlType == "postgres")
+            {
+                writer.WriteLine($"CREATE DATABASE \"{dbName}\";");
+                writer.WriteLine($"\\c \"{dbName}\";");
+                writer.WriteLine();
+            }
             //begin iterating through the list objects
             foreach (var list in listsObject)
             {
