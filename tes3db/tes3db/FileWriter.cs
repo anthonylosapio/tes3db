@@ -283,6 +283,12 @@ public class FileWriter
                 if (t == typeof(double?) || t == typeof(float)) return "DOUBLE PRECISION";
                 if (t == typeof(string)) return "VARCHAR(255)"; // will be updated later
                 return "TEXT";
+            case "sqlite":
+                if (t == typeof(int?) || t == typeof(long)) return "INTEGER";
+                if (t == typeof(bool?)) return "INTEGER"; // no native BOOLEAN; 0/1 convention
+                if (t == typeof(double?) || t == typeof(float)) return "REAL";
+                if (t == typeof(string)) return "TEXT";
+                return "TEXT";
             default:
                 throw new ArgumentException($"Unsupported SQL type: {sqlType}");
         }
@@ -298,7 +304,7 @@ public class FileWriter
             throw new ArgumentException("Database name cannot be empty.");
 
         string q = (sqlType == "mysql") ? "`" : "";
-        
+
         using (var writer = new StreamWriter(filePath, false, Encoding.UTF8))
         {
             //create the database if it doesn't exist, and use it
@@ -333,13 +339,16 @@ public class FileWriter
                         {
                             case string s:
                                 int length = s.Length;
-                                if (max.Count > j) {
+                                if (max.Count > j)
+                                {
                                     if (max[j] < length)
                                     {
                                         max[j] = length;
                                     }
-                                } else { 
-                                    max.Add(length); 
+                                }
+                                else
+                                {
+                                    max.Add(length);
                                 }
                                 break;
                             case int n:
@@ -381,22 +390,24 @@ public class FileWriter
 
                 string start = $"CREATE TABLE `{tableNames[Array.IndexOf(listsObject, list)]}` (";
                 writer.WriteLine(start);
-                
+
                 foreach (var col in cols)
                 {
                     string comma = (i < rowLength - 1) ? "," : "";
                     string idCollation = "";
-                    if (col.Name == "id") {
+                    if (col.Name == "id")
+                    {
                         hasIdColumn = true;
                         idCollation = " CHARACTER SET utf8mb4 COLLATE utf8mb4_bin";
+                        if (sqlType == "sqlite") idCollation = " PRIMARY KEY";
                     }
-                    if(hasIdColumn) comma = ",";//include a comma because the PRIMARY KEY line will be added after this line
+                    if (hasIdColumn) comma = ",";//include a comma because the PRIMARY KEY line will be added after this line
                     string output = $"{q}{col.Name}{q} {TypeToSql(col.Type, sqlType, max[i])}{idCollation}{comma}";
                     writer.WriteLine(output);
                     i++;
                 }
 
-                if (hasIdColumn)
+                if (hasIdColumn && sqlType != "sqlite")
                 {
                     writer.WriteLine($"PRIMARY KEY ({q}id{q})");
                 }
@@ -404,8 +415,16 @@ public class FileWriter
                 writer.WriteLine(closing);
                 writer.WriteLine();
             }
+
+            if (sqlType == "mysql" || sqlType == "sqlite")
+            {
+
+                writer.WriteLine("CREATE INDEX `idx_dialogueinfo_next_id` ON `dialogueinfo` (`next_id`, `dialogue_topic`);");
+                writer.WriteLine("CREATE INDEX `idx_dialogueinfo_topic_id` ON `dialogueinfo` (`dialogue_topic`, `id`);");
+                writer.WriteLine("CREATE INDEX `idx_dialogueinfo_speaker_id` ON `dialogueinfo` (`speaker_id`);");
+                writer.WriteLine("CREATE INDEX `idx_dialogueinfo_id_speaker_id` ON `dialogueinfo` (`id`, `speaker_id`);");
+            }
         }
-        
     }
 
 }

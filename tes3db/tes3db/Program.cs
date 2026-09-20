@@ -49,8 +49,8 @@ class Program
         // outputFormat
         // string
         // csv tsv mysql postgres
-        string outputFormat = "csv";
-        string fileExtension = "csv";
+        string outputFormat = "sqlite";
+        string fileExtension = "db";
         
         // noSkip
         // true/false
@@ -218,6 +218,7 @@ class Program
             "tsv" => "tsv",
             "mysql" => "sql",
             "postgres" => "sql",
+            "sqlite" => "db",
             _ => throw new ArgumentException($"Unknown output format: {outputFormat}")
         };
 
@@ -709,6 +710,7 @@ class Program
                 break;
             case "mysql":
             case "postgres":
+            case "sqlite":
                 FileWriter.WriteSql(outputFile, npcs, outputNpc, format);
                 //FileWriter.WriteSql(outputFileDialogue, dialogues, outputDialogue, format);
                 FileWriter.WriteSql(outputFileDialogueInfo, dialogueInfos, outputDialogueInfo, format);
