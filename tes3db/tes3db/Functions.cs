@@ -177,5 +177,6 @@ public class Functions
                 return;
             }
         }
+        npc.faction = "None";
     }
 }
