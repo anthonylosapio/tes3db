@@ -32,4 +32,8 @@
 		<None Include="Site\**\*" />
 	</ItemGroup>
 	
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.12" />
+	</ItemGroup>
+	
 </Project>
