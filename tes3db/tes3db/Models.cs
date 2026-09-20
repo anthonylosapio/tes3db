@@ -68,7 +68,7 @@ public class Models
         {
             public int? level { get; set; }
             public NpcStats? stats { get; set; } = new NpcStats();
-            public int? dispostion { get; set; }
+            public int? disposition { get; set; }
             public int? reputation { get; set; }
             public int? rank { get; set; }
             public int? gold { get; set; }
