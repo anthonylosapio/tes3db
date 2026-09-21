@@ -84,7 +84,7 @@ public class FileWriter
         queryStart += ") VALUES ";
 
         using (var writer = new StreamWriter(filePath, false, Encoding.UTF8))
-        {
+        {            
             writer.WriteLine(queryStart);
             // Write the values for each rows to insert
             counter = 0;
@@ -136,7 +136,7 @@ public class FileWriter
                 typeof(int?),
                 typeof(bool?),
                 typeof(double?),
-                typeof(int?[]),
+                typeof(int[]),
                 typeof(string[]),
                 typeof(List<InventoryItem>),
                 typeof(List<Effect>),
@@ -192,7 +192,7 @@ public class FileWriter
             typeof(List<Effect>),
             typeof(List<string>),
             typeof(string[]),
-            typeof(int?[]),
+            typeof(int[]),
             typeof(List<Reaction>),
             typeof(List<Requirement>),
             typeof(List<TravelDestination>),

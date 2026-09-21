@@ -14,7 +14,7 @@ public class Models
         public JsonElement InventoryRaw { get; set; }
         [JsonIgnore]
         public List<InventoryItem> inventory => Functions.GetInventory(InventoryRaw);
-        public List<string>? Spells { get; set; }
+        public List<string>? spells { get; set; }
         public AIData? ai_data { get; set; }
         public List<TravelDestination>? travel_destinations { get; set; }
         public string? race { get; set; }
@@ -139,7 +139,9 @@ public class Models
         public int? Unarmored { get; set; } = 0; // 17
     }
     
-    public class Cell { 
+    public class Cell
+    {
+        public string? id { get { return (string.IsNullOrEmpty(name) ? JsonSerializer.Serialize(data?.grid) : name); } }
         public string? flags { get; set; }
         public string? name { get; set; }
         public CellData? data { get; set; }
@@ -158,6 +160,8 @@ public class Models
         {
             get
             {
+                if(string.IsNullOrEmpty(name))
+                    return region;
                 if (!string.IsNullOrEmpty(name) && name.Contains(','))
                     return name.Split(',')[0].Trim();
                 return name;

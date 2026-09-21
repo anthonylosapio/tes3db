@@ -10,6 +10,10 @@ class Program
     {
         var sw = Stopwatch.StartNew();
 
+        string dbName = "tes3db.db";
+        string outputDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "tes3db_sql");
+        if (!Directory.Exists(outputDirectory)) Directory.CreateDirectory(outputDirectory);
+
         /* Default parameter values */
         // filename/table values
         string outputAlchemy = "alchemy";
@@ -21,7 +25,6 @@ class Program
         string outputClass = "class";
         string outputClothing = "clothing";
         string outputCreature = "creature";
-        string outputDialogue = "dialogue";
         string outputDialogueInfo = "dialogueinfo";
         string outputMagicEffect = "magiceffect";
         string outputEnchanting = "enchanting";
@@ -36,10 +39,13 @@ class Program
         string outputSkill = "skill";
         string outputSpell = "spell";
         string outputWeapon = "weapon";
-
         string outputHeader = "header";
 
         string prefix = "";
+
+        bool refresh = false;
+
+        bool dbExists = File.Exists(Path.Combine(outputDirectory, dbName)) ? true : false;
 
         // includeColumnHeadings
         // true/false
@@ -50,7 +56,7 @@ class Program
         // string
         // csv tsv mysql postgres
         string outputFormat = "sqlite";
-        string fileExtension = "db";
+        string fileExtension = "sql";
         
         // noSkip
         // true/false
@@ -67,119 +73,9 @@ class Program
         {
             switch (args[i].ToLower())
             {
-                case "--alchemy":
-                    if (i + 1 < args.Length)
-                        outputAlchemy = args[++i];
-                    break;  
-
-                case "--apparatus":
-                    if (i + 1 < args.Length)
-                        outputApparatus = args[++i];
-                    break;
-
-                case "--armor":
-                    if (i + 1 < args.Length)
-                        outputArmor = args[++i];
-                    break;
-
-                case "--birthsign":
-                    if (i + 1 < args.Length)
-                        outputBirthsign = args[++i];
-                    break;
-                
-                case "--book":
-                    if (i + 1 < args.Length)
-                        outputBook = args[++i];
-                    break;
-
-                case "--class":
-                    if (i + 1 < args.Length)
-                        outputClass = args[++i];
-                    break;
-
-                case "--clothing":
-                    if (i + 1 < args.Length)
-                        outputClothing = args[++i];
-                    break;
-
-                case "--creature":
-                    if (i + 1 < args.Length)
-                        outputCreature = args[++i];
-                    break;
-
-                case "--dialogue":
-                    if (i + 1 < args.Length)
-                        outputDialogue = args[++i];
-                    break;
-
-                case "--dialogueinfo":
-                    if (i + 1 < args.Length)
-                        outputDialogueInfo = args[++i];
-                    break;
-
-                case "--faction":
-                    if (i + 1 < args.Length)
-                        outputFaction = args[++i];
-                    break;
-
-                case "--header":
-                    if (i + 1 < args.Length)
-                        outputHeader = args[++i];
-                    break;
-
-                case "--ingredient":
-                    if (i + 1 < args.Length)
-                        outputIngredient = args[++i];
-                    break;
-
-                case "--lockpick":
-                    if (i + 1 < args.Length)
-                        outputLockpick = args[++i];
-                    break;
-
-                case "--magiceffect":
-                    if (i + 1 < args.Length)
-                        outputMagicEffect = args[++i];
-                    break;
-
-                case "--miscitem":
-                    if (i + 1 < args.Length)
-                        outputMiscItem = args[++i];
-                    break;
-
-                case "--npc":
-                    if (i + 1 < args.Length)
-                        outputNpc = args[++i];
-                    break;
-
-                case "--probe":
-                    if (i + 1 < args.Length)
-                        outputProbe = args[++i];
-                    break;
-
-                case "--race":
-                    if (i + 1 < args.Length)
-                        outputRace = args[++i];
-                    break;
-
-                case "--repairitem":
-                    if (i + 1 < args.Length)
-                        outputRepairItem = args[++i];
-                    break;
-
-                case "--skill":
-                    if (i + 1 < args.Length)
-                        outputSkill = args[++i];
-                    break;
-
-                case "--spell":
-                    if (i + 1 < args.Length)
-                        outputSpell = args[++i];
-                    break;
-
-                case "--weapon":
-                    if (i + 1 < args.Length)
-                        outputWeapon = args[++i];
+                case "--refresh":
+                case "-r":
+                    refresh = true;
                     break;
 
                 case "--format":
@@ -221,6 +117,12 @@ class Program
             "sqlite" => "db",
             _ => throw new ArgumentException($"Unknown output format: {outputFormat}")
         };
+
+        //if(!dbExists || refresh || outputFormat!="sqlite")
+        //{
+        //    Console.WriteLine($"Database file {dbName} already exists. Use --refresh to overwrite.");
+        //    return;
+        //}
 
         List<Npc> npcs = new List<Npc>();
         List<Cell> cells = new List<Cell>();
@@ -341,7 +243,7 @@ class Program
 
                             case "Cell":
                                 var cell = Functions.DeserializeObject<Cell>(element);
-                                if (!cells.Any(c => c.name == cell.name))
+                                if (!cells.Any(c => c.id == cell.id))
                                 {
                                     cell.expansion = expansionNames[expansionIndex];
                                     cells.Add(cell);
@@ -502,6 +404,7 @@ class Program
                                 if (!classes.Any(c => c.id == className.id))
                                 {
                                     className.expansion = expansionNames[expansionIndex];
+                                    if(className.name == null) className.name = className.id;
                                     classes.Add(className);
                                 }
                                 break;
@@ -648,31 +551,31 @@ class Program
 
         Console.WriteLine("Writing output files...");
 
-        string outputFile = $"{prefix}{outputNpc}.{fileExtension}";
+        string outputFile = Path.Combine(outputDirectory, $"{prefix}{outputNpc}.{fileExtension}");
         //string outputFileDialogue = $"{prefix}{outputDialogue}.{fileExtension}";
-        string outputFileDialogueInfo = $"{prefix}{outputDialogueInfo}.{fileExtension}";
-        string outputFileBook = $"{prefix}{outputBook}.{fileExtension}";
-        string outputFileMiscItem = $"{prefix}{outputMiscItem}.{fileExtension}";
-        string outputFileCell = $"{prefix}{outputCell}.{fileExtension}";
-        string outputFileClothing = $"{prefix}{outputClothing}.{fileExtension}";
-        string outputFileEnchanting = $"{prefix}{outputEnchanting}.{fileExtension}";
-        string outputFileWeapon = $"{prefix}{outputWeapon}.{fileExtension}";
-        string outputFileSpell = $"{prefix}{outputSpell}.{fileExtension}";
-        string outputFileArmor = $"{prefix}{outputArmor}.{fileExtension}";
-        string outputFileMagicEffect = $"{prefix}{outputMagicEffect}.{fileExtension}";
-        string outputFileAlchemy = $"{prefix}{outputAlchemy}.{fileExtension}";
-        string outputFileIngredient = $"{prefix}{outputIngredient}.{fileExtension}";
-        string outputFileCreature = $"{prefix}{outputCreature}.{fileExtension}";
-        string outputFileBirthsign = $"{prefix}{outputBirthsign}.{fileExtension}";
-        string outputFileRace = $"{prefix}{outputRace}.{fileExtension}";
-        string outputFileApparatus = $"{prefix}{outputApparatus}.{fileExtension}";
-        string outputFileClass = $"{prefix}{outputClass}.{fileExtension}";
-        string outputFileFaction = $"{prefix}{outputFaction}.{fileExtension}";
-        string outputFileSkill = $"{prefix}{outputSkill}.{fileExtension}";
-        string outputFileLockpick = $"{prefix}{outputLockpick}.{fileExtension}";
-        string outputFileProbe = $"{prefix}{outputProbe}.{fileExtension}";
-        string outputFileHeader = $"{prefix}{outputHeader}.{fileExtension}";
-        string outputFileRepairItem = $"{prefix}{outputRepairItem}.{fileExtension}";
+        string outputFileDialogueInfo = Path.Combine(outputDirectory, $"{prefix}{outputDialogueInfo}.{fileExtension}");
+        string outputFileBook = Path.Combine(outputDirectory, $"{prefix}{outputBook}.{fileExtension}");
+        string outputFileMiscItem = Path.Combine(outputDirectory, $"{prefix}{outputMiscItem}.{fileExtension}");
+        string outputFileCell = Path.Combine(outputDirectory, $"{prefix}{outputCell}.{fileExtension}");
+        string outputFileClothing = Path.Combine(outputDirectory, $"{prefix}{outputClothing}.{fileExtension}");
+        string outputFileEnchanting = Path.Combine(outputDirectory, $"{prefix}{outputEnchanting}.{fileExtension}");
+        string outputFileWeapon = Path.Combine(outputDirectory, $"{prefix}{outputWeapon}.{fileExtension}");
+        string outputFileSpell = Path.Combine(outputDirectory, $"{prefix}{outputSpell}.{fileExtension}");
+        string outputFileArmor = Path.Combine(outputDirectory, $"{prefix}{outputArmor}.{fileExtension}");
+        string outputFileMagicEffect = Path.Combine(outputDirectory, $"{prefix}{outputMagicEffect}.{fileExtension}");
+        string outputFileAlchemy = Path.Combine(outputDirectory, $"{prefix}{outputAlchemy}.{fileExtension}");
+        string outputFileIngredient = Path.Combine(outputDirectory, $"{prefix}{outputIngredient}.{fileExtension}");
+        string outputFileCreature = Path.Combine(outputDirectory, $"{prefix}{outputCreature}.{fileExtension}");
+        string outputFileBirthsign = Path.Combine(outputDirectory, $"{prefix}{outputBirthsign}.{fileExtension}");
+        string outputFileRace = Path.Combine(outputDirectory, $"{prefix}{outputRace}.{fileExtension}");
+        string outputFileApparatus = Path.Combine(outputDirectory, $"{prefix}{outputApparatus}.{fileExtension}");
+        string outputFileClass = Path.Combine(outputDirectory, $"{prefix}{outputClass}.{fileExtension}");
+        string outputFileFaction = Path.Combine(outputDirectory, $"{prefix}{outputFaction}.{fileExtension}");
+        string outputFileSkill = Path.Combine(outputDirectory, $"{prefix}{outputSkill}.{fileExtension}");
+        string outputFileLockpick = Path.Combine(outputDirectory, $"{prefix}{outputLockpick}.{fileExtension}");
+        string outputFileProbe = Path.Combine(outputDirectory, $"{prefix}{outputProbe}.{fileExtension}");
+        string outputFileHeader = Path.Combine(outputDirectory, $"{prefix}{outputHeader}.{fileExtension}");
+        string outputFileRepairItem = Path.Combine(outputDirectory, $"{prefix}{outputRepairItem}.{fileExtension}");
 
         object[] listsObject = { npcs, /*dialogues,*/ dialogueInfos, books, miscItems, cells, clothes, enchantings, weapons, spells, armors, effects, alchemies, ingredients, creatures, birthsigns, races, apparatuses, classes, factions, skills, lockpicks, probes, headers, repairItems };
         string[] tableNames = { outputNpc,/* outputDialogue, */outputDialogueInfo, outputBook, outputMiscItem, outputCell, outputClothing, outputEnchanting, outputWeapon, outputSpell, outputArmor, outputMagicEffect, outputAlchemy, outputIngredient, outputCreature, outputBirthsign, outputRace, outputApparatus, outputClass, outputFaction, outputSkill, outputLockpick, outputProbe, outputHeader, outputRepairItem };
@@ -737,7 +640,7 @@ class Program
                 FileWriter.WriteSql(outputFileRepairItem, repairItems, outputRepairItem, format);
                 FileWriter.WriteSql(outputFileCell, cells, outputCell, format);
 
-                FileWriter.WriteSqlCreateTableFile("tes3db.sql", listsObject, tableNames, format, "tes3db");
+                FileWriter.WriteSqlCreateTableFile(Path.Combine(outputDirectory, "tes3db.sql"), listsObject, tableNames, format, "tes3db");
 
                 break;
             default:
@@ -752,36 +655,13 @@ class Program
         Console.WriteLine("Usage: tes3db.exe [options]");
         Console.WriteLine();
         Console.WriteLine("Options:");
-        Console.WriteLine("  --format, -f <type>      Output type: csv tsv mysql postgres (default: csv)");
+        Console.WriteLine("  --refresh, -r            Force refresh of sqlite database");
+        Console.WriteLine("  --format, -f <type>      Output type: sqlite csv tsv mysql postgres (default: sqlite)");
         Console.WriteLine("  --no-headers             Exclude column headers in (csv/tsv only)");
         Console.WriteLine("  --skip                   Will skip NPCs missing Cell, Region, Attribute or Skill poperties");
         Console.WriteLine("  --verbose                Display verbose output");
         Console.WriteLine("");
         Console.WriteLine("  --prefix, -p <prefix>    Prefix for output files, helpful if keeping expansions separate (default: none)");
-        Console.WriteLine("");
-        Console.WriteLine("  --alchemy <name>         db Table & output File name for extracted Alchemies (default: alchemy)");
-        Console.WriteLine("  --apparatus <name>       db Table & output File name for extracted Apparatuses (default: apparatus)");
-        Console.WriteLine("  --armor <name>           db Table & output File name for extracted Armors (default: armor)");
-        Console.WriteLine("  --birthsign <name>       db Table & output File name for extracted Birthsigns (default: birthsign)");
-        Console.WriteLine("  --book <name>            db Table & output File name for extracted Books (default: book)");
-        Console.WriteLine("  --class <name>           db Table & output File name for extracted Classes (default: class)");
-        Console.WriteLine("  --clothing <name>        db Table & output File name for extracted Clothing (default: clothing)");
-        Console.WriteLine("  --creature <name>        db Table & output File name for extracted Creatures (default: creature)");
-        Console.WriteLine("  --dialogue <name>        db Table & output File name for extracted Dialogue (default: dialogue)");
-        Console.WriteLine("  --dialogueinfo <name>    db Table & output File name for extracted DialogueInfo (default: dialogueinfo)");
-        Console.WriteLine("  --effect <name>          db Table & output File name for extracted Effects (default: effect)");
-        Console.WriteLine("  --enchanting <name>      db Table & output File name for extracted Enchantings (default: enchanting)");
-        Console.WriteLine("  --faction <name>         db Table & output File name for extracted Factions (default: faction)");
-        Console.WriteLine("  --ingredient <name>      db Table & output File name for extracted Ingredients (default: ingredient)");
-        Console.WriteLine("  --lockpick <name>        db Table & output File name for extracted Lockpicks (default: lockpick)");
-        Console.WriteLine("  --miscitem <name>        db Table & output File name for extracted MiscItems (default: miscitem)");
-        Console.WriteLine("  --npc <name>             db Table & output File name for extracted NPCs (default: npc)");
-        Console.WriteLine("  --probe <name>           db Table & output File name for extracted Probes (default: probe)");
-        Console.WriteLine("  --race <name>            db Table & output File name for extracted Races (default: race)");
-        Console.WriteLine("  --repairitem <name>      db Table & output File name for extracted RepairItems (default: repairitem)");
-        Console.WriteLine("  --skill <name>           db Table & output File name for extracted Skills (default: skill)");
-        Console.WriteLine("  --spell <name>           db Table & output File name for extracted Spells (default: spell)");
-        Console.WriteLine("  --weapon <name>          db Table & output File name for extracted Weapons (default: weapon)");
         Console.WriteLine("");
         Console.WriteLine("  --help                   Show this help message");
     }
