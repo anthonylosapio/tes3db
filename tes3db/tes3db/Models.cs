@@ -14,19 +14,25 @@ public class Models
         public JsonElement InventoryRaw { get; set; }
         [JsonIgnore]
         public List<InventoryItem> inventory => Functions.GetInventory(InventoryRaw);
-        public List<string>? Spells { get; set; }
+        public List<string>? spells { get; set; }
         public AIData? ai_data { get; set; }
         public List<TravelDestination>? travel_destinations { get; set; }
+        [JsonIgnore]
         public string? race { get; set; }
+        [JsonPropertyName("race")]
         public string? race_id { get; set; }
-        [JsonPropertyName("class")]
+        [JsonIgnore]
         public string? classs { get; set; }
+        [JsonPropertyName("class")]
         public string? class_id { get; set; }
+        [JsonIgnore]
         public string? faction { get; set; }
+        [JsonPropertyName("faction")]
         public string? faction_id { get; set; }
         public string? head { get; set; }
         public string? hair { get; set; }
         public string? npc_flags { get; set; }
+        public string? gender { get { return (npc_flags?.Contains("FEMALE") == true) ? "Female" : "Male"; } } 
         public int? blood_type { get; set; }
         public string? expansion { get; set; }
         public NpcData? data { get; set; }
@@ -67,7 +73,7 @@ public class Models
         {
             public int? level { get; set; }
             public NpcStats? stats { get; set; } = new NpcStats();
-            public int? dispostion { get; set; }
+            public int? disposition { get; set; }
             public int? reputation { get; set; }
             public int? rank { get; set; }
             public int? gold { get; set; }
@@ -138,7 +144,9 @@ public class Models
         public int? Unarmored { get; set; } = 0; // 17
     }
     
-    public class Cell { 
+    public class Cell
+    {
+        public string? id { get { return (string.IsNullOrEmpty(name) ? JsonSerializer.Serialize(data?.grid) : name); } }
         public string? flags { get; set; }
         public string? name { get; set; }
         public CellData? data { get; set; }
@@ -157,6 +165,8 @@ public class Models
         {
             get
             {
+                if(string.IsNullOrEmpty(name))
+                    return region;
                 if (!string.IsNullOrEmpty(name) && name.Contains(','))
                     return name.Split(',')[0].Trim();
                 return name;

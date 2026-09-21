@@ -91,6 +91,11 @@ public class Functions
                     var idString = id.GetString();
                     if (!string.IsNullOrEmpty(idString)) refs.Add(idString);
                 }
+                if (obj.TryGetProperty("cell", out JsonElement cell))
+                {
+                    var cellString = cell.GetString();
+                    if (!string.IsNullOrEmpty(cellString)) refs.Add(cellString);
+                }
             }
         }
         return refs;
@@ -138,8 +143,12 @@ public class Functions
         {
             npc.region = cell.region;
             npc.cell = cell.name;
-            npc.location = cell.location;
+            npc.location = cell.location ?? cell.region;
             npc.sub_location = cell.sub_location;
+        }
+        else
+        {
+            npc.location = "None";
         }
     }
 
@@ -177,5 +186,6 @@ public class Functions
                 return;
             }
         }
+        npc.faction = "None";
     }
 }
