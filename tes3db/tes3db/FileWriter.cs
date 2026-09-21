@@ -303,7 +303,7 @@ public class FileWriter
         if (string.IsNullOrWhiteSpace(dbName))
             throw new ArgumentException("Database name cannot be empty.");
 
-        string q = (sqlType == "mysql") ? "`" : "";
+        string q = (sqlType == "postgres") ? "\"" : "`";
 
         using (var writer = new StreamWriter(filePath, false, Encoding.UTF8))
         {
@@ -401,7 +401,7 @@ public class FileWriter
                         idCollation = " CHARACTER SET utf8mb4 COLLATE utf8mb4_bin";
                         if (sqlType == "sqlite") idCollation = " PRIMARY KEY";
                     }
-                    if (hasIdColumn) comma = ",";//include a comma because the PRIMARY KEY line will be added after this line
+                    if (hasIdColumn && sqlType != "sqlite") comma = ",";//include a comma because the PRIMARY KEY line will be added after this line
                     string output = $"{q}{col.Name}{q} {TypeToSql(col.Type, sqlType, max[i])}{idCollation}{comma}";
                     writer.WriteLine(output);
                     i++;
