@@ -1,8 +1,6 @@
 ﻿namespace tes3db;
 
 using System.Diagnostics;
-using System.Text.Json;
-using static tes3db.Models;
 
 class Program
 {
@@ -98,17 +96,19 @@ class Program
             FileReader.Main(verbose, noSkip, includeColumnHeadings, prefix, fileExtension, outputDirectory, outputFormat);
         }
 
-        //Do specific SQLITE TASKS HERE - create the database if it doesn't exist and run the newly generated query scripts
+        //Do specific SQLITE TASKS HERE - create the database if it doesn't exist and run the newly generated import scripts
         if (outputFormat == "sqlite") { 
-
-            if(dbExists && refresh)
+            
+            if (dbExists && refresh)
             {
+                if (verbose) Console.WriteLine($"Removing existing SQLite database file at: {dbFilePath}");
                 File.Delete(dbFilePath);
                 dbExists = false;
             }
         
             if(!dbExists)
             {
+                if(verbose) Console.WriteLine($"Creating SQLite database at: {dbFilePath}");
                 // Create the SQLite database
                 using (var connection = new Microsoft.Data.Sqlite.SqliteConnection($"Data Source={dbFilePath}"))
                 {
@@ -133,8 +133,30 @@ class Program
                                 }
                             }
                         }
+                    }
+                    else
+                    {
+                        Console.WriteLine($"SQL script file not found: {sqlScriptPath}");
+                    }
 
+                    //Populate the database with data from the generated sql file
+                    var sqlFiles = Directory.GetFiles(outputDirectory, "*.sql")
+                        .Where(f => !Path.GetFileName(f).Equals("tes3db.sql", StringComparison.OrdinalIgnoreCase))
+                        .ToList();
 
+                    foreach (var sqlFile in sqlFiles)
+                    {
+                        Console.WriteLine($"Executing {Path.GetFileName(sqlFile)}...");
+
+                        string sqlScript = File.ReadAllText(sqlFile);
+                        if (!string.IsNullOrEmpty(sqlScript))
+                        {
+                            using (var command = connection.CreateCommand())
+                            {
+                                command.CommandText = sqlScript;
+                                command.ExecuteNonQuery();
+                            }
+                        }
                     }
 
                 }
