@@ -17,12 +17,17 @@ public class Models
         public List<string>? spells { get; set; }
         public AIData? ai_data { get; set; }
         public List<TravelDestination>? travel_destinations { get; set; }
+        [JsonIgnore]
         public string? race { get; set; }
+        [JsonPropertyName("race")]
         public string? race_id { get; set; }
-        [JsonPropertyName("class")]
+        [JsonIgnore]
         public string? classs { get; set; }
+        [JsonPropertyName("class")]
         public string? class_id { get; set; }
+        [JsonIgnore]
         public string? faction { get; set; }
+        [JsonPropertyName("faction")]
         public string? faction_id { get; set; }
         public string? head { get; set; }
         public string? hair { get; set; }

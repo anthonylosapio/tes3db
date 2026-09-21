@@ -519,13 +519,6 @@ class Program
             var index = Functions.BuildReferenceIndex(cells, expansion);
             cellRefExpansionDictionary[expansion] = index;
         }
-        foreach(var npc in npcs)
-        {
-            if (npc.expansion == null)
-            {
-                Console.WriteLine($"Warning: NPC {npc.id} has no expansion assigned. This may cause issues with cell placement.");
-            }
-        }
         foreach (var npc in npcs)
         {
             Functions.AddCellLocationInfoToNPC(npc, cellRefExpansionDictionary[npc.expansion]);
@@ -538,7 +531,7 @@ class Program
         {
             foreach (var npc in npcs)
             {
-                if(npc.cell == null && npc.region == null && verbose) Console.WriteLine("CellName & Region mssing - " + npc.id);
+                if(npc.location=="None" && verbose) Console.WriteLine("CellName & Region mssing - " + npc.id);
                 if(npc.data.stats.attributes == null && verbose) Console.WriteLine($"Attributes missing - {npc.id}");
                 if(npc.data.stats.skills == null && verbose) Console.WriteLine($"Skills missing - " + npc.id);
                 if(npc.expansion == null && verbose) Console.WriteLine($"Expansion missing - " + npc.id);
@@ -546,7 +539,7 @@ class Program
 
             // Remove objects from list that we don't want to include
             npcs.RemoveAll(item => item.data.stats.attributes == null);
-            npcs.RemoveAll(item => (item.cell == null && item.region == null));
+            npcs.RemoveAll(item => (item.location == "None"));
         }
 
         Console.WriteLine("Writing output files...");
@@ -586,7 +579,6 @@ class Program
             case "csv":
             case "tsv":
                 FileWriter.WriteCsv(outputFile, npcs, includeColumnHeadings, format);
-                //FileWriter.WriteCsv(outputFileDialogue, dialogues, includeColumnHeadings, format);
                 FileWriter.WriteCsv(outputFileDialogueInfo, dialogueInfos, includeColumnHeadings, format);
                 FileWriter.WriteCsv(outputFileBook, books, includeColumnHeadings, format);
                 FileWriter.WriteCsv(outputFileMiscItem, miscItems, includeColumnHeadings, format);
@@ -615,7 +607,6 @@ class Program
             case "postgres":
             case "sqlite":
                 FileWriter.WriteSql(outputFile, npcs, outputNpc, format);
-                //FileWriter.WriteSql(outputFileDialogue, dialogues, outputDialogue, format);
                 FileWriter.WriteSql(outputFileDialogueInfo, dialogueInfos, outputDialogueInfo, format);
                 FileWriter.WriteSql(outputFileBook, books, outputBook, format);
                 FileWriter.WriteSql(outputFileMiscItem, miscItems, outputMiscItem, format);

@@ -146,6 +146,10 @@ public class Functions
             npc.location = cell.location ?? cell.region;
             npc.sub_location = cell.sub_location;
         }
+        else
+        {
+            npc.location = "None";
+        }
     }
 
     public static void AddRaceInfoToNPC(Npc npc, List<Race> races)
