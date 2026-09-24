@@ -445,6 +445,9 @@ public class FileReader
             if (verbose) Console.Write($"\r {npc.expansion}: {npcCount}/{npcTotal}");
         }
 
+        //adding a "None" faction to the faction list
+        factions.Add(new Faction { id = "None", name = "None" });
+
         // List NPCs missing attributes, skills or cell placement
         if (!noSkip)
         {

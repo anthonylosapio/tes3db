@@ -664,14 +664,14 @@ public class Models
         }
     }
 
-    public class Faction { 
-        public string? flags { get; set; }
-        public string? id { get; set; }
-        public string? name { get; set; }
-        public string[]? rank_names { get; set; }
-        public string? expansion { get; set; }
-        public List<Reaction>? reactions { get; set; }
-        public FactionData? data { get; set; }
+    public class Faction {
+        public string? flags { get; set; } = null;
+        public string? id { get; set; } = null;
+        public string? name { get; set; } = null;
+        public string[]? rank_names { get; set; } = null;
+        public string? expansion { get; set; } = null;
+        public List<Reaction>? reactions { get; set; } = new List<Reaction>();
+        public FactionData? data { get; set; } = new FactionData();
         public class Reaction { 
             public string? faction { get; set; }
             public int? reaction { get; set; }
@@ -681,21 +681,27 @@ public class Models
             [JsonPropertyName("favored_attributes")]
             public JsonElement favored_attributesRaw { get; set; }
             [JsonIgnore]
-            public string? favored_attribute1 => favored_attributesRaw[0].GetString();
+            public string? favored_attribute1 => GetFavoredAttribute(0);
             [JsonIgnore]
-            public string? favored_attribute2 => favored_attributesRaw[1].GetString();
-            public List<Requirement>? requirements { get; set; }
-            public string[]? favored_skills { get; set; }
+            public string? favored_attribute2 => GetFavoredAttribute(1);
+            public List<Requirement>? requirements { get; set; } = null;
+            public string[]? favored_skills { get; set; } = null;
             [JsonPropertyName("flags")]
-            public string? data_flags { get; set; }
+            public string? data_flags { get; set; } = null;
             public class Requirement { 
                 public int[]? attributes { get; set; }
                 public int? primary_skill { get; set; }
                 public int? favored_skill { get; set; }
                 public int? reputation { get; set; }
             }
+            private string? GetFavoredAttribute(int index)
+            {
+                return favored_attributesRaw.ValueKind == JsonValueKind.Array &&
+                       favored_attributesRaw.GetArrayLength() > index
+                    ? favored_attributesRaw[index].GetString()
+                    : null;
+            }
         }
-
     }
 
     public class Skill { 
