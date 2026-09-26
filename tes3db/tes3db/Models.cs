@@ -668,7 +668,7 @@ public class Models
         public string? flags { get; set; } = null;
         public string? id { get; set; } = null;
         public string? name { get; set; } = null;
-        public string[]? rank_names { get; set; } = null;
+        public string[]? rank_names { get; set; } = Array.Empty<string>();
         public string? expansion { get; set; } = null;
         public List<Reaction>? reactions { get; set; } = new List<Reaction>();
         public FactionData? data { get; set; } = new FactionData();
@@ -684,8 +684,8 @@ public class Models
             public string? favored_attribute1 => GetFavoredAttribute(0);
             [JsonIgnore]
             public string? favored_attribute2 => GetFavoredAttribute(1);
-            public List<Requirement>? requirements { get; set; } = null;
-            public string[]? favored_skills { get; set; } = null;
+            public List<Requirement>? requirements { get; set; } = new List<Requirement>();
+            public string[]? favored_skills { get; set; } = Array.Empty<string>();
             [JsonPropertyName("flags")]
             public string? data_flags { get; set; } = null;
             public class Requirement { 
