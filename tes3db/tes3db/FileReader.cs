@@ -320,7 +320,8 @@ public class FileReader
                                 if (!classes.Any(c => c.id == className.id))
                                 {
                                     className.expansion = expansionNames[expansionIndex];
-                                    if (className.name == null) className.name = className.id;
+                                    //this is here specifically because buoyant armiger has a blank name in the base game file
+                                    if (string.IsNullOrEmpty(className.name)) className.name = className.id;
                                     classes.Add(className);
                                 }
                                 break;
@@ -443,6 +444,9 @@ public class FileReader
             npcCount++;
             if (verbose) Console.Write($"\r {npc.expansion}: {npcCount}/{npcTotal}");
         }
+
+        //adding a "None" faction to the faction list
+        factions.Add(new Faction { id = "None", name = "None" });
 
         // List NPCs missing attributes, skills or cell placement
         if (!noSkip)

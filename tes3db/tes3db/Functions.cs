@@ -187,5 +187,6 @@ public class Functions
             }
         }
         npc.faction = "None";
+        npc.faction_id = "None";
     }
 }
