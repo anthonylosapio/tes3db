@@ -146,7 +146,7 @@ public class Models
     
     public class Cell
     {
-        public string? id { get { return (string.IsNullOrEmpty(name) ? JsonSerializer.Serialize(data?.grid) : name); } }
+        public string? id { get { return (string.IsNullOrEmpty(name) ? JsonSerializer.Serialize(data?.grid) : $"{name}{JsonSerializer.Serialize(data?.grid)}"); } }
         public string? flags { get; set; }
         public string? name { get; set; }
         public CellData? data { get; set; }
