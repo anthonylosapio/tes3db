@@ -33,8 +33,8 @@ public class Functions
             foreach (JsonElement array in element.EnumerateArray())
             {
                 InventoryItem inventoryItem = new InventoryItem();
-                inventoryItem.Quantity = array[0].GetInt32();
-                inventoryItem.ItemId = array[1].GetString();
+                inventoryItem.quantity = array[0].GetInt32();
+                inventoryItem.id = array[1].GetString();
                 inventory.Add(inventoryItem);
             }
         }
@@ -130,11 +130,18 @@ public class Functions
 
             foreach (var reference in cell.references)
             {
-                // last cell wins on duplicate references; adjust if you need first-wins instead
                 index[reference] = cell;
             }
         }
         return index;
+    }
+
+    public static void AddCellInfoToContainer(Container container, Dictionary<string, Cell> referenceIndex)
+    {
+        if (referenceIndex.TryGetValue(container.id, out var cell))
+        {
+            container.cell = cell.id;
+        }
     }
 
     public static void AddCellLocationInfoToNPC(Npc npc, Dictionary<string, Cell> referenceIndex)
@@ -143,6 +150,7 @@ public class Functions
         {
             npc.region = cell.region;
             npc.cell = cell.name;
+            npc.cell_id = cell.id;
             npc.location = cell.location ?? cell.region;
             npc.sub_location = cell.sub_location;
         }

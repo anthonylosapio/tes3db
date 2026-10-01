@@ -37,6 +37,7 @@ public class Models
         public string? expansion { get; set; }
         public NpcData? data { get; set; }
         public string? cell { get; set; }
+        public string? cell_id { get; set; }
         public string? region { get; set; }
         public string? location { get; set; }
         public string? sub_location { get; set; }
@@ -97,8 +98,8 @@ public class Models
 
     public class InventoryItem
     {
-        public int? Quantity { get; set; }
-        public string? ItemId { get; set; }
+        public int? quantity { get; set; }
+        public string? id { get; set; }
     }
     
     public class Attributes
@@ -146,7 +147,11 @@ public class Models
     
     public class Cell
     {
-        public string? id { get { return (string.IsNullOrEmpty(name) ? JsonSerializer.Serialize(data?.grid) : $"{name}{JsonSerializer.Serialize(data?.grid)}"); } }
+        public string? id { 
+            get {
+                if (data == null || data.data_flags == null) return null;
+                return (!data.data_flags.Contains("IS_INTERIOR") ? $"{region} {JsonSerializer.Serialize(data?.grid)}" : $"{name}"); } 
+            }
         public string? flags { get; set; }
         public string? name { get; set; }
         public CellData? data { get; set; }
@@ -184,11 +189,13 @@ public class Models
             }
         }
     }
+
     public class FieldValueandType
     {
         public object? Value { get; set; }
         public Type? Type { get; set; }
     }
+    
     public class PropertyNameandType
     {
         public string? Name { get; set; }
@@ -792,6 +799,23 @@ public class Models
             public int? value { get; set; }
             public int? uses { get; set; }
         }
+    }
+
+    public class Container
+    {
+        public string? flags { get; set; }
+        public string? id { get; set; }
+        public string? name { get; set; }
+        public string? mesh { get; set; }
+        public double? encumbrance { get; set; }
+        public string? container_flags { get; set; }
+        public string? expansion { get; set; }
+        [JsonPropertyName("inventory")]
+        public JsonElement InventoryRaw { get; set; }
+        [JsonIgnore]
+        public List<InventoryItem> inventory => Functions.GetInventory(InventoryRaw);
+        public string? cell { get; set; }
+
     }
     public class Header
     {

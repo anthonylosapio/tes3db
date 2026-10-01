@@ -19,6 +19,7 @@ public class FileReader
         string outputCell = "cell";
         string outputClass = "class";
         string outputClothing = "clothing";
+        string outputContainer = "container";
         string outputCreature = "creature";
         string outputDialogueInfo = "dialogueinfo";
         string outputMagicEffect = "magiceffect";
@@ -61,6 +62,7 @@ public class FileReader
         List<Lockpick> lockpicks = new List<Lockpick>();
         List<Header> headers = new List<Header>();
         List<RepairItem> repairItems = new List<RepairItem>();
+        List<Container> containers = new List<Container>();
 
         //used to populate the topic of DialogueInfo. DialogInfo related to a specific topic appear of Dialogue object
         string DialogueTopic = "";
@@ -365,6 +367,14 @@ public class FileReader
                                     repairItems.Add(repairItem);
                                 }
                                 break;
+                            case "Container":
+                                var container = Functions.DeserializeObject<Container>(element);
+                                if (!containers.Any(c => c.id == container.id))
+                                {
+                                    container.expansion = expansionNames[expansionIndex];
+                                    containers.Add(container);
+                                }
+                                break;
                             case "Header":
                                 var header = Functions.DeserializeObject<Header>(element);
                                 header.expansion = expansionNames[expansionIndex];
@@ -389,13 +399,16 @@ public class FileReader
                 Console.WriteLine($" Factions:     {factions.Count,10} | Ingredients:  {ingredients.Count,10} | Lockpicks:    {lockpicks.Count,10}");
                 Console.WriteLine($" MagicEffects: {effects.Count,10} | MiscItems:    {miscItems.Count,10} | Probes:       {probes.Count,10}");
                 Console.WriteLine($" Races:        {races.Count,10} | RepairItems:  {repairItems.Count,10} | Skills:       {skills.Count,10}");
-                Console.WriteLine($" Spells:       {spells.Count,10} |");
+                Console.WriteLine($" Spells:       {spells.Count,10} | Containers:   {containers.Count,10}");
             }
             expansionIndex++;
         }
 
         //Remove orphaned npcs
         npcs.RemoveAll(item => (item.expansion == null));
+
+        //Remove empty containers
+        containers.RemoveAll(item => (item.inventory == null || item.inventory.Count == 0));
 
         //populate location, expansion, race, class & faction information for NPCs
         int npcTotal = npcs.Count;
@@ -430,7 +443,7 @@ public class FileReader
 
         npcCount = 0;
         if (verbose) Console.WriteLine("");
-        if (verbose) Console.WriteLine("Adding Cell, Region, & Location to NPCs...");
+        if (verbose) Console.WriteLine("Adding Cell, Region, & Location to NPCs & Containers...");
 
         var cellRefExpansionDictionary = new Dictionary<string, Dictionary<string, Cell>>();
         foreach (var expansion in expansionNames)
@@ -444,6 +457,13 @@ public class FileReader
             npcCount++;
             if (verbose) Console.Write($"\r {npc.expansion}: {npcCount}/{npcTotal}");
         }
+        foreach (var container in containers)
+        {
+            Functions.AddCellInfoToContainer(container, cellRefExpansionDictionary[container.expansion]);
+            npcCount++;
+            if (verbose) Console.Write($"\r {container.expansion}: {npcCount}/{npcTotal}");
+        }
+
 
         //adding a "None" faction to the faction list
         factions.Add(new Faction { id = "None", name = "None" });
@@ -491,9 +511,10 @@ public class FileReader
         string outputFileProbe = Path.Combine(outputDirectory, $"{prefix}{outputProbe}.{fileExtension}");
         string outputFileHeader = Path.Combine(outputDirectory, $"{prefix}{outputHeader}.{fileExtension}");
         string outputFileRepairItem = Path.Combine(outputDirectory, $"{prefix}{outputRepairItem}.{fileExtension}");
+        string outputFileContainer = Path.Combine(outputDirectory, $"{prefix}{outputContainer}.{fileExtension}");
 
-        object[] listsObject = { npcs, /*dialogues,*/ dialogueInfos, books, miscItems, cells, clothes, enchantings, weapons, spells, armors, effects, alchemies, ingredients, creatures, birthsigns, races, apparatuses, classes, factions, skills, lockpicks, probes, headers, repairItems };
-        string[] tableNames = { outputNpc,/* outputDialogue, */outputDialogueInfo, outputBook, outputMiscItem, outputCell, outputClothing, outputEnchanting, outputWeapon, outputSpell, outputArmor, outputMagicEffect, outputAlchemy, outputIngredient, outputCreature, outputBirthsign, outputRace, outputApparatus, outputClass, outputFaction, outputSkill, outputLockpick, outputProbe, outputHeader, outputRepairItem };
+        object[] listsObject = { npcs, /*dialogues,*/ dialogueInfos, books, miscItems, cells, clothes, enchantings, weapons, spells, armors, effects, alchemies, ingredients, creatures, birthsigns, races, apparatuses, classes, factions, skills, lockpicks, probes, headers, repairItems, containers };
+        string[] tableNames = { outputNpc,/* outputDialogue, */outputDialogueInfo, outputBook, outputMiscItem, outputCell, outputClothing, outputEnchanting, outputWeapon, outputSpell, outputArmor, outputMagicEffect, outputAlchemy, outputIngredient, outputCreature, outputBirthsign, outputRace, outputApparatus, outputClass, outputFaction, outputSkill, outputLockpick, outputProbe, outputHeader, outputRepairItem, outputContainer };
 
         string format = outputFormat.ToLowerInvariant();
         switch (format)
@@ -524,6 +545,7 @@ public class FileReader
                 FileWriter.WriteCsv(outputFileHeader, headers, includeColumnHeadings, format);
                 FileWriter.WriteCsv(outputFileRepairItem, repairItems, includeColumnHeadings, format);
                 FileWriter.WriteCsv(outputFileCell, cells, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileContainer, containers, includeColumnHeadings, format);
                 break;
             case "mysql":
             case "postgres":
@@ -552,6 +574,7 @@ public class FileReader
                 FileWriter.WriteSql(outputFileHeader, headers, outputHeader, format);
                 FileWriter.WriteSql(outputFileRepairItem, repairItems, outputRepairItem, format);
                 FileWriter.WriteSql(outputFileCell, cells, outputCell, format);
+                FileWriter.WriteSql(outputFileContainer, containers, outputContainer, format);
 
                 FileWriter.WriteSqlCreateTableFile(Path.Combine(outputDirectory, "tes3db.sql"), listsObject, tableNames, format, "tes3db");
 
