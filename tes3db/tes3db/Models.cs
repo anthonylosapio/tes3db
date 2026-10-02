@@ -147,11 +147,17 @@ public class Models
     
     public class Cell
     {
-        public string? id { 
-            get {
+        public string? id
+        {
+            get
+            {
                 if (data == null || data.data_flags == null) return null;
-                return (!data.data_flags.Contains("IS_INTERIOR") ? $"{region} {JsonSerializer.Serialize(data?.grid)}" : $"{name}"); } 
+                if (data.data_flags.Contains("IS_INTERIOR")) return $"{name}";
+                if (!string.IsNullOrEmpty(name)) return $"{name} {JsonSerializer.Serialize(data?.grid)}";
+                if (!string.IsNullOrEmpty(region)) return $"{region} {JsonSerializer.Serialize(data?.grid)}";
+                return null;
             }
+        }
         public string? flags { get; set; }
         public string? name { get; set; }
         public CellData? data { get; set; }
