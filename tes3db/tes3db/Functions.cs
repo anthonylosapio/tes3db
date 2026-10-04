@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Security.Principal;
 using System.Text.Json;
 using static tes3db.Models;
 
@@ -33,8 +34,8 @@ public class Functions
             foreach (JsonElement array in element.EnumerateArray())
             {
                 InventoryItem inventoryItem = new InventoryItem();
-                inventoryItem.Quantity = array[0].GetInt32();
-                inventoryItem.ItemId = array[1].GetString();
+                inventoryItem.quantity = array[0].GetInt32();
+                inventoryItem.id = array[1].GetString();
                 inventory.Add(inventoryItem);
             }
         }
@@ -86,15 +87,18 @@ public class Functions
         {
             foreach (JsonElement obj in element.EnumerateArray())
             {
-                if (obj.TryGetProperty("id", out JsonElement id))
+                if (obj.TryGetProperty("destination", out JsonElement destination))
+                {
+                    if (destination.TryGetProperty("cell", out JsonElement cell))
+                    {
+                        var cellString = cell.GetString();
+                        if (!string.IsNullOrEmpty(cellString)) refs.Add(cellString);
+                    }
+                }
+                else if (obj.TryGetProperty("id", out JsonElement id))
                 {
                     var idString = id.GetString();
                     if (!string.IsNullOrEmpty(idString)) refs.Add(idString);
-                }
-                if (obj.TryGetProperty("cell", out JsonElement cell))
-                {
-                    var cellString = cell.GetString();
-                    if (!string.IsNullOrEmpty(cellString)) refs.Add(cellString);
                 }
             }
         }
@@ -130,19 +134,57 @@ public class Functions
 
             foreach (var reference in cell.references)
             {
-                // last cell wins on duplicate references; adjust if you need first-wins instead
                 index[reference] = cell;
             }
         }
         return index;
     }
 
+    public static List<CellReferenceMap> BuildCellReferenceMap(List<Cell> cells, bool verbose)
+    {
+        var totalCells = cells.Count;
+        var count = 1;
+
+        var map = new Dictionary<(string?, string?), CellReferenceMap>();
+
+        foreach (var cell in cells)
+        {
+            if (cell.references == null) continue;
+
+            foreach (var reference in cell.references)
+            {
+                var key = (cell.id, reference);
+
+                if (!map.TryGetValue(key, out var entry))
+                {
+                    entry = new CellReferenceMap
+                    {
+                        cell_id = cell.id,
+                        reference_id = reference,
+                        quantity = 1
+                    };
+                    map[key] = entry;
+                }
+                else
+                {
+                    entry.quantity++;
+                }
+            }
+
+            if (verbose) Console.Write($"\rCells completed: {count}/{totalCells}");
+            count++;
+        }
+
+        return map.Values.ToList();
+    }
+
     public static void AddCellLocationInfoToNPC(Npc npc, Dictionary<string, Cell> referenceIndex)
     {
-        if (referenceIndex.TryGetValue(npc.id, out var cell))
+        if (npc.id!=null &&referenceIndex.TryGetValue(npc.id, out var cell))
         {
             npc.region = cell.region;
             npc.cell = cell.name;
+            npc.cell_id = cell.id;
             npc.location = cell.location ?? cell.region;
             npc.sub_location = cell.sub_location;
         }
