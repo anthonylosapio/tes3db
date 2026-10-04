@@ -37,7 +37,9 @@ public class FileReader
         string outputWeapon = "weapon";
         string outputHeader = "header";
 
-        List<Npc> npcs = new List<Npc>();
+        string outputCellReferenceMap = "cellreferencemap";
+
+        List <Npc> npcs = new List<Npc>();
         List<Cell> cells = new List<Cell>();
         List<Dialogue> dialogues = new List<Dialogue>();
         List<DialogueInfo> dialogueInfos = new List<DialogueInfo>();
@@ -175,7 +177,7 @@ public class FileReader
                                 {
                                     var existingNpc = npcs.FirstOrDefault(n => n.id == npc.id);
                                     //if the npc was added from npc.json, it will not have an expansion assigned. Assign it now.
-                                    if (existingNpc.expansion == null) existingNpc.expansion = expansionNames[expansionIndex];
+                                    if (existingNpc?.expansion == null) existingNpc?.expansion = expansionNames[expansionIndex];
                                 }
                                 break;
 
@@ -412,7 +414,9 @@ public class FileReader
 
         //populate location, expansion, race, class & faction information for NPCs
         int npcTotal = npcs.Count;
+        int containerCount = containers.Count;
         int npcCount = 0;
+
         if (verbose) Console.WriteLine("Adding race info to NPCs...");
         foreach (var npc in npcs)
         {
@@ -443,7 +447,7 @@ public class FileReader
 
         npcCount = 0;
         if (verbose) Console.WriteLine("");
-        if (verbose) Console.WriteLine("Adding Cell, Region, & Location to NPCs & Containers...");
+        if (verbose) Console.WriteLine("Adding Cell, Region, & Location to NPCs...");
 
         var cellRefExpansionDictionary = new Dictionary<string, Dictionary<string, Cell>>();
         foreach (var expansion in expansionNames)
@@ -453,17 +457,17 @@ public class FileReader
         }
         foreach (var npc in npcs)
         {
-            Functions.AddCellLocationInfoToNPC(npc, cellRefExpansionDictionary[npc.expansion]);
+            if(npc.expansion!=null) Functions.AddCellLocationInfoToNPC(npc, cellRefExpansionDictionary[npc.expansion]);
             npcCount++;
             if (verbose) Console.Write($"\r {npc.expansion}: {npcCount}/{npcTotal}");
         }
-        foreach (var container in containers)
-        {
-            Functions.AddCellInfoToContainer(container, cellRefExpansionDictionary[container.expansion]);
-            npcCount++;
-            if (verbose) Console.Write($"\r {container.expansion}: {npcCount}/{npcTotal}");
-        }
+        if (verbose) Console.WriteLine("");
+        
+        if (verbose) Console.WriteLine("Generating Cell Reference Map...");
+        var cellReferenceMap = Functions.BuildCellReferenceMap(cells, verbose);
+        if (verbose) Console.WriteLine("");
 
+        //empty cell references to save space
 
         //adding a "None" faction to the faction list
         factions.Add(new Faction { id = "None", name = "None" });
@@ -474,13 +478,13 @@ public class FileReader
             foreach (var npc in npcs)
             {
                 if (npc.location == "None" && verbose) Console.WriteLine("CellName & Region mssing - " + npc.id);
-                if (npc.data.stats.attributes == null && verbose) Console.WriteLine($"Attributes missing - {npc.id}");
-                if (npc.data.stats.skills == null && verbose) Console.WriteLine($"Skills missing - " + npc.id);
+                if (npc.data?.stats?.attributes == null && verbose) Console.WriteLine($"Attributes missing - {npc.id}");
+                if (npc.data?.stats?.skills == null && verbose) Console.WriteLine($"Skills missing - " + npc.id);
                 if (npc.expansion == null && verbose) Console.WriteLine($"Expansion missing - " + npc.id);
             }
 
             // Remove objects from list that we don't want to include
-            npcs.RemoveAll(item => item.data.stats.attributes == null);
+            npcs.RemoveAll(item => item.data?.stats?.attributes == null);
             npcs.RemoveAll(item => (item.location == "None"));
         }
 
@@ -513,8 +517,10 @@ public class FileReader
         string outputFileRepairItem = Path.Combine(outputDirectory, $"{prefix}{outputRepairItem}.{fileExtension}");
         string outputFileContainer = Path.Combine(outputDirectory, $"{prefix}{outputContainer}.{fileExtension}");
 
-        object[] listsObject = { npcs, /*dialogues,*/ dialogueInfos, books, miscItems, cells, clothes, enchantings, weapons, spells, armors, effects, alchemies, ingredients, creatures, birthsigns, races, apparatuses, classes, factions, skills, lockpicks, probes, headers, repairItems, containers };
-        string[] tableNames = { outputNpc,/* outputDialogue, */outputDialogueInfo, outputBook, outputMiscItem, outputCell, outputClothing, outputEnchanting, outputWeapon, outputSpell, outputArmor, outputMagicEffect, outputAlchemy, outputIngredient, outputCreature, outputBirthsign, outputRace, outputApparatus, outputClass, outputFaction, outputSkill, outputLockpick, outputProbe, outputHeader, outputRepairItem, outputContainer };
+        string outputFileCellReferenceMap = Path.Combine(outputDirectory, $"{prefix}{outputCellReferenceMap}.{fileExtension}");
+
+        object[] listsObject = { npcs, /*dialogues,*/ dialogueInfos, books, miscItems, cells, clothes, enchantings, weapons, spells, armors, effects, alchemies, ingredients, creatures, birthsigns, races, apparatuses, classes, factions, skills, lockpicks, probes, headers, repairItems, containers, cellReferenceMap };
+        string[] tableNames = { outputNpc,/* outputDialogue, */outputDialogueInfo, outputBook, outputMiscItem, outputCell, outputClothing, outputEnchanting, outputWeapon, outputSpell, outputArmor, outputMagicEffect, outputAlchemy, outputIngredient, outputCreature, outputBirthsign, outputRace, outputApparatus, outputClass, outputFaction, outputSkill, outputLockpick, outputProbe, outputHeader, outputRepairItem, outputContainer, outputCellReferenceMap };
 
         string format = outputFormat.ToLowerInvariant();
         switch (format)
@@ -575,6 +581,7 @@ public class FileReader
                 FileWriter.WriteSql(outputFileRepairItem, repairItems, outputRepairItem, format);
                 FileWriter.WriteSql(outputFileCell, cells, outputCell, format);
                 FileWriter.WriteSql(outputFileContainer, containers, outputContainer, format);
+                FileWriter.WriteSql(outputFileCellReferenceMap, cellReferenceMap, outputCellReferenceMap, format);
 
                 FileWriter.WriteSqlCreateTableFile(Path.Combine(outputDirectory, "tes3db.sql"), listsObject, tableNames, format, "tes3db");
 

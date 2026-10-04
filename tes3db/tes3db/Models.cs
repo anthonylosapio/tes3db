@@ -152,10 +152,7 @@ public class Models
             get
             {
                 if (data == null || data.data_flags == null) return null;
-                if (data.data_flags.Contains("IS_INTERIOR")) return $"{name}";
-                if (!string.IsNullOrEmpty(name)) return $"{name} {JsonSerializer.Serialize(data?.grid)}";
-                if (!string.IsNullOrEmpty(region)) return $"{region} {JsonSerializer.Serialize(data?.grid)}";
-                return null;
+                return (data.data_flags.Contains("IS_INTERIOR")) ? $"{name}" : $"{JsonSerializer.Serialize(data?.grid)}";
             }
         }
         public string? flags { get; set; }
@@ -772,6 +769,7 @@ public class Models
             public int? uses { get; set; }
         }
     }
+    
     public class Probe
     {
         public string? flags { get; set; }
@@ -789,6 +787,7 @@ public class Models
             public int? uses { get; set; }
         }
     }
+    
     public class RepairItem
     {
         public string? flags { get; set; }
@@ -820,8 +819,13 @@ public class Models
         public JsonElement InventoryRaw { get; set; }
         [JsonIgnore]
         public List<InventoryItem> inventory => Functions.GetInventory(InventoryRaw);
-        public string? cell { get; set; }
+    }
 
+    public class CellReferenceMap
+    {
+        public string? cell_id { get; set; }
+        public string? reference_id { get; set; }
+        public int? quantity { get; set; }
     }
     public class Header
     {

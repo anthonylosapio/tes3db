@@ -43,6 +43,7 @@ public class FileWriter
             // Write each record
             foreach (var obj in data)
             {
+                if(obj == null) continue; // Skip null objects
                 List<FieldValueandType> values = GetPropertyValues(obj, typeof(T));
                 var line = new StringBuilder();
 
@@ -90,6 +91,7 @@ public class FileWriter
             counter = 0;
             foreach (var obj in data)
             {
+                if (obj == null) continue; // Skip null objects
                 string queryLine = "(";
                 List<FieldValueandType> values = GetPropertyValues(obj, typeof(T));
                 int c = 0;
@@ -220,7 +222,18 @@ public class FileWriter
                 else if (serializeTypes.Contains(property.PropertyType))
                 {
                     var value = property.GetValue(instance);
-                    string serializedValue = JsonSerializer.Serialize(value);
+                    string serializedValue;
+                    //special case for cells, we want to zero out the references since we already
+                    //generated a cell reference map, this will save space in the database
+                    if (type==typeof(Cell) && property.Name == "references")
+                    {
+                        serializedValue = "[]";
+                    }
+                    else
+                    {
+                        serializedValue = JsonSerializer.Serialize(value);
+                    }
+                    
                     var newFieldValueandType = new FieldValueandType
                     {
                         Value = serializedValue.Replace("\\u0027", "'"),// Replace escaped single quotes with actual single quotes
@@ -393,6 +406,7 @@ public class FileWriter
 
                 foreach (var col in cols)
                 {
+                    if (col.Type == null) continue;
                     string comma = (i < rowLength - 1) ? "," : "";
                     string idCollation = "";
                     if (col.Name == "id")
@@ -423,6 +437,8 @@ public class FileWriter
                 writer.WriteLine("CREATE INDEX `idx_dialogueinfo_topic_id` ON `dialogueinfo` (`dialogue_topic`, `id`);");
                 writer.WriteLine("CREATE INDEX `idx_dialogueinfo_speaker_id` ON `dialogueinfo` (`speaker_id`);");
                 writer.WriteLine("CREATE INDEX `idx_dialogueinfo_id_speaker_id` ON `dialogueinfo` (`id`, `speaker_id`);");
+                writer.WriteLine("CREATE INDEX `idx_cellreferencemap_reference_id` ON `cellreferencemap` (`reference_id`);");
+                writer.WriteLine("CREATE INDEX `idx_cellreferencemap_cell_id` ON `cellreferencemap` (`cell_id`);");
             }
         }
     }
