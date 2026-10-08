@@ -160,11 +160,14 @@ public class FileReader
 
                             case "Cell":
                                 var cell = Functions.DeserializeObject<Cell>(element);
-                                if (!cells.Any(c => c.id == cell.id))
-                                {
-                                    cell.expansion = expansionNames[expansionIndex];
+                                cell.expansion = expansionNames[expansionIndex];
+
+                                // Merge into existing if found, or add new
+                                var existing = cells.Find(c => c.id == cell.id);
+                                if (existing != null && existing.references!=null && cell.references != null)
+                                    existing.references.AddRange(cell.references);
+                                else
                                     cells.Add(cell);
-                                }
                                 break;
                             case "Npc":
                                 var npc = Functions.DeserializeObject<Npc>(element);
@@ -455,6 +458,7 @@ public class FileReader
             var index = Functions.BuildReferenceIndex(cells, expansion);
             cellRefExpansionDictionary[expansion] = index;
         }
+
         foreach (var npc in npcs)
         {
             if(npc.expansion!=null) Functions.AddCellLocationInfoToNPC(npc, cellRefExpansionDictionary[npc.expansion]);
@@ -463,11 +467,10 @@ public class FileReader
         }
         if (verbose) Console.WriteLine("");
         
+        //Generate the cell reference map
         if (verbose) Console.WriteLine("Generating Cell Reference Map...");
         var cellReferenceMap = Functions.BuildCellReferenceMap(cells, verbose);
         if (verbose) Console.WriteLine("");
-
-        //empty cell references to save space
 
         //adding a "None" faction to the faction list
         factions.Add(new Faction { id = "None", name = "None" });

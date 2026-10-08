@@ -159,10 +159,7 @@ public class Models
         public string? name { get; set; }
         public CellData? data { get; set; }
         public string? region { get; set; }
-        [JsonPropertyName("references")]
-        public JsonElement referencesRaw { get; set; }
-        [JsonIgnore]
-        public List<string>? references => Functions.GetCellRefs(referencesRaw);
+        public List<CellReference>? references { get; set; }
         public string? expansion { get; set; }
         public class CellData {
             [JsonPropertyName("flags")]
@@ -191,6 +188,42 @@ public class Models
                 return null;
             }
         }
+    }
+
+    public class CellReference
+    {
+        public string? ref_id
+        {
+            get
+            {
+                return (destination != null && destination.cell != null) ? destination.cell : id;
+            }
+        }
+        public string? id { get; set; }
+        public string? owner { get; set; }
+        public int? lock_level { get; set; }
+        public string? key { get; set; }
+        public string? trap { get; set; }
+        public string? owner_faction { get; set; }
+        public long? owner_faction_rank { get; set; }
+        public Destination? destination { get; set; }
+        public class Destination
+        {
+            public string? cell { get; set; }
+        }
+    }
+
+    public class CellReferenceMap
+    {
+        public string? cell_id { get; set; }
+        public string? reference_id { get; set; }
+        public int? quantity { get; set; }
+        public string? owner { get; set; }
+        public int? lock_level { get; set; }
+        public string? key { get; set; }
+        public string? trap { get; set; }
+        public string? owner_faction { get; set; }
+        public long? owner_faction_rank { get; set; }
     }
 
     public class FieldValueandType
@@ -821,12 +854,6 @@ public class Models
         public List<InventoryItem> inventory => Functions.GetInventory(InventoryRaw);
     }
 
-    public class CellReferenceMap
-    {
-        public string? cell_id { get; set; }
-        public string? reference_id { get; set; }
-        public int? quantity { get; set; }
-    }
     public class Header
     {
         public string? flags { get; set; }

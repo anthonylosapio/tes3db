@@ -134,7 +134,7 @@ public class Functions
 
             foreach (var reference in cell.references)
             {
-                index[reference] = cell;
+                if(reference.id!=null) index[reference.id] = cell;
             }
         }
         return index;
@@ -153,15 +153,21 @@ public class Functions
 
             foreach (var reference in cell.references)
             {
-                var key = (cell.id, reference);
+                var key = (cell.id, reference.ref_id);
 
                 if (!map.TryGetValue(key, out var entry))
                 {
                     entry = new CellReferenceMap
                     {
                         cell_id = cell.id,
-                        reference_id = reference,
-                        quantity = 1
+                        reference_id = reference.ref_id,
+                        quantity = 1,
+                        owner = reference.owner,
+                        lock_level = reference.lock_level,
+                        key = reference.key,
+                        trap = reference.trap,
+                        owner_faction = reference.owner_faction,
+                        owner_faction_rank = reference.owner_faction_rank,
                     };
                     map[key] = entry;
                 }
