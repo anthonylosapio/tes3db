@@ -418,52 +418,86 @@ public class FileReader
         //populate location, expansion, race, class & faction information for NPCs
         int npcTotal = npcs.Count;
         int containerCount = containers.Count;
-        int npcCount = 0;
+        int counter = 0;
 
         if (verbose) Console.WriteLine("Adding race info to NPCs...");
         foreach (var npc in npcs)
         {
             Functions.AddRaceInfoToNPC(npc, races);
-            npcCount++;
-            if (verbose) Console.Write($"\r {npcCount}/{npcTotal}");
+            counter++;
+            if (verbose) Console.Write($"\r {counter}/{npcTotal}");
         }
 
-        npcCount = 0;
+        counter = 0;
         if (verbose) Console.WriteLine("");
         if (verbose) Console.WriteLine("Adding Class info to NPCs...");
         foreach (var npc in npcs)
         {
             Functions.AddClassInfoToNPC(npc, classes);
-            npcCount++;
-            if (verbose) Console.Write($"\r {npcCount}/{npcTotal}");
+            counter++;
+            if (verbose) Console.Write($"\r {counter}/{npcTotal}");
         }
 
-        npcCount = 0;
+        counter = 0;
         if (verbose) Console.WriteLine("");
         if (verbose) Console.WriteLine("Adding Faction info to NPCs...");
         foreach (var npc in npcs)
         {
             Functions.AddFactionInfoToNPC(npc, factions);
-            npcCount++;
-            if (verbose) Console.Write($"\r {npcCount}/{npcTotal}");
+            counter++;
+            if (verbose) Console.Write($"\r {counter}/{npcTotal}");
         }
+        if (verbose) Console.WriteLine("");
+        counter = 0;
+        //add Region for cells missing region
+        //take a couple passes to account for nested cells
+        if (verbose) Console.WriteLine($"Addeding region to interior cells");
+        counter = 0;
+        int previousTotal = 1;
+        int passes = 0;
+        while (counter != previousTotal)
+        {
+            previousTotal = counter;
+            var regionDictionary = Functions.BuilCellRegionDictionary(cells);
 
-        npcCount = 0;
+            foreach(var cell in cells.Where(c => string.IsNullOrEmpty(c.region)))
+            {
+                if (cell.id != null && regionDictionary.TryGetValue(cell.id, out var c))
+                {
+                    counter++;
+                    if (verbose) Console.Write($"\r {counter} cells");
+                    cell.region = c.region;
+                }
+            }
+            passes++;
+            Console.WriteLine($"Pass {passes} complete. {counter} cells updated.");
+        }
+        if (verbose) Console.WriteLine("");
+        //foreach(var cell in cells.Where(c => string.IsNullOrEmpty(c.region)))
+        //{
+        //    if(cell.expansion != null && cell.id!=null && cellRefExpansionDictionary[cell.expansion].TryGetValue(cell.id, out var c))
+        //    {
+        //        counter++;
+        //        if(verbose) Console.Write($"\r Added region to {counter} cells");
+        //        cell.region = c.region;
+        //    }
+
+        //}
         if (verbose) Console.WriteLine("");
         if (verbose) Console.WriteLine("Adding Cell, Region, & Location to NPCs...");
 
+        //Dictionary<expansion, Dictionary<cell.reference.ref_id, Cell>>
         var cellRefExpansionDictionary = new Dictionary<string, Dictionary<string, Cell>>();
         foreach (var expansion in expansionNames)
         {
             var index = Functions.BuildReferenceIndex(cells, expansion);
             cellRefExpansionDictionary[expansion] = index;
         }
-
         foreach (var npc in npcs)
         {
             if(npc.expansion!=null) Functions.AddCellLocationInfoToNPC(npc, cellRefExpansionDictionary[npc.expansion]);
-            npcCount++;
-            if (verbose) Console.Write($"\r {npc.expansion}: {npcCount}/{npcTotal}");
+            counter++;
+            if (verbose) Console.Write($"\r {npc.expansion}: {counter}/{npcTotal}");
         }
         if (verbose) Console.WriteLine("");
         

@@ -134,7 +134,23 @@ public class Functions
 
             foreach (var reference in cell.references)
             {
-                if(reference.id!=null) index[reference.id] = cell;
+                if(reference.ref_id!=null) index[reference.ref_id] = cell;
+            }
+        }
+        return index;
+    }
+
+    public static Dictionary<string, Cell> BuilCellRegionDictionary(List<Cell> cells)
+    {
+        var index = new Dictionary<string, Cell>();
+        foreach (var cell in cells.Where(c => !string.IsNullOrEmpty(c.region)))
+        {
+            if (cell.references == null)
+                continue;
+
+            foreach (var reference in cell.references)
+            {
+                if (reference.ref_id != null) index[reference.ref_id] = cell;
             }
         }
         return index;
