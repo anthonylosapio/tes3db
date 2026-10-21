@@ -854,6 +854,20 @@ public class Models
         public List<InventoryItem> inventory => Functions.GetInventory(InventoryRaw);
     }
 
+    public class LeveledItem
+    {
+        public string? flags { get; set; }
+        public string? id { get; set; }
+        public string? leveled_item_flags { get; set; }
+        public int? chance_none { get; set; }
+        public string? expansion { get; set; }
+
+        [JsonPropertyName("items")]
+        public JsonElement InventoryRaw { get; set; }
+        [JsonIgnore]
+        public List<InventoryItem> items => Functions.GetInventory(InventoryRaw);
+    }
+
     public class Header
     {
         public string? flags { get; set; }
