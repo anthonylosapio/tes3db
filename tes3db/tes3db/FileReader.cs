@@ -22,11 +22,12 @@ public class FileReader
         string outputContainer = "container";
         string outputCreature = "creature";
         string outputDialogueInfo = "dialogueinfo";
-        string outputMagicEffect = "magiceffect";
         string outputEnchanting = "enchanting";
         string outputFaction = "faction";
         string outputIngredient = "ingredient";
+        string outputLeveledItem = "levelleditem";
         string outputLockpick = "lockpick";
+        string outputMagicEffect = "magiceffect";
         string outputMiscItem = "miscitem";
         string outputNpc = "npc";
         string outputProbe = "probe";
@@ -65,6 +66,7 @@ public class FileReader
         List<Header> headers = new List<Header>();
         List<RepairItem> repairItems = new List<RepairItem>();
         List<Container> containers = new List<Container>();
+        List<LeveledItem> leveledItems = new List<LeveledItem>();
 
         //used to populate the topic of DialogueInfo. DialogInfo related to a specific topic appear of Dialogue object
         string DialogueTopic = "";
@@ -274,6 +276,17 @@ public class FileReader
                                     alchemies.Add(alchemy);
                                 }
                                 break;
+                            case "LeveledItem":
+                                var leveledItem = Functions.DeserializeObject<LeveledItem>(element);
+                                int idx = leveledItems.FindIndex(li => li.id == leveledItem.id);
+                                if (idx >= 0)
+                                    leveledItems[idx] = leveledItem;     // replace
+                                else
+                                {
+                                    leveledItem.expansion = expansionNames[expansionIndex];
+                                    leveledItems.Add(leveledItem);      // new
+                                }
+                                break;
                             case "Ingredient":
                                 var ingredient = Functions.DeserializeObject<Ingredient>(element);
                                 if (!ingredients.Any(i => i.id == ingredient.id))
@@ -404,7 +417,7 @@ public class FileReader
                 Console.WriteLine($" Factions:     {factions.Count,10} | Ingredients:  {ingredients.Count,10} | Lockpicks:    {lockpicks.Count,10}");
                 Console.WriteLine($" MagicEffects: {effects.Count,10} | MiscItems:    {miscItems.Count,10} | Probes:       {probes.Count,10}");
                 Console.WriteLine($" Races:        {races.Count,10} | RepairItems:  {repairItems.Count,10} | Skills:       {skills.Count,10}");
-                Console.WriteLine($" Spells:       {spells.Count,10} | Containers:   {containers.Count,10}");
+                Console.WriteLine($" Spells:       {spells.Count,10} | Containers:   {containers.Count,10} | LeveledItems: {leveledItems.Count,10}");
             }
             expansionIndex++;
         }
@@ -448,7 +461,7 @@ public class FileReader
             if (verbose) Console.Write($"\r {counter}/{npcTotal}");
         }
         if (verbose) Console.WriteLine("");
-        counter = 0;
+        
         //add Region for cells missing region
         //take a couple passes to account for nested cells
         if (verbose) Console.WriteLine($"Addeding region to interior cells");
@@ -473,20 +486,10 @@ public class FileReader
             Console.WriteLine($"Pass {passes} complete. {counter} cells updated.");
         }
         if (verbose) Console.WriteLine("");
-        //foreach(var cell in cells.Where(c => string.IsNullOrEmpty(c.region)))
-        //{
-        //    if(cell.expansion != null && cell.id!=null && cellRefExpansionDictionary[cell.expansion].TryGetValue(cell.id, out var c))
-        //    {
-        //        counter++;
-        //        if(verbose) Console.Write($"\r Added region to {counter} cells");
-        //        cell.region = c.region;
-        //    }
-
-        //}
+        
         if (verbose) Console.WriteLine("");
         if (verbose) Console.WriteLine("Adding Cell, Region, & Location to NPCs...");
 
-        //Dictionary<expansion, Dictionary<cell.reference.ref_id, Cell>>
         var cellRefExpansionDictionary = new Dictionary<string, Dictionary<string, Cell>>();
         foreach (var expansion in expansionNames)
         {
@@ -541,6 +544,7 @@ public class FileReader
         string outputFileMagicEffect = Path.Combine(outputDirectory, $"{prefix}{outputMagicEffect}.{fileExtension}");
         string outputFileAlchemy = Path.Combine(outputDirectory, $"{prefix}{outputAlchemy}.{fileExtension}");
         string outputFileIngredient = Path.Combine(outputDirectory, $"{prefix}{outputIngredient}.{fileExtension}");
+        string outputFileLeveledItem = Path.Combine(outputDirectory, $"{prefix}{outputLeveledItem}.{fileExtension}");
         string outputFileCreature = Path.Combine(outputDirectory, $"{prefix}{outputCreature}.{fileExtension}");
         string outputFileBirthsign = Path.Combine(outputDirectory, $"{prefix}{outputBirthsign}.{fileExtension}");
         string outputFileRace = Path.Combine(outputDirectory, $"{prefix}{outputRace}.{fileExtension}");
@@ -556,8 +560,8 @@ public class FileReader
 
         string outputFileCellReferenceMap = Path.Combine(outputDirectory, $"{prefix}{outputCellReferenceMap}.{fileExtension}");
 
-        object[] listsObject = { npcs, /*dialogues,*/ dialogueInfos, books, miscItems, cells, clothes, enchantings, weapons, spells, armors, effects, alchemies, ingredients, creatures, birthsigns, races, apparatuses, classes, factions, skills, lockpicks, probes, headers, repairItems, containers, cellReferenceMap };
-        string[] tableNames = { outputNpc,/* outputDialogue, */outputDialogueInfo, outputBook, outputMiscItem, outputCell, outputClothing, outputEnchanting, outputWeapon, outputSpell, outputArmor, outputMagicEffect, outputAlchemy, outputIngredient, outputCreature, outputBirthsign, outputRace, outputApparatus, outputClass, outputFaction, outputSkill, outputLockpick, outputProbe, outputHeader, outputRepairItem, outputContainer, outputCellReferenceMap };
+        object[] listsObject = { npcs, /*dialogues,*/ dialogueInfos, books, miscItems, cells, clothes, enchantings, weapons, spells, armors, effects, alchemies, ingredients, creatures, birthsigns, races, apparatuses, classes, factions, skills, lockpicks, probes, headers, repairItems, containers, cellReferenceMap, leveledItems };
+        string[] tableNames = { outputNpc,/* outputDialogue, */outputDialogueInfo, outputBook, outputMiscItem, outputCell, outputClothing, outputEnchanting, outputWeapon, outputSpell, outputArmor, outputMagicEffect, outputAlchemy, outputIngredient, outputCreature, outputBirthsign, outputRace, outputApparatus, outputClass, outputFaction, outputSkill, outputLockpick, outputProbe, outputHeader, outputRepairItem, outputContainer, outputCellReferenceMap, outputLeveledItem };
 
         string format = outputFormat.ToLowerInvariant();
         switch (format)
@@ -589,6 +593,7 @@ public class FileReader
                 FileWriter.WriteCsv(outputFileRepairItem, repairItems, includeColumnHeadings, format);
                 FileWriter.WriteCsv(outputFileCell, cells, includeColumnHeadings, format);
                 FileWriter.WriteCsv(outputFileContainer, containers, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileLeveledItem, leveledItems, includeColumnHeadings, format);
                 break;
             case "mysql":
             case "postgres":
@@ -618,6 +623,7 @@ public class FileReader
                 FileWriter.WriteSql(outputFileRepairItem, repairItems, outputRepairItem, format);
                 FileWriter.WriteSql(outputFileCell, cells, outputCell, format);
                 FileWriter.WriteSql(outputFileContainer, containers, outputContainer, format);
+                FileWriter.WriteSql(outputFileLeveledItem, leveledItems, outputLeveledItem, format);
                 FileWriter.WriteSql(outputFileCellReferenceMap, cellReferenceMap, outputCellReferenceMap, format);
 
                 FileWriter.WriteSqlCreateTableFile(Path.Combine(outputDirectory, "tes3db.sql"), listsObject, tableNames, format, "tes3db");

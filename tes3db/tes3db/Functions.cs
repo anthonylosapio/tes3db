@@ -34,8 +34,18 @@ public class Functions
             foreach (JsonElement array in element.EnumerateArray())
             {
                 InventoryItem inventoryItem = new InventoryItem();
-                inventoryItem.quantity = array[0].GetInt32();
-                inventoryItem.id = array[1].GetString();
+                if (array[0].ValueKind == JsonValueKind.Number)
+                {
+                    inventoryItem.quantity = array[0].GetInt32();
+                    inventoryItem.id = array[1].GetString();
+                }
+                else
+                {
+                    inventoryItem.quantity = array[1].GetInt32();
+                    inventoryItem.id = array[0].GetString();
+                }
+                
+                
                 inventory.Add(inventoryItem);
             }
         }
