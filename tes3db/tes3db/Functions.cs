@@ -34,8 +34,18 @@ public class Functions
             foreach (JsonElement array in element.EnumerateArray())
             {
                 InventoryItem inventoryItem = new InventoryItem();
-                inventoryItem.quantity = array[0].GetInt32();
-                inventoryItem.id = array[1].GetString();
+                if (array[0].ValueKind == JsonValueKind.Number)
+                {
+                    inventoryItem.quantity = array[0].GetInt32();
+                    inventoryItem.id = array[1].GetString();
+                }
+                else
+                {
+                    inventoryItem.quantity = array[1].GetInt32();
+                    inventoryItem.id = array[0].GetString();
+                }
+                
+                
                 inventory.Add(inventoryItem);
             }
         }
@@ -134,7 +144,23 @@ public class Functions
 
             foreach (var reference in cell.references)
             {
-                index[reference] = cell;
+                if(reference.ref_id!=null) index[reference.ref_id] = cell;
+            }
+        }
+        return index;
+    }
+
+    public static Dictionary<string, Cell> BuilCellRegionDictionary(List<Cell> cells)
+    {
+        var index = new Dictionary<string, Cell>();
+        foreach (var cell in cells.Where(c => !string.IsNullOrEmpty(c.region)))
+        {
+            if (cell.references == null)
+                continue;
+
+            foreach (var reference in cell.references)
+            {
+                if (reference.ref_id != null) index[reference.ref_id] = cell;
             }
         }
         return index;
@@ -153,15 +179,21 @@ public class Functions
 
             foreach (var reference in cell.references)
             {
-                var key = (cell.id, reference);
+                var key = (cell.id, reference.ref_id);
 
                 if (!map.TryGetValue(key, out var entry))
                 {
                     entry = new CellReferenceMap
                     {
                         cell_id = cell.id,
-                        reference_id = reference,
-                        quantity = 1
+                        reference_id = reference.ref_id,
+                        quantity = 1,
+                        owner = reference.owner,
+                        lock_level = reference.lock_level,
+                        key = reference.key,
+                        trap = reference.trap,
+                        owner_faction = reference.owner_faction,
+                        owner_faction_rank = reference.owner_faction_rank,
                     };
                     map[key] = entry;
                 }

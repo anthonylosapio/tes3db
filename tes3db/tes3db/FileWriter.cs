@@ -140,12 +140,14 @@ public class FileWriter
                 typeof(double?),
                 typeof(int[]),
                 typeof(string[]),
+                typeof(long?),
                 typeof(List<InventoryItem>),
                 typeof(List<Effect>),
                 typeof(List<string>),
                 typeof(List<Reaction>),
                 typeof(List<Requirement>),
                 typeof(List<TravelDestination>),
+                typeof(List<CellReference>),
             };
         var ignoreTypes = new HashSet<Type>
             {
@@ -185,7 +187,8 @@ public class FileWriter
             typeof(string),
             typeof(int?),
             typeof(bool?),
-            typeof(double?)
+            typeof(double?),
+            typeof(long?),
         };
         //Types that will be started as serialized JSON strings in the SQL output
         var serializeTypes = new HashSet<Type>
@@ -198,6 +201,7 @@ public class FileWriter
             typeof(List<Reaction>),
             typeof(List<Requirement>),
             typeof(List<TravelDestination>),
+            typeof(List<CellReference>),
         };
 
         var ignoreTypes = new HashSet<Type>
@@ -258,7 +262,7 @@ public class FileWriter
 
     private static string FormatValueForSql(FieldValueandType obj)
     {
-        if(obj.Type == typeof(int?))
+        if(obj.Type == typeof(int?) || obj.Type == typeof(long?) || obj.Type == typeof(long))
         {
             return obj.Value?.ToString() ?? "NULL";
         }
@@ -272,15 +276,15 @@ public class FileWriter
         return $"'{s.Replace("'", "''")}'";
     }
 
-    private static string TypeToSql(Type t, string sqlType, int max)
+    private static string TypeToSql(Type t, string sqlType, long max)
     {
         switch (sqlType.ToLowerInvariant())
         {
             case "mysql":
-                if (t == typeof(int?) || t == typeof(long)) { 
+                if (t == typeof(int?) || t == typeof(long?) || t == typeof(long)) { 
                     if(max < 128) return "TINYINT";
                     if (max < 32768) return "SMALLINT";
-                    return "INT"; 
+                    return "BIGINT"; 
                 }
                 if (t == typeof(bool?)) return "BOOL";
                 if (t == typeof(double?) || t == typeof(float)) return "DOUBLE";
@@ -291,13 +295,13 @@ public class FileWriter
                 }
                 return "TEXT";
             case "postgres":
-                if (t == typeof(int?) || t == typeof(long)) return "BIGINT";
+                if (t == typeof(int?) || t == typeof(long?) || t == typeof(long)) return "BIGINT";
                 if (t == typeof(bool?)) return "BOOLEAN";
                 if (t == typeof(double?) || t == typeof(float)) return "DOUBLE PRECISION";
                 if (t == typeof(string)) return "VARCHAR(255)"; // will be updated later
                 return "TEXT";
             case "sqlite":
-                if (t == typeof(int?) || t == typeof(long)) return "INTEGER";
+                if (t == typeof(int?) || t == typeof(long?) || t == typeof(long)) return "INTEGER";
                 if (t == typeof(bool?)) return "INTEGER"; // no native BOOLEAN; 0/1 convention
                 if (t == typeof(double?) || t == typeof(float)) return "REAL";
                 if (t == typeof(string)) return "TEXT";
@@ -340,18 +344,18 @@ public class FileWriter
                 //iterate through the values of each object and store the maximum length/size of each property
                 //Type type = list.GetType();
                 Type t = list.GetType().GetGenericArguments()[0];
-                List<int> max = new List<int>();
+                List<long> max = new List<long>();
 
                 foreach (var obj in (IEnumerable)list)
                 {
                     List<FieldValueandType> values = GetPropertyValues(obj, t);
-                    int j = 0;
+                    var j = 0;
                     foreach (var value in values)
                     {
                         switch (value.Value)
                         {
                             case string s:
-                                int length = s.Length;
+                                var length = s.Length;
                                 if (max.Count > j)
                                 {
                                     if (max[j] < length)
@@ -375,6 +379,19 @@ public class FileWriter
                                 else
                                 {
                                     max.Add(n);
+                                }
+                                break;
+                            case long l:
+                                if (max.Count > j)
+                                {
+                                    if (max[j] < l)
+                                    {
+                                        max[j] = l;
+                                    }
+                                }
+                                else
+                                {
+                                    max.Add(l);
                                 }
                                 break;
                             case bool b:
