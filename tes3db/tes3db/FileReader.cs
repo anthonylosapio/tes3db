@@ -184,6 +184,24 @@ public class FileReader
                                     //if the npc was added from npc.json, it will not have an expansion assigned. Assign it now.
                                     if (existingNpc?.expansion == null) existingNpc?.expansion = expansionNames[expansionIndex];
                                 }
+                                //appending travel as a service if destinations exist
+                                if (npc.ai_data != null && npc.travel_destinations != null)
+                                {
+                                    if (npc.ai_data.services != null)
+                                    {
+                                        if (!npc.ai_data.services.Contains("OFFERS_TRAVEL"))
+                                        {
+                                            if(npc.ai_data.services.Length > 1) 
+                                            {
+                                                npc.ai_data.services += "| OFFERS_TRAVEL";
+                                            }
+                                            else
+                                            {
+                                                npc.ai_data.services = "OFFERS_TRAVEL";
+                                            }
+                                        }
+                                    }
+                                }
                                 break;
 
                             case "Dialogue":
