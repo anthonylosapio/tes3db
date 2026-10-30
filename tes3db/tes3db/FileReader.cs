@@ -25,7 +25,7 @@ public class FileReader
         string outputEnchanting = "enchanting";
         string outputFaction = "faction";
         string outputIngredient = "ingredient";
-        string outputLeveledItem = "levelleditem";
+        string outputLeveledItem = "leveleditem";
         string outputLockpick = "lockpick";
         string outputMagicEffect = "magiceffect";
         string outputMiscItem = "miscitem";
@@ -185,7 +185,7 @@ public class FileReader
                                     if (existingNpc?.expansion == null) existingNpc?.expansion = expansionNames[expansionIndex];
                                 }
                                 //appending travel as a service if destinations exist
-                                if (npc.ai_data != null && npc.travel_destinations != null)
+                                if (npc.ai_data != null && npc.travel_destinations != null && npc.travel_destinations.Count > 0)
                                 {
                                     if (npc.ai_data.services != null)
                                     {

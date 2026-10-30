@@ -1,5 +1,7 @@
 ﻿namespace tes3db;
 
+using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.Data.Sqlite;
 using System.Diagnostics;
 
 class Program
@@ -20,26 +22,37 @@ class Program
 
         bool dbExists = File.Exists(dbFilePath) ? true : false;
 
-        // includeColumnHeadings
+        // --no-headers
         // true/false
         // only applicable to csv/tsv output
         bool includeColumnHeadings = true;
 
-        // outputFormat
+        // -f --format
         // string
-        // csv tsv mysql postgres
+        // csv tsv mysql postgres sqlite
         string outputFormat = "sqlite";
         string fileExtension = "sql";
         
-        // noSkip
+        // --skip
         // true/false
         // if false, NPCs missing Cell, Region, Attribute or Skill poperties will be excluded from output
         bool noSkip = true;
 
-        // verbose
+        // -v --verbose
         // true/false
         // if true, more status updates are written to the console while the process runs
         bool verbose = false;
+
+        // --no-serve
+        // true/false
+        // if true, starts a local read-only REST API over the SQLite database after it is ready
+        bool serve = true;
+
+        // --host
+        string host = "127.0.0.1";
+
+        // --port
+        int port = 5000;
 
         // Parse command-line arguments
         for (int i = 0; i < args.Length; i++)
@@ -66,6 +79,7 @@ class Program
                     break;
 
                 case "--verbose":
+                case "-v":
                     verbose = true;
                     break;
 
@@ -73,6 +87,20 @@ class Program
                 case "-p":
                     if (i + 1 < args.Length)
                         prefix = args[++i];
+                    break;
+
+                case "--no-serve":
+                    serve = false;
+                    break;
+
+                case "--host":
+                    if (i + 1 < args.Length)
+                        host = args[++i];
+                    break;
+
+                case "--port":
+                    if (i + 1 < args.Length && int.TryParse(args[++i], out var parsedPort))
+                        port = parsedPort;
                     break;
 
                 case "--help":
@@ -162,7 +190,32 @@ class Program
                 }
             }
         }
-        
+
+        if (serve)
+        {
+            if (outputFormat != "sqlite")
+            {
+                Console.WriteLine("--serve requires the sqlite format (the default).");
+                return;
+            }
+            if (!File.Exists(dbFilePath))
+            {
+                Console.WriteLine($"SQLite database not found at: {dbFilePath}");
+                return;
+            }
+
+            //create read-only connection string to the SQLite database
+            AppConfiguration.DatabaseConnectionString = new SqliteConnectionStringBuilder
+            {
+                DataSource = dbFilePath,
+                Mode = SqliteOpenMode.ReadOnly
+            }.ToString();
+            
+            ApiServer.Run(dbFilePath, host, port, verbose);
+            
+            return;
+        }
+
         sw.Stop();
         Console.WriteLine($"Runtime: {sw.Elapsed}");
     }//end of Main
