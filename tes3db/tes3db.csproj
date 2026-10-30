@@ -21,10 +21,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Include="tes3db\wwwroot\**\*"
-				 Link="wwwroot\%(RecursiveDir)%(Filename)%(Extension)"
-				 CopyToOutputDirectory="PreserveNewest"
-				 CopyToPublishDirectory="PreserveNewest" />
+		<Content Include="tes3db\wwwroot\**\*" Link="wwwroot\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
 	</ItemGroup>
 	
 	<ItemGroup>
@@ -36,12 +33,6 @@
 	<ItemGroup>
 	  <None Remove=".gitignore" />
 	  <None Remove="README.md" />
-	</ItemGroup>
-	
-	<ItemGroup>
-		<!-- Treat everything in these folders as None (not built) -->
-		<None Include="sql\**\*" />
-		<None Include="Site\**\*" />
 	</ItemGroup>
 	
 	<ItemGroup>
