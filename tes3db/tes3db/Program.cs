@@ -1,6 +1,7 @@
 ﻿namespace tes3db;
 
 using Microsoft.AspNetCore.Hosting.Server;
+using Microsoft.Data.Sqlite;
 using System.Diagnostics;
 
 class Program
@@ -202,7 +203,16 @@ class Program
                 Console.WriteLine($"SQLite database not found at: {dbFilePath}");
                 return;
             }
+
+            //create read-only connection string to the SQLite database
+            AppConfiguration.DatabaseConnectionString = new SqliteConnectionStringBuilder
+            {
+                DataSource = dbFilePath,
+                Mode = SqliteOpenMode.ReadOnly
+            }.ToString();
+            
             ApiServer.Run(dbFilePath, host, port, verbose);
+            
             return;
         }
 
