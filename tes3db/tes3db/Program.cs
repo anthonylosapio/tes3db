@@ -202,7 +202,7 @@ class Program
                 Console.WriteLine($"SQLite database not found at: {dbFilePath}");
                 return;
             }
-            //ApiServer.Run(dbFilePath, host, port, verbose);
+            ApiServer.Run(dbFilePath, host, port, verbose);
             return;
         }
 
