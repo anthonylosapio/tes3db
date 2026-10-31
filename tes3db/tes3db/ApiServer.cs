@@ -58,15 +58,14 @@ public class ApiServer
                 command.CommandText = SqlQueries.search_object_query;
                 using var reader = await command.ExecuteReaderAsync();
 
-                var results = new List<object>();
+                var results = new List<SearchObject>();
                 while (await reader.ReadAsync())
                 {
-                    results.Add(new
-                    {
-                        id = reader.GetString(0),
-                        name = reader.GetString(1),
-                        type = reader.GetString(2)
-                    });
+                    results.Add(new SearchObject(
+                        id: reader.GetString(0),
+                        name: reader.GetString(1),
+                        type: reader.GetString(2)
+                    ));
                 }
 
                 return Results.Ok(results);
@@ -91,15 +90,14 @@ public class ApiServer
                 command.CommandText = SqlQueries.header_query;
                 using var reader = await command.ExecuteReaderAsync();
 
-                var results = new List<object>();
+                var results = new List<HeaderObject>();
                 while (await reader.ReadAsync())
                 {
-                    results.Add(new
-                    {
-                        expansion = reader.GetString(0),
-                        author = reader.GetString(1),
-                        description = reader.GetString(2)
-                    });
+                    results.Add(new HeaderObject(
+                        expansion: reader.GetString(0),
+                        author: reader.GetString(1),
+                        description: reader.GetString(2)
+                    ));
                 }
 
                 return Results.Ok(results);
