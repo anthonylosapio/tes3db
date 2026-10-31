@@ -24,16 +24,14 @@ public class ApiServer
         });
         builder.Logging.SetMinimumLevel(verbose ? LogLevel.Information : LogLevel.Warning);
         builder.Services.ConfigureHttpJsonOptions(o => o.SerializerOptions.PropertyNamingPolicy = null);
+        builder.Services.AddProblemDetails();
 
         var app = builder.Build();
         app.Urls.Add($"http://{host}:{port}");
+        app.UseExceptionHandler();
+        app.UseStatusCodePages();
         app.UseDefaultFiles();   // "/" serves wwwroot/index.html
         app.UseStaticFiles();
-        app.UseExceptionHandler(errorApp => errorApp.Run(async ctx =>
-        {
-            ctx.Response.StatusCode = 500;
-            await ctx.Response.WriteAsJsonAsync(new { error = "Internal server error." });
-        }));
 
         app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
@@ -50,69 +48,47 @@ public class ApiServer
     {
 
         public static async Task<IResult> HandleSearch(string connString) {
-            try
-            {
-                using var connection = new SqliteConnection(connString);
-                await connection.OpenAsync();
-                using var command = connection.CreateCommand();
-                command.CommandText = SqlQueries.search_object_query;
-                using var reader = await command.ExecuteReaderAsync();
 
-                var results = new List<SearchObject>();
-                while (await reader.ReadAsync())
-                {
-                    results.Add(new SearchObject(
-                        id: reader.GetString(0),
-                        name: reader.GetString(1),
-                        type: reader.GetString(2)
-                    ));
-                }
+            using var connection = new SqliteConnection(connString);
+            await connection.OpenAsync();
+            using var command = connection.CreateCommand();
+            command.CommandText = SqlQueries.search_object_query;
+            using var reader = await command.ExecuteReaderAsync();
 
-                return Results.Ok(results);
-            }
-            catch (Exception ex)
+            var results = new List<SearchObject>();
+            while (await reader.ReadAsync())
             {
-                return Results.Problem(
-                    detail: ex.Message,
-                    statusCode: 500,
-                    title: "Internal Server Error"
-                );
+                results.Add(new SearchObject(
+                    id: reader.GetString(0),
+                    name: reader.GetString(1),
+                    type: reader.GetString(2)
+                ));
             }
+
+            return Results.Ok(results);
         }
 
         public static async Task<IResult> HandleHeader(string connString)
         {
-            try
-            {
-                using var connection = new SqliteConnection(connString);
-                await connection.OpenAsync();
-                using var command = connection.CreateCommand();
-                command.CommandText = SqlQueries.header_query;
-                using var reader = await command.ExecuteReaderAsync();
 
-                var results = new List<HeaderObject>();
-                while (await reader.ReadAsync())
-                {
-                    results.Add(new HeaderObject(
-                        expansion: reader.GetString(0),
-                        author: reader.GetString(1),
-                        description: reader.GetString(2)
-                    ));
-                }
+            using var connection = new SqliteConnection(connString);
+            await connection.OpenAsync();
+            using var command = connection.CreateCommand();
+            command.CommandText = SqlQueries.header_query;
+            using var reader = await command.ExecuteReaderAsync();
 
-                return Results.Ok(results);
-            }
-            catch (Exception ex)
+            var results = new List<HeaderObject>();
+            while (await reader.ReadAsync())
             {
-                return Results.Problem(
-                    detail: ex.Message,
-                    statusCode: 500,
-                    title: "Internal Server Error"
-                );
+                results.Add(new HeaderObject(
+                    expansion: reader.GetString(0),
+                    author: reader.GetString(1),
+                    description: reader.GetString(2)
+                ));
             }
+
+            return Results.Ok(results);
         }
-
     }
-
-
 }
+
