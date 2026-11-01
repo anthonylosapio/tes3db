@@ -27,6 +27,7 @@ public class ApiServer
         builder.Services.AddProblemDetails();
 
         builder.Services.AddSingleton<IDbConnectionFactory>(new SqliteConnectionFactory(dbFilePath));
+        builder.Services.AddScoped<ICatalogRepository, CatalogRepository>();
 
         var app = builder.Build();
         app.Urls.Add($"http://{host}:{port}");
@@ -37,60 +38,17 @@ public class ApiServer
 
         app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
-        // API endpoint to get a list of all searchable objects in the database
-        app.MapGet("/api/search", () => StaticDispatcher.HandleSearch(AppConfiguration.DatabaseConnectionString));
-        app.MapGet("/api/header", () => StaticDispatcher.HandleHeader(AppConfiguration.DatabaseConnectionString));
+        // API endpoints
+        app.MapGet("/api/search", async (ICatalogRepository repo, CancellationToken ct) =>
+               TypedResults.Ok(await repo.GetSearchObjectsAsync(ct)));
+
+        app.MapGet("/api/header", async (ICatalogRepository repo, CancellationToken ct) =>
+            TypedResults.Ok(await repo.GetHeadersAsync(ct)));
 
         Console.WriteLine($"tes3db API listening on http://{host}:{port}  (Ctrl+C to stop)");
         Console.WriteLine($"Try: http://{host}:{port}/");
         app.Run();
     }
 
-    public static class StaticDispatcher
-    {
-
-        public static async Task<IResult> HandleSearch(string connString) {
-
-            using var connection = new SqliteConnection(connString);
-            await connection.OpenAsync();
-            using var command = connection.CreateCommand();
-            command.CommandText = SqlQueries.search_object_query;
-            using var reader = await command.ExecuteReaderAsync();
-
-            var results = new List<SearchObject>();
-            while (await reader.ReadAsync())
-            {
-                results.Add(new SearchObject(
-                    id: reader.GetString(0),
-                    name: reader.GetString(1),
-                    type: reader.GetString(2)
-                ));
-            }
-
-            return Results.Ok(results);
-        }
-
-        public static async Task<IResult> HandleHeader(string connString)
-        {
-
-            using var connection = new SqliteConnection(connString);
-            await connection.OpenAsync();
-            using var command = connection.CreateCommand();
-            command.CommandText = SqlQueries.header_query;
-            using var reader = await command.ExecuteReaderAsync();
-
-            var results = new List<HeaderObject>();
-            while (await reader.ReadAsync())
-            {
-                results.Add(new HeaderObject(
-                    expansion: reader.GetString(0),
-                    author: reader.GetString(1),
-                    description: reader.GetString(2)
-                ));
-            }
-
-            return Results.Ok(results);
-        }
-    }
 }
 
