@@ -15,7 +15,7 @@ public class ApiServer
         
 
         //Configure and run kestrel web server to serve the API
-        //Empty args so ASP.NET doesn't try to interpret tes3db's own command-line flags
+        //Empty args so ASP.NET doesn't try to interpret the tes3db command-line flags
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions
         {
             Args = Array.Empty<string>(),
@@ -25,6 +25,8 @@ public class ApiServer
         builder.Logging.SetMinimumLevel(verbose ? LogLevel.Information : LogLevel.Warning);
         builder.Services.ConfigureHttpJsonOptions(o => o.SerializerOptions.PropertyNamingPolicy = null);
         builder.Services.AddProblemDetails();
+
+        builder.Services.AddSingleton<IDbConnectionFactory>(new SqliteConnectionFactory(dbFilePath));
 
         var app = builder.Build();
         app.Urls.Add($"http://{host}:{port}");
