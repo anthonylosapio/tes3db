@@ -90,5 +90,7 @@ public static class SqlQueries
 	
 	public const string location_query = "SELECT DISTINCT `expansion`, `location` FROM `npc` ORDER BY `expansion`, `location`";
 
+
+
 }
 

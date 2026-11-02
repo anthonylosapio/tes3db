@@ -30,6 +30,7 @@ public class ApiServer
 
         builder.Services.AddSingleton<IDbConnectionFactory>(new SqliteConnectionFactory(dbFilePath));
         builder.Services.AddScoped<ICatalogRepository, CatalogRepository>();
+        builder.Services.AddScoped<ICatalogService, CatalogService>();
 
         var app = builder.Build();
 
@@ -47,6 +48,9 @@ public class ApiServer
 
         app.MapGet("/api/header", async (ICatalogRepository repo, CancellationToken ct) =>
             TypedResults.Ok(await repo.GetHeadersAsync(ct)));
+
+        app.MapGet("/api/interface", async (ICatalogService service, CancellationToken ct) =>
+            TypedResults.Ok(await service.GetInterfaceObject(ct)));
 
         Console.WriteLine($"tes3db API listening on http://{host}:{port}  (Ctrl+C to stop)");
         Console.WriteLine($"Try: http://{host}:{port}/");
