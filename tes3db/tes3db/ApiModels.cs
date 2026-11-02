@@ -9,7 +9,12 @@ public record SearchObject(string id, string name, string type);
 public record HeaderObject(string expansion, string author, string description);
 
 public class InterfaceObject {
+
+    public string[] GroupBy { get; set; } = ConstantsObject.GROUPBY;
+    public string[] Agg { get; set; } = ConstantsObject.AGG_FUNCTION;
+    public string[] Objects { get; set; } = ConstantsObject.SEARCH_OBJECTS;
     public FiltersObject Filters { get; set; } = new FiltersObject();
+    public SortsObject Sorts { get; set; } = new SortsObject();
 
     public class FiltersObject
     {
@@ -33,6 +38,22 @@ public class InterfaceObject {
         public string[] Specialization { get; set; } = ConstantsObject.SPECIALIZATION;
         public string[] IsPlayable { get; set; } = ConstantsObject.PLAYABLE_FLAG;
         public string[] IsBeastRace { get; set; } = ConstantsObject.BEAST_RACE_FLAG;
+    }
+    public class SortsObject
+    {
+        public string[] SortBy { get; set; } = ConstantsObject.SORTBY;
+        public string[] ItemSort { get; set; } = ConstantsObject.ITEM_SORTBY;
+        public string[] ArmorSort { get; set; } = ConstantsObject.ARMOR_SORTBY;
+        public string[] WeaponSort { get; set; } = ConstantsObject.WEAPON_SORTBY;
+        public string[] SpellSort { get; set; } = ConstantsObject.SPELL_SORTBY;
+        public string[] CreatureSort { get; set; } = ConstantsObject.CREATURE_SORTBY;
+        public string[] MiscItemSort { get; set; } = ConstantsObject.MISCITEM_SORTBY;
+        public string[] ApparatusSort { get; set; } = ConstantsObject.APPARATUS_SORTBY;
+        public string[] ToolSort { get; set; } = ConstantsObject.TOOL_SORTBY;
+        public string[] MagicEffectSort { get; set; } = ConstantsObject.MAGICEFFECT_SORTBY;
+        public string[] ClassSort { get; set; } = ConstantsObject.CLASS_SORTBY;
+        public string[] FactionSort { get; set; } = ConstantsObject.FACTION_SORTBY;
+        public string[] RaceSort { get; set; } = ConstantsObject.RACE_SORTBY;
     }
     /*
             $header = $this->repo->RunSelectQuery(header_query);
@@ -84,8 +105,6 @@ public class InterfaceObject {
                     "Race Sort" => RACE_SORTBY,
                 ],
             ];
-
-
      */
 }
 
