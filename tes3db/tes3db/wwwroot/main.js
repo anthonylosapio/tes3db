@@ -16,12 +16,17 @@ function start() {
 		changeObjectSelect(s);
 		
 
-		const headerTableId = document.getElementById('headerTableId');
-		if (data.Header && headerTableId) {
-			buildHeaderTable(headerTableId, data.Header);
-		}
+		
 		const queryCountId = document.getElementById('queryCountId');
 		if (data.Count && queryCountId) queryCountId.textContent = data.Count.Total
+	});
+
+	callServer("/api/header", function (json) {
+		const data = JSON.parse(json);
+		const headerTableId = document.getElementById('headerTableId');
+		if (data && headerTableId) {
+			buildHeaderTable(headerTableId, data);
+		}
 	});
 
 	// callServer("Posts", "", function (data) {
