@@ -1,10 +1,355 @@
 ﻿<!DOCTYPE html>
-<html>
+
+<html lang="en">
+
 <head>
-    <meta charset="utf-8" />
-    <title>tes3db.com</title>
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+    <meta http-equiv="CACHE-CONTROL" content="NO-CACHE">
+    <title>The Morrowind Database</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" sizes="57x57" href="apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+    <link href="bootstrap.css" rel="stylesheet">
+    <link href="site.css" rel="stylesheet">
+    <script src="trie.js"></script>
+    <script src="functions.js"></script>
+    <script src="main.js"></script>
+    <script>
+			window.onload = function() {
+				start();
+			};
+    </script>
 </head>
-<body>
-    Temporary placeholder file for tes3db.com.  The API is served at /api, and the health check is at /health.
+<body style="background-color: #1a1008;">
+    <div class="container">
+        <!-- BEGIN HEADER ROW -->
+        <div class="row g-1 my-1">
+            <div class="col-12 content content-border p-2">
+                <div class="row">
+                    <div class="col-auto" style="color: #6F541D">
+                        <h1><a class="plain-link" href="index.html">tes3db<span class="title-suffix">.com</span></a></h1>
+                    </div>
+                    <div class="col-auto">
+                        <h3>the Morrowind database</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END HEADER ROW -->
+        <!-- BEGIN MENU ROW -->
+        <div class="row g-1 my-1" id="menuRow">
+            <div class="col content-border content">
+                <div class="row justify-content-center align-items-center gx-1">
+                    <div class="col-auto fw-bold">Show NPCs </div>
+                    <div class="col-auto"><select id="GroupBySelectId"></select></div>
+
+                    <div class="col-auto fw-bold">by</div>
+                    <div class="col-auto"><select id="AggSelectId"></select></div>
+                    <div class="col-auto"><select id="SortBySelectId"></select></div>
+                    <div class="col-auto fw-bold">having at least</div>
+                    <div class="col-auto">
+                        <select id="minNpcSelectId">
+                            <option value="1">1</option>
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
+                    <div class="col-auto fw-bold">NPC(s)</div>
+                    <div class="col-sm-auto">
+                        <button class="btn border w-100 position-relative" style="background-color: #dbac64; font-weight: bold; font-size: 1.1em; margin-top: 2px;" id="getDataButton">
+                            <span class="btn-text">NPC Query</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="row justify-content-center align-items-center">
+                    <div class="col-auto fw-bold"> - OR - </div>
+                </div>
+                <div class="row justify-content-center align-items-center gx-1">
+                    <div class="col-auto fw-bold">List Top </div>
+                    <div class="col-auto">
+                        <select id="NpcLimitSelectId">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="200">200</option>
+                            <option value="500">500</option>
+                        </select>
+                    </div>
+                    <div class="col-auto">
+                        <select id="ObjectSelectId"></select>
+                    </div>
+                    <div class="col-auto fw-bold"> Sorted By </div>
+                    <div class="col-auto">
+                        <select class="sort-element" id="NpcSortSelectId"></select>
+                        <select class="d-none sort-element" id="ItemSortSelectId"></select>
+                        <select class="d-none sort-element" id="ToolSortSelectId"></select>
+                        <select class="d-none sort-element" id="ApparatusSortSelectId"></select>
+                        <select class="d-none sort-element" id="ArmorSortSelectId"></select>
+                        <select class="d-none sort-element" id="CreatureSortSelectId"></select>
+                        <select class="d-none sort-element" id="MiscItemSortSelectId"></select>
+                        <select class="d-none sort-element" id="SpellSortSelectId"></select>
+                        <select class="d-none sort-element" id="WeaponSortSelectId"></select>
+                        <select class="d-none sort-element" id="MagicEffectSortSelectId"></select>
+                        <select class="d-none sort-element" id="ClassSortSelectId"></select>
+                        <select class="d-none sort-element" id="FactionSortSelectId"></select>
+                        <select class="d-none sort-element" id="RaceSortSelectId"></select>
+                    </div>
+                    <div class="col-auto">
+                        <select id="AscDescSelectId">
+                            <option value="DESC">Descending</option>
+                            <option value="ASC">Ascending</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-auto">
+                        <button class="btn border w-100 position-relative" style="background-color: #dbac64; font-weight: bold; font-size: 1.1em; margin-top: 2px;" id="listNPCsButton" data-sort_id="NpcSortSelectId">
+                            <span class="btn-text">Find NPCs</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row justify-content-center align-items-center" id="FilterContainerId">
+                    <div class="col-auto fw-bold">
+                        Filters
+                    </div>
+                </div>
+                <div class="row justify-content-center" id="collapsibleFilterContainer">
+                </div>
+            </div>
+        </div>
+        <!-- END MENU ROW -->
+        <!-- BEGIN RESULTS ROW -->
+        <div class="row g-0 my-1">
+            <div class="col px-0">
+                <div class="content content-border" id="ResultsDiv">
+
+                </div>
+            </div>
+        </div>
+        <!-- END RESULTS ROW -->
+        <!-- BEGIN CONTENT ROW -->
+        <div class="row gx-1 my-1 align-items-stretch">
+            <div class="col-12 col-md-4">
+                <div class="content content-border p-2 h-100" style="position: relative;">
+                    <div id="searchOverlay" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; justify-content: center; align-items: center;"></div>
+                    <div class="row g-0 ">
+                        <div class="col-12 text-center">
+                            <b>Search the database:</b>
+                            <div class="position-relative">
+                                <input type="text" id="objectSearchInput" class="search-input w-100" />
+                                <span id="objectSearchClear" class="position-absolute top-50 end-0 translate-middle-y me-2 d-none" style="cursor: pointer; opacity: 0.5;" data-target="objectSearchInput">&times;</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="g-0" style="position: relative; width: fit-content;">
+                        <div id="searchResultsDiv" style="white-space: nowrap">
+
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-center">searchable items:</div>
+                        <div class="row">
+                            <div class="col-auto">
+                                alchemy
+                            </div>
+                            <div class="col-auto">
+                                apparatus
+                            </div>
+                            <div class="col-auto">
+                                armor
+                            </div>
+                            <div class="col-auto">
+                                birthsigns
+                            </div>
+                            <div class="col-auto">
+                                books
+                            </div>
+                            <div class="col-auto">
+                                npcs
+                            </div>
+                            <div class="col-auto">
+                                cells
+                            </div>
+                            <div class="col-auto">
+                                classes
+                            </div>
+                            <div class="col-auto">
+                                creatures
+                            </div>
+                            <div class="col-auto">
+                                clothing
+                            </div>
+                            <div class="col-auto">
+                                factions
+                            </div>
+                            <div class="col-auto">
+                                ingredients
+                            </div>
+                            <div class="col-auto">
+                                leveled items
+                            </div>
+                            <div class="col-auto">
+                                lockpicks
+                            </div>
+                            <div class="col-auto">
+                                magic effects
+                            </div>
+                            <div class="col-auto">
+                                misc items
+                            </div>
+                            <div class="col-auto">
+                                probes
+                            </div>
+                            <div class="col-auto">
+                                races
+                            </div>
+                            <div class="col-auto">
+                                repair items
+                            </div>
+                            <div class="col-auto">
+                                spells
+                            </div>
+                            <div class="col-auto">
+                                topics
+                            </div>
+                            <div class="col-auto">
+                                weapons
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-8">
+                <div class="content content-border h-100">
+                    <div class="d-flex justify-content-end">
+                        <div class="d-none btn filterBtn past-updates-btn" id="pastUpdatesButtonTop" data-state="show"> show past updates</div>
+                    </div>
+                    <div id="postContainer"></div>
+                    <div class="d-flex justify-content-end">
+                        <div class="btn filterBtn past-updates-btn" id="pastUpdatesButton" data-state="show"> show past updates</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row gx-1 my-1">
+            <div class="col">
+                <div class="content content-border">
+                    <div class="text-center postTitleCol">Data in this database comes from:</div>
+                    <table id="headerTableId"></table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row gx-1 my-1">
+
+            <div class="col-12 col-lg-5">
+                <div class="content content-border p-2 h-100">
+                    <div class="text-center postTitleCol">Most Viewed</div>
+                    <table class="w-100" id="TopListTableId">
+                        <tr><th>Name</th><th>Type</th><th>Views</th></tr>
+                    </table>
+                </div>
+            </div>
+            <div class="col-12 col-lg-7">
+                <div class="content content-border h-100">
+                    <div class="text-center postTitleCol">What is this site?:</div>
+                    <p>
+                        <ul>
+                            <li>This is the other half <a href="https://github.com/anthonylosapio/tes3db/" target="_blank">tes3db</a>, an open source command line tool that converts data from Morrowind game files into a database friendly format.</li>
+                            <li>Data from the original game & DLCs along with the popular landmass mods from <a href="https://www.tamriel-rebuilt.org" target="_blank">Tamriel Rebuilt</a> and <a href="https://www.project-tamriel.com/welcome" target="_blank">Project Tamriel</a> are available here to search and query.</li>
+                            <li>The end goal of <a href="https://github.com/anthonylosapio/tes3db/" target="_blank">tes3db</a> is to create a user-friendly tool that can easily spin up a database of game objects customized to your mod list. Imagine having wiki to reference that was custom tailored to your game.</li>
+                            <li><a href="https://github.com/Greatness7/tes3conv" target="_blank">tes3conv</a> was used to convert the game files to json so that data could be extracted (a future version of tes3db will go directly from .esm files to database).</li>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row gx-1 my-1">
+            <div class="col">
+                <div class="content content-border">
+                    <div class="text-center postTitleCol">How to use this site.</div>
+                    <ul>
+                        <li>Run Query</li>
+                        <ul>
+                            <li>
+                                Select how you want the data to be aggregated:
+                                <ul>
+                                    <li> AVG - Results will by sorted by the averages value for the group</li>
+                                    <li> SUM - Results sorted by the sum total for the group</li>
+                                    <li> MIN - Results sorted by the smallest/minimum value found in the group</li>
+                                    <li> MAX - Results sorted by the largest/maximum value gound in the group</li>
+                                    <li> COUNT - Results sorted by the total number of NPCs in the group</li>
+                                </ul>
+                            </li>
+                            <li>Choose which data point you want the aggregation applied to (Level, Health, Intelligence, Long Blade, etc)</li>
+                            <li>Select how you want the NPCs to be grouped (Class, Faction, Race, Gender, Expansion)</li>
+                            <li>Adjust the minimum number of NPCs you want to include to prevent small groups from skewing the results</li>
+                            <li>Expand the filters and un-check anything you want to exclude from the results</li>
+                            <li>Click the Run Query button</li>
+                            <li>
+                                Examples:
+                                <ul>
+                                    <li>To find the Average level of NPCs in each Expansion choose: Expansion - AVG - Level</li>
+                                    <li>To find out which faction has the most bartering gold choose: Faction - SUM - Gold</li>
+                                    <li>To find out where the luckiest NPC lives choose (spoiler, there's a tie): Location - MAX - Luck</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <li>Find NPCs/Books/Clothing/Weapons/etc</li>
+                        <ul>
+                            <li>Select How many game objects you want to include in the results</li>
+                            <li>Choose which data point you want the objects to be sorted by</li>
+                            <li>Expand the filters and un-check anything you want to exclude from the results</li>
+                            <li>Click the Find <i>Objects</i> button</li>
+                        </ul>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="row gx-0 my-1 text-center">
+            <div class="col">
+                <div class="content content-border">
+                    <p>See something wrong? Missing data or a bug? Please let me know! <a href="mailto: contact@tes3db.com">contact@tes3db.com</a></p>
+                    <p>Have a popular landmass mod that doesn't conflict with the base game? Let me know and I will include it.</p>
+
+                </div>
+            </div>
+        </div>
+        <!-- END CONTENT ROW -->
+        <!-- BEGIN FOOTER ROW -->
+        <div class="row text-center">
+            <div class="col">
+                <div class="content-border content">
+                    <div>
+                        The tes3db.com database has been queried <span style="font-weight: bold; color: #6F541D;" id="queryCountId"></span> times.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- END FOOTER ROW -->
+    </div>
 </body>
 </html>

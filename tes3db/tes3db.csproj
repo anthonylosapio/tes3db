@@ -29,6 +29,10 @@
 	  <EmbeddedResource Remove="tes3db\data\**" />
 	  <None Remove="tes3db\data\**" />
 	</ItemGroup>
+	
+	<ItemGroup>
+	  <Compile Remove="tes3db\wwwroot\CatalogService.cs" />
+	</ItemGroup>
 
 	<ItemGroup>
 	  <None Remove=".gitignore" />

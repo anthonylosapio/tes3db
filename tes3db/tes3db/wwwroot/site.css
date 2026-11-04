@@ -1,0 +1,282 @@
+.content {
+    background-color: black;
+    color: #dcc081;
+    position: relative;
+}
+
+.content-border {
+    border: solid 2px #6F541D;
+}
+
+.spinner-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    justify-content: center;
+    align-items: center;
+}
+/*******************************
+ELEMENT STYLES
+*******************************/
+body {
+    font-family: monospace;
+    scrollbar-color: #dcc081 black;
+}
+
+div {
+    scrollbar-width: thin;
+}
+/*******************************
+ANCHOR TAG STYLES
+*******************************/
+a:link {
+    color: orange;
+    text-decoration: none;
+}
+
+a:visited {
+    color: #8c59d3;
+}
+
+a:hover {
+    color: orange;
+    text-decoration: underline;
+}
+
+a:active {
+    color: red;
+}
+
+a.no-style:link,
+a.no-style:visited,
+a.no-style:hover,
+a.no-style:focus,
+a.no-style:active {
+    text-decoration: none; /* remove underline */
+    color: inherit; /* inherit from parent */
+
+    outline: none; /* remove focus outline */
+}
+
+/*******************************
+BUTTON, INPUT, & FORM ELEMENT STYLES
+*******************************/
+input[type="checkbox"] {
+    accent-color: purple;
+    margin-right: 3px;
+    white-space: nowrap;
+}
+
+select {
+    color: #c7c7c7;
+    background-color: black;
+    margin: 1px 3px 1px 3px;
+}
+
+.PlusMinusSpan {
+    font-weight: 800;
+    font-size: 1.1rem;
+}
+
+.btn:hover {
+    outline: 1px solid orange;
+}
+
+.filterBtn {
+    text-align: left;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    font-weight: bolder;
+    color: #c7c7c7;
+    display: block;
+}
+
+.filterBtnBorder {
+    border: solid orange 1px;
+}
+
+.blankBtn {
+    background-color: inherit;
+    color: inherit;
+    border: none;
+}
+
+.npcLinkBtn {
+    background-color: inherit;
+    color: inherit;
+    border: none;
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+    .npcLinkBtn:hover {
+        outline: 1px solid orange;
+    }
+
+.linkBtn {
+    background-color: inherit;
+    color: inherit;
+    border: none;
+    /*	text-decoration: underline;*/
+    text-align: left;
+    padding-left: 0px !important;
+}
+
+    .linkBtn:hover {
+        color: orange;
+    }
+
+.filterHeading {
+    font-weight: bold;
+    color: #c7c7c7;
+}
+
+.filterCollapsible {
+    max-height: 60vh;
+    overflow-y: auto;
+    border-right: 1px solid #A9A79E;
+}
+
+/*******************************
+TABLE STYLES
+*******************************/
+#ResultsDiv {
+    overflow-x: auto;
+    overflow-y: auto;
+    max-height: 90vh;
+}
+
+.dataTable {
+    margin-left: auto;
+    margin-right: auto;
+    border-collapse: collapse;
+    width: 98%;
+}
+
+.dataCell {
+    border-bottom: 1px solid #A9A79E;
+    border-left: 1px solid #A9A79E;
+}
+
+thead th {
+    position: sticky;
+    top: 0;
+    background-color: #dcc081;
+    color: black;
+    z-index: 10;
+}
+
+.table-label {
+    color: #867f75;
+}
+
+.table-value {
+    color: #dcc081;
+}
+
+/*******************************
+POST STYLES
+*******************************/
+.postDateCol {
+    color: #6F541D;
+    text-align: right;
+    font-size: 0.9em;
+}
+
+.postTitleCol {
+    color: #6F541D;
+    text-align: left;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+/*******************************
+SEARCH STYLES
+*******************************/
+.search-input {
+    background-color: black;
+    color: white;
+}
+
+.search-result-type {
+    color: #c7c7c7;
+    font-size: .8em;
+}
+
+.search-result-name {
+    font-size: 1.1em;
+}
+
+#searchResultsDiv {
+    position: absolute;
+    z-index: 1000;
+    background-color: black;
+    left: 0;
+    width: fit-content;
+    white-space: nowrap;
+    border-bottom: 1px solid #A9A79E;
+    border-left: 1px solid #A9A79E;
+    border-right: 1px solid #A9A79E;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    min-width: 100%;
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+    #searchResultsDiv button {
+        width: auto;
+        white-space: nowrap;
+        text-align: left !important;
+        justify-content: flex-start !important;
+        margin-top: 2px;
+    }
+
+/*******************************
+OBJECT SPECIFIC PAGE STYLES
+*******************************/
+.dialogue-topic {
+    font-weight: bold;
+    color: #6F541D;
+    border-top: 1px solid #A9A79E;
+}
+
+#MagicEffectsDivId .effect-wrapper + .effect-wrapper {
+    border-top: 1px solid #dee2e6;
+    padding-top: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.linked-inventory-list {
+    max-height: 55vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-left: 5px;
+    padding-bottom: 5px;
+}
+
+.container-tbody td {
+    padding-left: 15px;
+}
+/*******************************
+HEADER STYLES
+*******************************/
+a.plain-link, a.plain-link:hover, a.plain-link:visited, a.plain-link:active {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.title-suffix {
+    font-size: 42%;
+    vertical-align: baseline;
+}

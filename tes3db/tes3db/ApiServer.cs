@@ -1,16 +1,15 @@
 ﻿namespace tes3db;
 
-using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 public class ApiServer
 {
 
-    public static void Run(string dbFilePath, string host, int port, bool verbose)
+    public static void Run(string dbFilePath, string host, int port, bool verbose, bool noBrowser)
     {
         
 
@@ -28,8 +27,10 @@ public class ApiServer
 
         builder.Services.AddSingleton<IDbConnectionFactory>(new SqliteConnectionFactory(dbFilePath));
         builder.Services.AddScoped<ICatalogRepository, CatalogRepository>();
+        builder.Services.AddScoped<ICatalogService, CatalogService>();
 
         var app = builder.Build();
+
         app.Urls.Add($"http://{host}:{port}");
         app.UseExceptionHandler();
         app.UseStatusCodePages();
@@ -45,9 +46,39 @@ public class ApiServer
         app.MapGet("/api/header", async (ICatalogRepository repo, CancellationToken ct) =>
             TypedResults.Ok(await repo.GetHeadersAsync(ct)));
 
+        app.MapGet("/api/interface", async (ICatalogService service, CancellationToken ct) =>
+            TypedResults.Ok(await service.GetInterfaceObject(ct)));
+
         Console.WriteLine($"tes3db API listening on http://{host}:{port}  (Ctrl+C to stop)");
         Console.WriteLine($"Try: http://{host}:{port}/");
+
+        var browseHost = host is "0.0.0.0" or "+" or "*" or "::" ? "localhost" : host;
+        var url = $"http://{browseHost}:{port}/";
+
+        app.Lifetime.ApplicationStarted.Register(() =>
+        {
+            Console.WriteLine($"tes3db listening on {url}  (Ctrl+C to stop)");
+            if (!noBrowser) OpenBrowser(url);
+        });
+
         app.Run();
+    }
+
+    private static void OpenBrowser(string url)
+    {
+        try
+        {
+            if (OperatingSystem.IsWindows())
+                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true })?.Dispose();
+            else if (OperatingSystem.IsMacOS())
+                Process.Start("open", url)?.Dispose();
+            else if (OperatingSystem.IsLinux())
+                Process.Start("xdg-open", url)?.Dispose();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Couldn't open a browser automatically ({ex.Message}). Open {url} manually.");
+        }
     }
 
 }

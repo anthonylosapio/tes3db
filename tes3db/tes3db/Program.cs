@@ -34,25 +34,26 @@ class Program
         string fileExtension = "sql";
         
         // --skip
-        // true/false
         // if false, NPCs missing Cell, Region, Attribute or Skill poperties will be excluded from output
         bool noSkip = true;
 
         // -v --verbose
-        // true/false
         // if true, more status updates are written to the console while the process runs
         bool verbose = false;
 
         // --no-serve
-        // true/false
-        // if true, starts a local read-only REST API over the SQLite database after it is ready
-        bool serve = true;
+        // if true, prevents running local read-only REST API over the SQLite database after it is ready
+        bool noServe = false;
 
         // --host
         string host = "127.0.0.1";
 
         // --port
         int port = 5000;
+
+        // --no-browser
+        //if true, does not open launch web browser when server starts
+        bool noBrowser = false;
 
         // Parse command-line arguments
         for (int i = 0; i < args.Length; i++)
@@ -90,7 +91,7 @@ class Program
                     break;
 
                 case "--no-serve":
-                    serve = false;
+                    noServe = true;
                     break;
 
                 case "--host":
@@ -101,6 +102,10 @@ class Program
                 case "--port":
                     if (i + 1 < args.Length && int.TryParse(args[++i], out var parsedPort))
                         port = parsedPort;
+                    break;
+
+                case "--no-browser":
+                    noBrowser = true;
                     break;
 
                 case "--help":
@@ -191,7 +196,7 @@ class Program
             }
         }
 
-        if (serve)
+        if (!noServe)
         {
             if (outputFormat != "sqlite")
             {
@@ -203,15 +208,8 @@ class Program
                 Console.WriteLine($"SQLite database not found at: {dbFilePath}");
                 return;
             }
-
-            //create read-only connection string to the SQLite database
-            AppConfiguration.DatabaseConnectionString = new SqliteConnectionStringBuilder
-            {
-                DataSource = dbFilePath,
-                Mode = SqliteOpenMode.ReadOnly
-            }.ToString();
             
-            ApiServer.Run(dbFilePath, host, port, verbose);
+            ApiServer.Run(dbFilePath, host, port, verbose, noBrowser);
             
             return;
         }
@@ -229,6 +227,8 @@ class Program
         Console.WriteLine("  --no-headers             Exclude column headers in (csv/tsv only)");
         Console.WriteLine("  --skip                   Will skip NPCs missing Cell, Region, Attribute or Skill poperties");
         Console.WriteLine("  --verbose                Display verbose output");
+        Console.WriteLine("  --no-serve               Do not start the local read-only REST API server");
+        Console.WriteLine("  --no-browser             Do not open a web browser when starting the API server");
         Console.WriteLine("");
         Console.WriteLine("  --prefix, -p <prefix>    Prefix for output files, helpful if keeping expansions separate (default: none)");
         Console.WriteLine("");
