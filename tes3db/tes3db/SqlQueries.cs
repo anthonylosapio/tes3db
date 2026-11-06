@@ -176,7 +176,7 @@ public static class SqlQueries
         SELECT c.id, c.name 
         FROM container c
         JOIN json_each(c.inventory) AS j 
-          ON j.value->>'$.id' = @itemId
+          ON j.value->>'$.id' = @id
         GROUP BY c.id
         ORDER BY c.name;";
 
@@ -188,7 +188,7 @@ public static class SqlQueries
             END AS name 
         FROM cell AS a
         JOIN cellreferencemap AS c ON c.cell_id = a.id
-        WHERE c.reference_id = @cellId
+        WHERE c.reference_id = @id
         ORDER BY name;";
 
     #endregion
