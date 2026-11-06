@@ -8,10 +8,9 @@ using System.Text;
 public interface ICatalogService {
     
     Task<IReadOnlyList<Dictionary<string, object?>>> RunQueryAsync(string query, CancellationToken ct = default);
-
     Task<InterfaceObject> GetInterfaceObject(CancellationToken ct = default);
-
     Task<object> GetAlchemy(CancellationToken ct, string id);
+    Task<object> GetNpc(CancellationToken ct, string id);
 }
 public class CatalogService(ICatalogRepository repo) : ICatalogService
 {
@@ -44,13 +43,46 @@ public class CatalogService(ICatalogRepository repo) : ICatalogService
 
         var data = await repo.QueryToDictionaryAsync("SELECT * FROM alchemy WHERE id = @id", parameters, ct);
 
-        var npc = await repo.QueryToDictionaryAsync(SqlQueries.npc_inventory_query, parameters, ct);
+        var npcs = await repo.QueryToDictionaryAsync(SqlQueries.npc_inventory_query, parameters, ct);
+
+        var creatures = await repo.QueryToDictionaryAsync(SqlQueries.creature_inventory_query, parameters, ct);
+
+        var containers = await repo.QueryToDictionaryAsync(SqlQueries.container_inventory_query, parameters, ct);
+
+        var cells = await repo.QueryToDictionaryAsync(SqlQueries.cell_inventory_query, parameters, ct);
 
         var returnObject = new
         {
              data,
-             npc
+             npcs,
+             creatures,
+             containers,
+             cells
+        };
+        return returnObject;
+    }
 
+    public async Task<object> GetNpc(CancellationToken ct, string id)
+    {
+        var parameters = new List<CatalogRepository.QueryParameter>
+        {
+            new CatalogRepository.QueryParameter{ Name="@id", Value=id }
+        };
+        var data = await repo.QueryToDictionaryAsync("SELECT * FROM npc WHERE id = @id", parameters, ct);
+        
+        var dialogueParameters = new List<CatalogRepository.QueryParameter>
+        {
+            new CatalogRepository.QueryParameter{ Name="@speakerId", Value=id },
+            new CatalogRepository.QueryParameter{ Name="@speakerId2", Value=id },
+            new CatalogRepository.QueryParameter{ Name="@speakerId3", Value=id }
+        };
+        var dialogue = await repo.QueryToDictionaryAsync(SqlQueries.npc_dialogue_query, dialogueParameters, ct);
+
+
+        var returnObject = new
+        {
+            data,
+            dialogue
         };
         return returnObject;
     }

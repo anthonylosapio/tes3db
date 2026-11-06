@@ -52,6 +52,9 @@ public class ApiServer
         app.MapGet("/api/alchemy/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
             TypedResults.Ok(await service.GetAlchemy(ct, id)));
 
+        app.MapGet("/api/npc/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
+            TypedResults.Ok(await service.GetNpc(ct, id)));
+
         Console.WriteLine($"tes3db API listening on http://{host}:{port}  (Ctrl+C to stop)");
         Console.WriteLine($"Try: http://{host}:{port}/");
 
