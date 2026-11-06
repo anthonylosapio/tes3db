@@ -43,6 +43,9 @@ public class ApiServer
         app.MapGet("/api/search", async (ICatalogService service, CancellationToken ct) =>
                TypedResults.Ok(await service.RunQueryAsync(SqlQueries.search_object_query, ct)));
 
+        app.MapGet("/api/inventoryobject", async (ICatalogService service, CancellationToken ct) =>
+               TypedResults.Ok(await service.RunQueryAsync(SqlQueries.inventory_object_query, ct)));
+
         app.MapGet("/api/header", async (ICatalogService service, CancellationToken ct) =>
             TypedResults.Ok(await service.RunQueryAsync(SqlQueries.header_query, ct)));
 

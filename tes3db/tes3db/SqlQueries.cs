@@ -79,9 +79,58 @@ public static class SqlQueries
 		SELECT DISTINCT `id`, `id` AS 'name', 'leveleditem' AS `type` FROM `leveleditem`
 	;";
 
-	/// <summary>
-	/// Returns meta data about the game files used to populate the database
-	/// </summary>
+    /// <summary>
+    /// Used to create links to object pages when rendering inventory lists
+    /// </summary>
+    public const string inventory_object_query = @"SELECT id, name, 'npc' AS type FROM npc	
+		UNION ALL	
+		SELECT id, name, 'book' AS type FROM book 
+		WHERE 
+			name!='' 
+			AND icon NOT IN ('','default icon.dds') 
+			AND mesh !='tr	r_editormarker_npc.nif'
+			AND text != ''
+		UNION ALL
+		SELECT DISTINCT id, name, 'clothing' AS type FROM clothing
+		UNION ALL
+		SELECT DISTINCT id, name, 'armor' AS type FROM armor
+		UNION ALL
+		SELECT DISTINCT id, name, 'spell' AS type FROM spell
+		UNION ALL
+		SELECT DISTINCT id, name, 'weapon' AS type FROM weapon
+		UNION ALL
+		SELECT DISTINCT id, name, 'creature' AS type FROM creature
+		UNION ALL
+		SELECT DISTINCT id, name, 'miscitem' AS type FROM miscitem
+		UNION ALL
+		SELECT DISTINCT id, name, 'apparatus' AS type FROM apparatus
+		UNION ALL
+		SELECT DISTINCT id, name, 'probe' AS type FROM probe
+		UNION ALL
+		SELECT DISTINCT id, name, 'lockpick' AS type FROM lockpick
+		UNION ALL
+		SELECT DISTINCT id, name, 'repairitem' AS type FROM repairitem
+		UNION ALL
+		SELECT DISTINCT id, name, 'alchemy' AS type FROM alchemy
+		UNION ALL
+		SELECT DISTINCT id, name, 'ingredient' AS type FROM ingredient
+		UNION ALL
+		SELECT DISTINCT id, 
+			CASE 
+				WHEN data_flags LIKE '%IS_INTERIOR%' THEN name
+				WHEN name!='' THEN CONCAT(name, ' ', grid)
+				WHEN region!='' THEN CONCAT(region, ' ', grid)
+				ELSE grid 
+			END AS 'name', 
+			'cell' AS type 
+			FROM cell
+		UNION ALL
+		SELECT DISTINCT id, id AS 'name', 'leveleditem' AS type FROM leveleditem
+	;";
+
+    /// <summary>
+    /// Returns meta data about the game files used to populate the database
+    /// </summary>
     public const string header_query = "SELECT `expansion`, `author`, `description` FROM `header`;";
 
 	public const string expansion_query = "SELECT DISTINCT `expansion` FROM `header`";
