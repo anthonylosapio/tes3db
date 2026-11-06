@@ -274,16 +274,20 @@ function renderProperty_innerHTML(key, val) {
 async function renderMixedTable(data, tbody) {
 
 	//get the list of id'd items so we can link to book/clothing/weapon/armor pages
-	const idbObj = await idbSearchCache.load(cacheKey);
-	const objList = JSON.parse(idbObj);
-	const filteredList = objList.filter(ol => ['alchemy', 'apparatus', 'armor', 'book', 'clothing', 'creature', 'ingredient', 'leveleditem', 'lockpick', 'miscitem', 'probe', 'repairitem', 'weapon', 'npc', 'cell'].includes(ol.type));
+	//const idbObj = await idbSearchCache.load(cacheKey);
+	//const objList = JSON.parse(idbObj);
+	//const filteredList = objList.filter(ol => ['alchemy', 'apparatus', 'armor', 'book', 'clothing', 'creature', 'ingredient', 'leveleditem', 'lockpick', 'miscitem', 'probe', 'repairitem', 'weapon', 'npc', 'cell'].includes(ol.type));
+
+	const inventoryObjects = await callServer('/api/inventoryobject', function(result) {
+		return JSON.parse(result);
+	});
 
 	const obj = JSON.parse(data);
 	tbody.innerHTML = '';
 
 	const nameCounts = {};
 	for (const item of obj) {
-		const match = filteredList.find(fl => fl.id === item.id);
+		const match = inventoryObjects.find(io => io.id === item.id);
 		if (match) nameCounts[match.name] = (nameCounts[match.name] || 0) + 1;
 	}
 
@@ -293,7 +297,7 @@ async function renderMixedTable(data, tbody) {
 
 		//Handles NPC & Container inventory items which have id and quantity properties
 		if (item.id) {
-			const match = filteredList.find(fl => fl.id === item.id);
+			const match = inventoryObjects.find(io => io.id === item.id);
 			if (match) {
 				const isDuplicateName = nameCounts[match.name] > 1;
 				row.append(createTd(buildObjectLinkButton(match.name, match.id, match.type, 'linkBtn', isDuplicateName)));

@@ -169,7 +169,7 @@ public static class SqlQueries
 		FROM creature c
 		JOIN json_each(c.inventory) AS j ON j.value->>'$.id' = @id 
 		GROUP BY c.id 
-		ORDER BY c.expansion, c.location, c.name;
+		ORDER BY c.expansion, c.name;
 		""";
 
     public const string container_inventory_query = @"

@@ -16,7 +16,7 @@ async function callServer(url, callback, source = null) {
 
 		if (response.ok) {
 			//console.log(text);
-			callback(text);
+			return callback(text);
 		} else {
 			console.log(text);
 		}
