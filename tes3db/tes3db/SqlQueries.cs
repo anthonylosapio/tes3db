@@ -90,7 +90,19 @@ public static class SqlQueries
 	
 	public const string location_query = "SELECT DISTINCT `expansion`, `location` FROM `npc` ORDER BY `expansion`, `location`";
 
-
+	public const string npc_inventory_query = """
+		SELECT 
+			n.id, 
+			n.name, 
+			n.expansion, 
+			n.location 
+		FROM 
+			npc n 
+			JOIN json_each(n.inventory) AS j ON j.value->>'$.id' = @id 
+		GROUP BY n.id 
+		ORDER BY n.expansion, n.location, n.name;
+		""";
+		
 
 }
 

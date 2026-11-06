@@ -40,14 +40,17 @@ public class ApiServer
         app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 
         // API endpoints
-        app.MapGet("/api/search", async (ICatalogRepository repo, CancellationToken ct) =>
-               TypedResults.Ok(await repo.GetSearchObjectsAsync(ct)));
+        app.MapGet("/api/search", async (ICatalogService service, CancellationToken ct) =>
+               TypedResults.Ok(await service.RunQueryAsync(SqlQueries.search_object_query, ct)));
 
-        app.MapGet("/api/header", async (ICatalogRepository repo, CancellationToken ct) =>
-            TypedResults.Ok(await repo.GetHeadersAsync(ct)));
+        app.MapGet("/api/header", async (ICatalogService service, CancellationToken ct) =>
+            TypedResults.Ok(await service.RunQueryAsync(SqlQueries.header_query, ct)));
 
         app.MapGet("/api/interface", async (ICatalogService service, CancellationToken ct) =>
             TypedResults.Ok(await service.GetInterfaceObject(ct)));
+
+        app.MapGet("/api/alchemy/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
+            TypedResults.Ok(await service.GetAlchemy(ct, id)));
 
         Console.WriteLine($"tes3db API listening on http://{host}:{port}  (Ctrl+C to stop)");
         Console.WriteLine($"Try: http://{host}:{port}/");

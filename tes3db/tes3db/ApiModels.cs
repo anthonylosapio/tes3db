@@ -8,6 +8,18 @@ public record SearchObject(string id, string name, string type);
 
 public record HeaderObject(string expansion, string author, string description);
 
+public record AlchemyObject(
+    string flags,
+    string id, 
+    string name, 
+    string mesh, 
+    string icon, 
+    string expansion,
+    string effects,
+    double weight,
+    int value,
+    string data_flags);
+
 public class InterfaceObject {
 
     public string[] GroupBy { get; set; } = ConstantsObject.GROUPBY;
