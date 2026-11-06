@@ -149,13 +149,6 @@ function start(json, action) {
 		if (dialogueDiv && data.dialogue) {
 			renderTopic(dialogueDiv, data.dialogue);
 		}
-
-
-
-		/*!!!!!!!!!!!!!! tes3db.com only */
-		document.getElementById('ViewCountNameId').textContent = data.data[0].name;
-		document.getElementById('ViewCountId').textContent = data.count;
-		/*!!!!!!!!!!!!!! tes3db.com only */
 	}
 
 }
