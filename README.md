@@ -1,6 +1,6 @@
 # tes3db
 
-Run your own local wiki automatically built of off your custom Morrowind mod list.
+Run your own local wiki automatically built off of your custom Morrowind mod list.
 
 
 tes3db converts Morrowind json files to a searchable/query-able SQLite database served through an ASP.NET Core minimal API & with a web based front end (with options to export to csv/tsv or MySQL/Postres import). 
