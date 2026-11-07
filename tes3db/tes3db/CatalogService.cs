@@ -9,7 +9,8 @@ public interface ICatalogService {
     
     Task<IReadOnlyList<Dictionary<string, object?>>> RunQueryAsync(string query, CancellationToken ct = default);
     Task<InterfaceObject> GetInterfaceObject(CancellationToken ct = default);
-    Task<object> GetAlchemy(CancellationToken ct, string id);
+    Task<object> GetBirthsign(CancellationToken ct, string id);
+    Task<object> GetItem(CancellationToken ct, string query, string id);
     Task<object> GetNpc(CancellationToken ct, string id);
 }
 public class CatalogService(ICatalogRepository repo) : ICatalogService
@@ -34,14 +35,14 @@ public class CatalogService(ICatalogRepository repo) : ICatalogService
         return interfaceObject;
     }
 
-    public async Task<object> GetAlchemy(CancellationToken ct, string id) {
+    public async Task<object> GetItem(CancellationToken ct, string query, string id) {
 
         var parameters = new List<CatalogRepository.QueryParameter>
         {
             new CatalogRepository.QueryParameter{ Name="@id", Value=id }
         };
 
-        var data = await repo.QueryToDictionaryAsync("SELECT * FROM alchemy WHERE id = @id", parameters, ct);
+        var data = await repo.QueryToDictionaryAsync(query, parameters, ct);
 
         var npcs = await repo.QueryToDictionaryAsync(SqlQueries.npc_inventory_query, parameters, ct);
 
@@ -58,6 +59,24 @@ public class CatalogService(ICatalogRepository repo) : ICatalogService
              creatures,
              containers,
              cells
+        };
+        return returnObject;
+    }
+
+    public async Task<object> GetBirthsign(CancellationToken ct, string id)
+    {
+        var parameters = new List<CatalogRepository.QueryParameter>
+        {
+            new CatalogRepository.QueryParameter{ Name="@id", Value=id }
+        };
+        var data = await repo.QueryToDictionaryAsync(SqlQueries.birthsign_query, parameters, ct);
+
+        var spells = await repo.QueryToDictionaryAsync(SqlQueries.birthsign_spell_query, parameters, ct);
+
+        var returnObject = new
+        {
+            data,
+            spells
         };
         return returnObject;
     }

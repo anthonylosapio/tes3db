@@ -191,12 +191,23 @@ public static class SqlQueries
         WHERE c.reference_id = @id
         ORDER BY name;";
 
-    #endregion
+	#endregion
+	#region Item Queries
+	public const string alchemy_query = @"SELECT * FROM alchemy WHERE id = @id";
+	public const string apparatus_query = @"SELECT * FROM apparatus WHERE id = @id";
+	public const string armor_query = @"SELECT * FROM armor WHERE id = @id";
+	public const string birthsign_query = @"SELECT * FROM birthsign WHERE id = @id";
+	public const string birthsign_spell_query = @"SELECT s.* FROM birthsign b LEFT JOIN spell s ON EXISTS (SELECT 1 FROM json_each(b.spells) AS j WHERE j.value = s.id) WHERE b.id = @id;";
+    public const string book_query = @"SELECT book.*, e.effects, e.enchant_type, e.cost, e.max_charge FROM book	LEFT JOIN enchanting AS e ON e.id = book.enchanting	WHERE book.id = @id";
+    public const string npc_query = @"SELECT * FROM npc WHERE id = @id";
+    #endregion Item Queries
+
     /// <summary>
     /// Parameters @speakerId, @speakerId2, @speakerId3 should all be passed the same value
     /// </summary>
     public const string npc_dialogue_query = @"
-	WITH RECURSIVE ordered_list AS (
+
+    WITH RECURSIVE ordered_list AS (
 		SELECT 
 			id, 
 			prev_id, 

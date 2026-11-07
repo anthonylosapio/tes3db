@@ -53,7 +53,19 @@ public class ApiServer
             TypedResults.Ok(await service.GetInterfaceObject(ct)));
 
         app.MapGet("/api/alchemy/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
-            TypedResults.Ok(await service.GetAlchemy(ct, id)));
+            TypedResults.Ok(await service.GetItem(ct, SqlQueries.alchemy_query, id)));
+
+        app.MapGet("/api/apparatus/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
+            TypedResults.Ok(await service.GetItem(ct, SqlQueries.apparatus_query, id)));
+
+        app.MapGet("/api/armor/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
+            TypedResults.Ok(await service.GetItem(ct, SqlQueries.armor_query, id)));
+
+        app.MapGet("/api/birthsign/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
+            TypedResults.Ok(await service.GetBirthsign(ct, id)));
+
+        app.MapGet("/api/book/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
+            TypedResults.Ok(await service.GetItem(ct, SqlQueries.book_query, id)));
 
         app.MapGet("/api/npc/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
             TypedResults.Ok(await service.GetNpc(ct, id)));

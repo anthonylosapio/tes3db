@@ -843,8 +843,8 @@ function renderAbilities(data) {
 		td3value.textContent = item.cost;
 
 		const effectsDiv = document.createElement('div');
-		effectsDiv.classList.add('col-12');
-		renderEffects(item.effects, effectsDiv, 'birthsignData')
+		effectsDiv.classList.add('w-100');
+		renderEffects(item.effects, effectsDiv, 'Birthsign')
 
 		container.append(div, effectsDiv)
 	}
