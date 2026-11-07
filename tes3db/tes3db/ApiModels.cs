@@ -1,12 +1,4 @@
-﻿using System.Globalization;
-using System.Text.RegularExpressions;
-using static tes3db.Models;
-
-namespace tes3db;
-
-public record SearchObject(string id, string name, string type);
-
-public record HeaderObject(string expansion, string author, string description);
+﻿namespace tes3db;
 
 public class InterfaceObject {
 
@@ -55,57 +47,6 @@ public class InterfaceObject {
         public string[] FactionSort { get; set; } = ConstantsObject.FACTION_SORTBY;
         public string[] RaceSort { get; set; } = ConstantsObject.RACE_SORTBY;
     }
-    /*
-            $header = $this->repo->RunSelectQuery(header_query);
-            $count = $this->repo->RunSelectQuery(query_count_query);;
-
-            $filters = [
-                "Race" => RACES,
-                "Class" => CLASSES,
-                "Faction" => FACTIONS,
-                "Gender" => GENDERS,
-                "Expansion" => EXPANSIONS,
-                "Location" => LOCATIONS,
-                "Services" => SERVICES,
-                "Clothing Type" => CLOTHING_TYPE,
-                "Armor Type" => ARMOR_TYPE,
-                "Weapon Type" => WEAPON_TYPE,
-                "Spell Type" => SPELL_TYPE,
-                "Creature Type" => CREATURE_TYPE,
-                "Apparatus Type" => APPARATUS_TYPE,
-                "Magic Effect" => MAGIC_EFFECT,
-                "Magic School" => MAGIC_SCHOOL,
-                "Skills" => SKILLS,
-                "Attributes" => ATTRIBUTES,
-                "Specialization" => SPECIALIZATION,
-                "Is Playable" => PLAYABLE_FLAG,
-                "Is Beast Race" => BEAST_RACE_FLAG,
-            ];
-
-            $data = [
-                "Header" => $header,
-                "Count" => $count[0],
-                "Filters" => $filters,
-                "Group By" => GROUPBY,
-                "Agg" => AGG_FUNCTION,
-                "Objects" => SEARCH_OBJECTS,
-                "Sorts" => [
-                    "Sort By" => SORTBY,
-                    "Item Sort" => ITEM_SORTBY,
-                    "Armor Sort" => ARMOR_SORTBY,
-                    "Weapon Sort" => WEAPON_SORTBY,
-                    "Spell Sort" => SPELL_SORTBY,
-                    "Creature Sort" => CREATURE_SORTBY,
-                    "MiscItem Sort" => MISCITEM_SORTBY,
-                    "Apparatus Sort" => APPARATUS_SORTBY,
-                    "Tool Sort" => TOOL_SORTBY,
-                    "MegicEffect Sort" => MAGICEFFECT_SORTBY,
-                    "Class Sort" => CLASS_SORTBY,
-                    "Faction Sort" => FACTION_SORTBY,
-                    "Race Sort" => RACE_SORTBY,
-                ],
-            ];
-     */
 }
 
 public class ConstantsObject

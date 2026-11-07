@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+    <meta http-equiv="CACHE-CONTROL" content="NO-CACHE">
+    <title>The Morrowind Database</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" sizes="57x57" href="apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+    <link href="bootstrap.css" rel="stylesheet">
+    <link href="site.css" rel="stylesheet">
+    <script src="functions.js"></script>
+    <script src="item.js"></script>
+    <script>
+			window.onload = function() {
+				fetchObjectData('Alchemy')
+			};
+    </script>
+</head>
+<body style="background-color: #2B1A08;">
+    <div class="container">
+        <!-- -- -- -- BEGIN ROW 1  -- -- -- -->
+        <div class="row">
+            <div class="col-12 mb-1">
+                <div class="content-border content px-3 header-container">
+                    <div>
+                        <h1 id="nameId"></h1>
+                        Id: <span id="idId"></span>
+                    </div>
+                    <div style="color: #6F541D;">
+                        <h1><a class="plain-link" href="index.html">tes3db<span class="title-suffix">.com</span></a></h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- -- -- -- END ROW 1    -- -- -- -->
+        <!-- -- -- -- BEGIN ROW 2  -- -- -- -->
+        <div class="row g-1">
+            <div class="col-12 col-md-3 mb-1">
+                <div class="content-border content p-2 h-100">
+                    <table class="w-100">
+                        <tbody>
+                            <tr><td class="table-label">Expansion:</td><td class="table-value" id="expansionId" /></tr>
+                            <tr><td class="table-label">Weight:</td><td class="table-value" id="weightId" /></tr>
+                            <tr><td class="table-label">Value:</td><td class="table-value" id="valueId" /></tr>
+                            <tr><td class="table-label">Flags:</td><td class="table-value" id="flagsId"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-12 col-md-7 mb-1">
+                <div class="content-border content p-2 h-100">
+                    <div class="linked-inventory-list">
+                        <div>
+                            <div class="text-center table-label">Held By NPC:</div>
+                            <div id="NpcLinkListId"></div>
+                        </div>
+                        <div>
+                            <div class="text-center table-label">Held By Creature:</div>
+                            <div id="CreatureLinkListId"></div>
+                        </div>
+                        <div>
+                            <div class="text-center table-label">Found in Container:</div>
+                            <div id="ContainerLinkListId"></div>
+                        </div>
+                        <div>
+                            <div class="text-center table-label">Found in Cell:</div>
+                            <div id="CellLinkListId"></div>
+                        </div>
+                        <div>
+                            <div class="text-center table-label">Found in Level Item List:</div>
+                            <div id="ListLinkListId"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-md-2 mb-1">
+                <div class="content-border content p-2 h-100">
+                    <div id="IconId">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- -- -- -- END ROW 2    -- -- -- -->
+        <!-- -- -- -- BEGIN ROW 3  -- -- -- -->
+        <div class="row d-none" id="EnchantmentsDivId">
+            <div class="col-12 mb-1">
+                <div class="content-border content p-2">
+                    <div class="w-100 text-center">Magic Effects</div>
+                    <div class="row g-0" id="MagicEffectsDivId">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- -- -- -- END ROW 3 -- -- -- -->
+        <!-- BEGIN FOOTER -->
+        <div class="row">
+            <div class="col text-center">
+                <div class="content content-border">
+                     &nbsp;
+                </div>
+            </div>
+        </div>
+        <!-- END FOOTER -->
+    </div>
+</body>
+</html>

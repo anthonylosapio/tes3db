@@ -10,6 +10,9 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 public static class SqlQueries
 {
+	/// <summary>
+	/// Used to populate the search trie with id, name, and type of all searchable objects
+	/// </summary>
 	public const string search_object_query = @"SELECT `id`, `name`, 'npc' AS `type` FROM `npc`	
 		UNION ALL	
 		SELECT `id`, `name`, 'book' AS `type` FROM `book` 
@@ -76,6 +79,58 @@ public static class SqlQueries
 		SELECT DISTINCT `id`, `id` AS 'name', 'leveleditem' AS `type` FROM `leveleditem`
 	;";
 
+    /// <summary>
+    /// Used to create links to object pages when rendering inventory lists
+    /// </summary>
+    public const string inventory_object_query = @"SELECT id, name, 'npc' AS type FROM npc	
+		UNION ALL	
+		SELECT id, name, 'book' AS type FROM book 
+		WHERE 
+			name!='' 
+			AND icon NOT IN ('','default icon.dds') 
+			AND mesh !='tr	r_editormarker_npc.nif'
+			AND text != ''
+		UNION ALL
+		SELECT DISTINCT id, name, 'clothing' AS type FROM clothing
+		UNION ALL
+		SELECT DISTINCT id, name, 'armor' AS type FROM armor
+		UNION ALL
+		SELECT DISTINCT id, name, 'spell' AS type FROM spell
+		UNION ALL
+		SELECT DISTINCT id, name, 'weapon' AS type FROM weapon
+		UNION ALL
+		SELECT DISTINCT id, name, 'creature' AS type FROM creature
+		UNION ALL
+		SELECT DISTINCT id, name, 'miscitem' AS type FROM miscitem
+		UNION ALL
+		SELECT DISTINCT id, name, 'apparatus' AS type FROM apparatus
+		UNION ALL
+		SELECT DISTINCT id, name, 'probe' AS type FROM probe
+		UNION ALL
+		SELECT DISTINCT id, name, 'lockpick' AS type FROM lockpick
+		UNION ALL
+		SELECT DISTINCT id, name, 'repairitem' AS type FROM repairitem
+		UNION ALL
+		SELECT DISTINCT id, name, 'alchemy' AS type FROM alchemy
+		UNION ALL
+		SELECT DISTINCT id, name, 'ingredient' AS type FROM ingredient
+		UNION ALL
+		SELECT DISTINCT id, 
+			CASE 
+				WHEN data_flags LIKE '%IS_INTERIOR%' THEN name
+				WHEN name!='' THEN CONCAT(name, ' ', grid)
+				WHEN region!='' THEN CONCAT(region, ' ', grid)
+				ELSE grid 
+			END AS 'name', 
+			'cell' AS type 
+			FROM cell
+		UNION ALL
+		SELECT DISTINCT id, id AS 'name', 'leveleditem' AS type FROM leveleditem
+	;";
+
+    /// <summary>
+    /// Returns meta data about the game files used to populate the database
+    /// </summary>
     public const string header_query = "SELECT `expansion`, `author`, `description` FROM `header`;";
 
 	public const string expansion_query = "SELECT DISTINCT `expansion` FROM `header`";
@@ -90,7 +145,125 @@ public static class SqlQueries
 	
 	public const string location_query = "SELECT DISTINCT `expansion`, `location` FROM `npc` ORDER BY `expansion`, `location`";
 
+    #region Item Inventory Queries
+	/* Queries that find objects (npcs, creatures, cells, etc) that hold a specific item */
+    public const string npc_inventory_query = """
+		SELECT 
+			n.id, 
+			n.name, 
+			n.expansion, 
+			n.location 
+		FROM 
+			npc n 
+			JOIN json_each(n.inventory) AS j ON j.value->>'$.id' = @id 
+		GROUP BY n.id 
+		ORDER BY n.expansion, n.location, n.name;
+		""";
 
+    public const string creature_inventory_query = """
+		SELECT 
+			c.id,
+			c.name,
+			c.expansion,
+			c.creature_type 
+		FROM creature c
+		JOIN json_each(c.inventory) AS j ON j.value->>'$.id' = @id 
+		GROUP BY c.id 
+		ORDER BY c.expansion, c.name;
+		""";
 
+    public const string container_inventory_query = @"
+        SELECT c.id, c.name 
+        FROM container c
+        JOIN json_each(c.inventory) AS j 
+          ON j.value->>'$.id' = @id
+        GROUP BY c.id
+        ORDER BY c.name;";
+
+    public const string cell_inventory_query = @"
+        SELECT a.id, a.region,
+            CASE
+                WHEN a.name != '' THEN a.name
+                ELSE a.region || a.id
+            END AS name 
+        FROM cell AS a
+        JOIN cellreferencemap AS c ON c.cell_id = a.id
+        WHERE c.reference_id = @id
+        ORDER BY name;";
+
+	#endregion
+	#region Item Queries
+	public const string alchemy_query = @"SELECT * FROM alchemy WHERE id = @id";
+	public const string apparatus_query = @"SELECT * FROM apparatus WHERE id = @id";
+	public const string armor_query = @"SELECT * FROM armor WHERE id = @id";
+	public const string birthsign_query = @"SELECT * FROM birthsign WHERE id = @id";
+	public const string birthsign_spell_query = @"SELECT s.* FROM birthsign b LEFT JOIN spell s ON EXISTS (SELECT 1 FROM json_each(b.spells) AS j WHERE j.value = s.id) WHERE b.id = @id;";
+    public const string book_query = @"SELECT book.*, e.effects, e.enchant_type, e.cost, e.max_charge FROM book	LEFT JOIN enchanting AS e ON e.id = book.enchanting	WHERE book.id = @id";
+    public const string npc_query = @"SELECT * FROM npc WHERE id = @id";
+    #endregion Item Queries
+
+    /// <summary>
+    /// Parameters @speakerId, @speakerId2, @speakerId3 should all be passed the same value
+    /// </summary>
+    public const string npc_dialogue_query = @"
+
+    WITH RECURSIVE ordered_list AS (
+		SELECT 
+			id, 
+			prev_id, 
+			next_id,
+			text,
+			dialogue_type,
+			dialogue_topic,
+			dialogue_id,
+			id AS chain_start,
+			1 AS position,
+			speaker_race,
+			speaker_class,
+			speaker_faction,
+			speaker_cell,
+			player_faction,
+			disposition,
+			speaker_rank,
+			speaker_sex,
+			player_rank,
+			quest_state
+		FROM dialogueinfo
+		WHERE 
+			speaker_id = @speakerId
+			AND id NOT IN (
+				SELECT next_id FROM dialogueinfo WHERE next_id IS NOT NULL
+				AND speaker_id = @speakerId2
+			)
+		UNION ALL
+		SELECT 
+			d.id, 
+			d.prev_id, 
+			d.next_id,
+			d.text,
+			d.dialogue_type,
+			d.dialogue_topic,
+           	d.dialogue_id,
+			ol.chain_start,
+			ol.position + 1,
+			d.speaker_race,
+			d.speaker_class,
+			d.speaker_faction,
+			d.speaker_cell,
+			d.player_faction,
+			d.disposition,
+			d.speaker_rank,
+			d.speaker_sex,
+			d.player_rank,
+			d.quest_state
+		FROM 
+			dialogueinfo d
+			JOIN ordered_list ol ON d.id = ol.next_id
+		WHERE speaker_id = @speakerId3
+		)
+		SELECT DISTINCT dialogue_type, dialogue_topic, text, speaker_race, speaker_class, speaker_faction, speaker_cell, player_faction,
+			disposition, speaker_rank, speaker_sex, player_rank, quest_state
+		FROM ordered_list
+		ORDER BY dialogue_type, chain_start, position DESC; ";
 }
 
