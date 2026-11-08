@@ -173,6 +173,7 @@ function renderPage(data, action) {
 				break;
 
 			case 'items':
+			case 'creatures':
 			case 'inventory':
 				const InventoryTableId = document.getElementById('InventoryTableId')
 				if (InventoryTableId) renderMixedTable(value, InventoryTableId);
@@ -302,7 +303,7 @@ async function renderMixedTable(data, tbody) {
 			} else {
 				row.appendChild(createTd('', []));
 			}
-			row.appendChild(createTd(item.quantity, ['text-center']));
+			row.appendChild(createTd(item.level, ['text-center']));
 		} else if (item) {
 			match = filteredList.find(fl => fl.id === item);
 			if (match) {

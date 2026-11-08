@@ -73,6 +73,9 @@ function buildObjectLinkButton(objName, objId, objType, cssClass = 'npcLinkBtn',
 		case 'ingredient':
 			page = 'ingredient.html';
 			break;
+		case 'leveledcreature':
+			page = 'leveledcreature.html';
+			break;
 		case 'leveleditem':
 			page = 'leveleditem.html';
 			break;
