@@ -865,7 +865,27 @@ public class Models
         [JsonPropertyName("items")]
         public JsonElement InventoryRaw { get; set; }
         [JsonIgnore]
-        public List<InventoryItem> items => Functions.GetInventory(InventoryRaw);
+        public List<LeveledObject> items => Functions.SetLeveledObject(InventoryRaw);
+    }
+
+    public class LeveledCreature
+    {
+        public string? flags { get; set; }
+        public string? id { get; set; }
+        public string? leveled_creature_flags { get; set; }
+        public int? chance_none { get; set; }
+        public string? expansion { get; set; }
+        [JsonPropertyName("creatures")]
+        public JsonElement CreaturesRaw { get; set; }
+        [JsonIgnore]
+        public List<LeveledObject> creatures => Functions.SetLeveledObject(CreaturesRaw);
+    }
+
+    public class LeveledObject
+    {
+        public string? id { get; set; }
+        public int? level { get; set; }
+        
     }
 
     public class Header

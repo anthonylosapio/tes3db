@@ -142,6 +142,7 @@ public class FileWriter
                 typeof(string[]),
                 typeof(long?),
                 typeof(List<InventoryItem>),
+                typeof(List<LeveledObject>),
                 typeof(List<Effect>),
                 typeof(List<string>),
                 typeof(List<Reaction>),
@@ -194,6 +195,7 @@ public class FileWriter
         var serializeTypes = new HashSet<Type>
         {
             typeof(List<InventoryItem>),
+            typeof(List<LeveledObject>),
             typeof(List<Effect>),
             typeof(List<string>),
             typeof(string[]),

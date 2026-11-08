@@ -26,6 +26,7 @@ public class FileReader
         string outputFaction = "faction";
         string outputIngredient = "ingredient";
         string outputLeveledItem = "leveleditem";
+        string outputLeveledCreature = "leveledcreature";
         string outputLockpick = "lockpick";
         string outputMagicEffect = "magiceffect";
         string outputMiscItem = "miscitem";
@@ -67,6 +68,7 @@ public class FileReader
         List<RepairItem> repairItems = new List<RepairItem>();
         List<Container> containers = new List<Container>();
         List<LeveledItem> leveledItems = new List<LeveledItem>();
+        List<LeveledCreature> leveledCreatures = new List<LeveledCreature>();
 
         //used to populate the topic of DialogueInfo. DialogInfo related to a specific topic appear of Dialogue object
         string DialogueTopic = "";
@@ -305,6 +307,19 @@ public class FileReader
                                     leveledItems.Add(leveledItem);      // new
                                 }
                                 break;
+
+                            case "LeveledCreature":
+                                var leveledCreature = Functions.DeserializeObject<LeveledCreature>(element);
+                                int idc = leveledCreatures.FindIndex(li => li.id == leveledCreature.id);
+                                if (idc >= 0)
+                                    leveledCreatures[idc] = leveledCreature;     // replace
+                                else
+                                {
+                                    leveledCreature.expansion = expansionNames[expansionIndex];
+                                    leveledCreatures.Add(leveledCreature);      // new
+                                }
+                                break;
+
                             case "Ingredient":
                                 var ingredient = Functions.DeserializeObject<Ingredient>(element);
                                 if (!ingredients.Any(i => i.id == ingredient.id))
@@ -436,6 +451,7 @@ public class FileReader
                 Console.WriteLine($" MagicEffects: {effects.Count,10} | MiscItems:    {miscItems.Count,10} | Probes:       {probes.Count,10}");
                 Console.WriteLine($" Races:        {races.Count,10} | RepairItems:  {repairItems.Count,10} | Skills:       {skills.Count,10}");
                 Console.WriteLine($" Spells:       {spells.Count,10} | Containers:   {containers.Count,10} | LeveledItems: {leveledItems.Count,10}");
+                Console.WriteLine($" LeveledCreatures: {leveledCreatures.Count,10}");
             }
             expansionIndex++;
         }
@@ -563,6 +579,7 @@ public class FileReader
         string outputFileAlchemy = Path.Combine(outputDirectory, $"{prefix}{outputAlchemy}.{fileExtension}");
         string outputFileIngredient = Path.Combine(outputDirectory, $"{prefix}{outputIngredient}.{fileExtension}");
         string outputFileLeveledItem = Path.Combine(outputDirectory, $"{prefix}{outputLeveledItem}.{fileExtension}");
+        string outputFileLeveledCreature = Path.Combine(outputDirectory, $"{prefix}{outputLeveledCreature}.{fileExtension}");
         string outputFileCreature = Path.Combine(outputDirectory, $"{prefix}{outputCreature}.{fileExtension}");
         string outputFileBirthsign = Path.Combine(outputDirectory, $"{prefix}{outputBirthsign}.{fileExtension}");
         string outputFileRace = Path.Combine(outputDirectory, $"{prefix}{outputRace}.{fileExtension}");
@@ -578,8 +595,8 @@ public class FileReader
 
         string outputFileCellReferenceMap = Path.Combine(outputDirectory, $"{prefix}{outputCellReferenceMap}.{fileExtension}");
 
-        object[] listsObject = { npcs, /*dialogues,*/ dialogueInfos, books, miscItems, cells, clothes, enchantings, weapons, spells, armors, effects, alchemies, ingredients, creatures, birthsigns, races, apparatuses, classes, factions, skills, lockpicks, probes, headers, repairItems, containers, cellReferenceMap, leveledItems };
-        string[] tableNames = { outputNpc,/* outputDialogue, */outputDialogueInfo, outputBook, outputMiscItem, outputCell, outputClothing, outputEnchanting, outputWeapon, outputSpell, outputArmor, outputMagicEffect, outputAlchemy, outputIngredient, outputCreature, outputBirthsign, outputRace, outputApparatus, outputClass, outputFaction, outputSkill, outputLockpick, outputProbe, outputHeader, outputRepairItem, outputContainer, outputCellReferenceMap, outputLeveledItem };
+        object[] listsObject = { npcs, /*dialogues,*/ dialogueInfos, books, miscItems, cells, clothes, enchantings, weapons, spells, armors, effects, alchemies, ingredients, creatures, birthsigns, races, apparatuses, classes, factions, skills, lockpicks, probes, headers, repairItems, containers, cellReferenceMap, leveledItems, leveledCreatures };
+        string[] tableNames = { outputNpc,/* outputDialogue, */outputDialogueInfo, outputBook, outputMiscItem, outputCell, outputClothing, outputEnchanting, outputWeapon, outputSpell, outputArmor, outputMagicEffect, outputAlchemy, outputIngredient, outputCreature, outputBirthsign, outputRace, outputApparatus, outputClass, outputFaction, outputSkill, outputLockpick, outputProbe, outputHeader, outputRepairItem, outputContainer, outputCellReferenceMap, outputLeveledItem, outputLeveledCreature };
 
         string format = outputFormat.ToLowerInvariant();
         switch (format)
@@ -612,6 +629,7 @@ public class FileReader
                 FileWriter.WriteCsv(outputFileCell, cells, includeColumnHeadings, format);
                 FileWriter.WriteCsv(outputFileContainer, containers, includeColumnHeadings, format);
                 FileWriter.WriteCsv(outputFileLeveledItem, leveledItems, includeColumnHeadings, format);
+                FileWriter.WriteCsv(outputFileLeveledCreature, leveledCreatures, includeColumnHeadings, format);
                 break;
             case "mysql":
             case "postgres":
@@ -642,6 +660,7 @@ public class FileReader
                 FileWriter.WriteSql(outputFileCell, cells, outputCell, format);
                 FileWriter.WriteSql(outputFileContainer, containers, outputContainer, format);
                 FileWriter.WriteSql(outputFileLeveledItem, leveledItems, outputLeveledItem, format);
+                FileWriter.WriteSql(outputFileLeveledCreature, leveledCreatures, outputLeveledCreature, format);
                 FileWriter.WriteSql(outputFileCellReferenceMap, cellReferenceMap, outputCellReferenceMap, format);
 
                 FileWriter.WriteSqlCreateTableFile(Path.Combine(outputDirectory, "tes3db.sql"), listsObject, tableNames, format, "tes3db");
