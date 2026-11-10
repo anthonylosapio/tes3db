@@ -196,6 +196,7 @@ public static class SqlQueries
         ORDER BY name;";
 
 	#endregion
+
 	#region Item Queries
 	public const string alchemy_query = @"SELECT * FROM alchemy WHERE id = @id";
 	public const string apparatus_query = @"SELECT * FROM apparatus WHERE id = @id";
@@ -205,6 +206,143 @@ public static class SqlQueries
     public const string book_query = @"SELECT book.*, e.effects, e.enchant_type, e.cost, e.max_charge FROM book	LEFT JOIN enchanting AS e ON e.id = book.enchanting	WHERE book.id = @id";
     public const string npc_query = @"SELECT * FROM npc WHERE id = @id";
     #endregion Item Queries
+
+    #region Cell Queries
+    public const string cell_npc_query = @"
+	SELECT n.id, n.name, n.expansion, n.faction_id, n.faction
+	FROM
+		cellreferencemap AS c
+		JOIN npc AS n ON c.reference_id = n.id
+	WHERE c.cell_id = @id1
+	";
+
+    public const string cell_equipment_query = @"
+	SELECT clothing.id, clothing.name, clothing.clothing_type AS 'type', 'clothing' AS 'object', clothing.expansion, c.quantity, c.owner, c.lock_level, c.trap, c.key, c.owner_faction, c.owner_faction_rank, npc.name AS 'owner_name'
+    FROM
+		clothing
+		JOIN cellreferencemap AS c ON c.reference_id = clothing.id
+		LEFT JOIN npc ON npc.id = c.owner
+    WHERE c.cell_id = @id1
+	UNION ALL
+	SELECT w.id, w.name, w.weapon_type AS 'type', 'weapon' AS 'object', w.expansion, c.quantity, c.owner, c.lock_level, c.trap, c.key, c.owner_faction, c.owner_faction_rank, npc.name AS 'owner_name'
+    FROM
+		weapon AS w
+		JOIN cellreferencemap AS c ON c.reference_id = w.id
+		LEFT JOIN npc ON npc.id = c.owner
+    WHERE c.cell_id = @id2
+	UNION ALL
+	SELECT a.id, a.name, a.armor_type AS 'type', 'armor' AS 'object', a.expansion, c.quantity, c.owner, c.lock_level, c.trap, c.key, c.owner_faction, c.owner_faction_rank, npc.name AS 'owner_name'
+    FROM
+		armor AS a
+		JOIN cellreferencemap AS c ON c.reference_id = a.id
+		LEFT JOIN npc ON npc.id = c.owner
+    WHERE c.cell_id = @id3
+
+	ORDER BY object, type, name;
+	";
+
+    public const string cell_ingredient_query = @"
+	SELECT i.id, i.name, 'ingredient' AS 'object', i.expansion, c.quantity, c.owner, c.lock_level, c.trap, c.key, c.owner_faction, c.owner_faction_rank, npc.name AS 'owner_name'
+    FROM
+		ingredient AS i
+		JOIN cellreferencemap AS c ON c.reference_id = i.id
+		LEFT JOIN npc ON npc.id = c.owner
+    WHERE c.cell_id = @id1
+	UNION ALL
+	SELECT a.id, a.name, 'alchemy' AS 'object', a.expansion, c.quantity, c.owner, c.lock_level, c.trap, c.key, c.owner_faction, c.owner_faction_rank, npc.name AS 'owner_name'
+    FROM
+		alchemy AS a
+		JOIN cellreferencemap AS c ON c.reference_id = a.id
+		LEFT JOIN npc ON npc.id = c.owner
+    WHERE c.cell_id = @id2
+	ORDER BY object, name;
+	";
+
+    public const string cell_miscitem_query = @"
+	SELECT m.id, m.name, 'miscitem' AS 'object', m.expansion, c.quantity, c.owner, c.lock_level, c.trap, c.key, c.owner_faction, c.owner_faction_rank, npc.name AS 'owner_name'
+    FROM
+		miscitem AS m
+		JOIN cellreferencemap AS c ON c.reference_id = m.id
+		LEFT JOIN npc ON npc.id = c.owner
+    WHERE c.cell_id = @id1
+	UNION ALL
+	SELECT m.id, m.name, 'book' AS 'object', m.expansion, c.quantity, c.owner, c.lock_level, c.trap, c.key, c.owner_faction, c.owner_faction_rank, npc.name AS 'owner_name'
+    FROM
+		book AS m
+		JOIN cellreferencemap AS c ON c.reference_id = m.id
+		LEFT JOIN npc ON npc.id = c.owner
+    WHERE c.cell_id = @id2
+
+	ORDER BY object, name;
+	";
+
+    public const string cell_tool_query = @"
+	SELECT a.id, a.name, 'apparatus' AS 'object', c.quantity, c.owner, c.lock_level, c.trap, c.key, c.owner_faction, c.owner_faction_rank, npc.name AS 'owner_name'
+    FROM
+		apparatus AS a
+		JOIN cellreferencemap AS c ON c.reference_id = a.id
+		LEFT JOIN npc ON npc.id = c.owner
+    WHERE c.cell_id = @id1
+	UNION ALL
+	SELECT a.id, a.name, 'lockpick' AS 'object', c.quantity, c.owner, c.lock_level, c.trap, c.key, c.owner_faction, c.owner_faction_rank, npc.name AS 'owner_name'
+    FROM
+		lockpick AS a
+		JOIN cellreferencemap AS c ON c.reference_id = a.id
+		LEFT JOIN npc ON npc.id = c.owner
+    WHERE c.cell_id = @id2
+	UNION ALL
+	SELECT a.id, a.name, 'probe' AS 'object', c.quantity, c.owner, c.lock_level, c.trap, c.key, c.owner_faction, c.owner_faction_rank, npc.name AS 'owner_name'
+    FROM
+		probe AS a
+		JOIN cellreferencemap AS c ON c.reference_id = a.id
+		LEFT JOIN npc ON npc.id = c.owner
+    WHERE c.cell_id = @id3
+	UNION ALL
+	SELECT a.id, a.name, 'repairitem' AS 'object', c.quantity, c.owner, c.lock_level, c.trap, c.key, c.owner_faction, c.owner_faction_rank, npc.name AS 'owner_name'
+    FROM
+		repairitem AS a
+		JOIN cellreferencemap AS c ON c.reference_id = a.id
+		LEFT JOIN npc ON npc.id = c.owner
+    WHERE c.cell_id = @id4
+
+	ORDER BY object, name;
+	";
+
+    public const string cell_container_query = @"
+	SELECT a.*, c.owner, c.lock_level, c.trap, c.key, c.owner_faction, c.owner_faction_rank, npc.name AS 'owner_name'
+    FROM
+		container AS a
+		JOIN cellreferencemap AS c ON c.reference_id = a.id
+		LEFT JOIN npc ON npc.id = c.owner
+    WHERE c.cell_id = @id1
+	ORDER BY name;
+	";
+
+    public const string cell_cell_query = @"
+	SELECT a.id, a.name, c.owner, 'cell' AS 'object', c.lock_level, c.trap, c.key, c.owner_faction, c.owner_faction_rank, npc.name AS 'owner_name', a.region
+    FROM
+		cell AS a
+		JOIN cellreferencemap AS c ON c.reference_id = a.id
+		LEFT JOIN npc ON npc.id = c.owner
+    WHERE c.cell_id = @id1
+	ORDER BY name;
+	";
+
+    public const string cell_creature_query = @"
+	SELECT n.id, n.name, n.expansion, n.creature_type, 'creature' AS 'object', c.quantity
+	FROM
+		cellreferencemap AS c
+		JOIN creature AS n ON c.reference_id = n.id
+	WHERE c.cell_id = @id1
+	";
+
+    public const string cell_leveledcreature_query = @"
+	SELECT l.id, l.id AS 'name', l.expansion, 'leveledcreature' AS 'object', c.quantity
+	FROM
+		cellreferencemap AS c
+		JOIN leveledcreature AS l ON c.reference_id = l.id
+	WHERE c.cell_id = @id1";
+    #endregion Cell Queries
 
     /// <summary>
     /// Parameters @speakerId, @speakerId2, @speakerId3 should all be passed the same value

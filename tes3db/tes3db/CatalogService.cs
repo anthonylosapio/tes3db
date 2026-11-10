@@ -12,6 +12,7 @@ public interface ICatalogService {
     Task<object> GetBirthsign(CancellationToken ct, string id);
     Task<object> GetItem(CancellationToken ct, string query, string id);
     Task<object> GetNpc(CancellationToken ct, string id);
+    Task<object> GetCell(CancellationToken ct, string id);
 }
 public class CatalogService(ICatalogRepository repo) : ICatalogService
 {
@@ -102,6 +103,64 @@ public class CatalogService(ICatalogRepository repo) : ICatalogService
         {
             data,
             dialogue
+        };
+        return returnObject;
+    }
+
+    public async Task<object> GetCell(CancellationToken ct, string id)
+    {
+        var parameter1 = new List<CatalogRepository.QueryParameter>
+        {
+            new CatalogRepository.QueryParameter{ Name="@id", Value=id }
+        };
+        var parameter2 = new List<CatalogRepository.QueryParameter>
+        {
+            new CatalogRepository.QueryParameter{ Name="@id1", Value=id },
+            new CatalogRepository.QueryParameter{ Name="@id2", Value=id }
+        };
+        var parameter3 = new List<CatalogRepository.QueryParameter>
+        {
+            new CatalogRepository.QueryParameter{ Name="@id1", Value=id },
+            new CatalogRepository.QueryParameter{ Name="@id2", Value=id },
+            new CatalogRepository.QueryParameter{ Name="@id3", Value=id }
+        };
+        var parameter4 = new List<CatalogRepository.QueryParameter>
+        {
+            new CatalogRepository.QueryParameter{ Name="@id1", Value=id },
+            new CatalogRepository.QueryParameter{ Name="@id2", Value=id },
+            new CatalogRepository.QueryParameter{ Name="@id3", Value=id },
+            new CatalogRepository.QueryParameter{ Name="@id4", Value=id }
+        };
+
+        var data = await repo.QueryToDictionaryAsync("SELECT * FROM cell WHERE id = @id", parameter1, ct);
+
+        var npcs = await repo.QueryToDictionaryAsync(SqlQueries.cell_npc_query, parameter1, ct);
+
+        var containers = await repo.QueryToDictionaryAsync(SqlQueries.cell_container_query, parameter1, ct);
+
+        var equipment = await repo.QueryToDictionaryAsync(SqlQueries.cell_equipment_query, parameter3, ct);
+
+        var ingredients = await repo.QueryToDictionaryAsync(SqlQueries.cell_ingredient_query, parameter2, ct);
+
+        var tools = await repo.QueryToDictionaryAsync(SqlQueries.cell_tool_query, parameter4, ct);
+
+        var miscitems = await repo.QueryToDictionaryAsync(SqlQueries.cell_miscitem_query, parameter2, ct);
+
+        var creatures = await repo.QueryToDictionaryAsync(SqlQueries.cell_creature_query, parameter1, ct);
+
+        var lists = await repo.QueryToDictionaryAsync(SqlQueries.cell_leveledcreature_query, parameter1, ct);
+
+        var returnObject = new
+        {
+            data,
+            npcs,
+            containers,
+            equipment,
+            ingredients,
+            tools,
+            miscitems,
+            creatures,
+            lists
         };
         return returnObject;
     }

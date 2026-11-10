@@ -67,6 +67,9 @@ public class ApiServer
         app.MapGet("/api/book/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
             TypedResults.Ok(await service.GetItem(ct, SqlQueries.book_query, id)));
 
+        app.MapGet("/api/cell/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
+            TypedResults.Ok(await service.GetCell(ct, id)));
+
         app.MapGet("/api/npc/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
             TypedResults.Ok(await service.GetNpc(ct, id)));
 
