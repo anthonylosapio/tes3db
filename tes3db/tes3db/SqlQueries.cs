@@ -213,7 +213,7 @@ public static class SqlQueries
 	FROM
 		cellreferencemap AS c
 		JOIN npc AS n ON c.reference_id = n.id
-	WHERE c.cell_id = @id1
+	WHERE c.cell_id = @id
 	";
 
     public const string cell_equipment_query = @"
@@ -314,7 +314,7 @@ public static class SqlQueries
 		container AS a
 		JOIN cellreferencemap AS c ON c.reference_id = a.id
 		LEFT JOIN npc ON npc.id = c.owner
-    WHERE c.cell_id = @id1
+    WHERE c.cell_id = @id
 	ORDER BY name;
 	";
 
@@ -324,7 +324,7 @@ public static class SqlQueries
 		cell AS a
 		JOIN cellreferencemap AS c ON c.reference_id = a.id
 		LEFT JOIN npc ON npc.id = c.owner
-    WHERE c.cell_id = @id1
+    WHERE c.cell_id = @id
 	ORDER BY name;
 	";
 
@@ -333,7 +333,7 @@ public static class SqlQueries
 	FROM
 		cellreferencemap AS c
 		JOIN creature AS n ON c.reference_id = n.id
-	WHERE c.cell_id = @id1
+	WHERE c.cell_id = @id
 	";
 
     public const string cell_leveledcreature_query = @"
@@ -341,7 +341,7 @@ public static class SqlQueries
 	FROM
 		cellreferencemap AS c
 		JOIN leveledcreature AS l ON c.reference_id = l.id
-	WHERE c.cell_id = @id1";
+	WHERE c.cell_id = @id";
     #endregion Cell Queries
 
     /// <summary>
