@@ -43,7 +43,7 @@ function start(json, action) {
 			renderLinkList(data.creatures, CreatureLinkListId, 'creature');
 		}
 
-		//List linked Cells
+		//List linked Containers
 		//Used by Apparatus, Armor, Book, Clothing, Lockpick, MiscItem, Probe, RepairItem, Spell, Weapon
 		const ContainerLinkListId = document.getElementById('ContainerLinkListId');
 		if (data.containers && ContainerLinkListId) {
@@ -99,18 +99,22 @@ function start(json, action) {
 			renderLinkList(data.weapons, WeaponsContainer);
 		}
 
+		const ListLinkListId = document.getElementById('ListLinkListId');
+		if (data.lists && ListLinkListId) {
+			renderLinkList(data.lists, ListLinkListId);
+		}
 		//List of Ingredients
 		//Used by Cell
 		const IngredientsContainer = document.getElementById('IngredientsContainer');
 		if (data.ingredients && IngredientsContainer) {
-			renderTableBodyRows(data.ingredients, IngredientsContainer);
+			renderTableBodyRows(data.ingredients, IngredientsContainer, true);
 		}
 
 		//List of Tools (Apparatus, Lockpicks, Probes, RepairItems)
 		//Used by Cell
 		const ToolsContainer = document.getElementById('ToolsContainer');
 		if (data.tools && ToolsContainer) {
-			renderTableBodyRows(data.tools, ToolsContainer);
+			renderTableBodyRows(data.tools, ToolsContainer, true);
 		}
 
 		//List of Misc Items
@@ -118,22 +122,33 @@ function start(json, action) {
 		const MiscItemContainer = document.getElementById('MiscItemContainer');
 		if (data.miscitems && MiscItemContainer) {
 			//			console.log(JSON.stringify(data.miscitems));
-			renderTableBodyRows(data.miscitems, MiscItemContainer);
+			renderTableBodyRows(data.miscitems, MiscItemContainer, true);
 		}
 
 		//List of Misc Items
 		//Used by Cell
 		const EquipmentContainer = document.getElementById('EquipmentContainer');
 		if (data.equipment && EquipmentContainer) {
-			renderTableBodyRows(data.equipment, EquipmentContainer);
+			renderTableBodyRows(data.equipment, EquipmentContainer, true);
 		}
 		//List of Misc Items
 		//Used by Cell
 		const CellsContainer = document.getElementById('CellsContainer');
-
 		if (data.cells && CellsContainer) {
 			//			console.log(JSON.stringify(data.cells));
-			renderTableBodyRows(data.cells, CellsContainer);
+			renderTableBodyRows(data.cells, CellsContainer, true);
+		}
+
+		const CreaturesContainer = document.getElementById('CreaturesContainer');
+		if (data.creatures && CreaturesContainer) {
+			console.log(JSON.stringify(data.creatures));
+			renderTableBodyRows(data.creatures, CreaturesContainer, true);
+		}
+
+		const LeveledCreaturesContainer = document.getElementById('LeveledCreaturesContainer');
+		if (data.lists && LeveledCreaturesContainer) {
+			//			console.log(JSON.stringify(data.lists));
+			renderTableBodyRows(data.lists, LeveledCreaturesContainer, true);
 		}
 
 		//List of Containers
@@ -173,6 +188,7 @@ function renderPage(data, action) {
 				break;
 
 			case 'items':
+			case 'creatures':
 			case 'inventory':
 				const InventoryTableId = document.getElementById('InventoryTableId')
 				if (InventoryTableId) renderMixedTable(value, InventoryTableId);
@@ -302,7 +318,7 @@ async function renderMixedTable(data, tbody) {
 			} else {
 				row.appendChild(createTd('', []));
 			}
-			row.appendChild(createTd(item.quantity, ['text-center']));
+			row.appendChild(createTd(item.level, ['text-center']));
 		} else if (item) {
 			match = filteredList.find(fl => fl.id === item);
 			if (match) {
@@ -424,26 +440,34 @@ function renderLinkStringArray(array, parent, type) {
 	}
 }
 
-function renderTableBodyRows(object, parent) {
+function renderTableBodyRows(object, parent, includeHeader = false) {
 	//	console.log(JSON.stringify(object));
 	const nameCounts = {};
 	let hasOwner = false;
 	let hasKey = false;
 	let hasRegion = false;
+	let hasQuantity = false;
+	let hasName = false;
+	let hasObject = false;
+
 	for (const obj of object) {
 		nameCounts[obj.name] = (nameCounts[obj.name] || 0) + 1;
 		if (obj.owner || obj.owner_faction) hasOwner = true;
 		if (obj.lock_level || obj.trap) hasKey = true;
 		if (obj.region) hasRegion = true;
+		if (obj.quantity) hasQuantity = true;
+		if (obj.name) hasName = true;
+		if (obj.object) hasObject = true;
 	}
 
-	if (object[0] && object[0].object && object[0].object == 'cell') {
+	if (includeHeader) {
 		const headTr = document.createElement('tr');
-		headTr.append(createTd('cell', ['table-label']));
+		if (hasName) headTr.append(createTd('name', ['table-label']));
+		if (hasObject && object[0].object != 'cell' && object[0].object != 'leveledcreature') headTr.append(createTd('type', ['table-label']));
 		if (hasRegion) headTr.append(createTd('region', ['table-label']));
 		if (hasKey) headTr.append(createTd('lock/trap', ['table-label']));
 		if (hasOwner) headTr.append(createTd('owner', ['table-label']));
-		headTr.append(createTd('quantity', ['table-label']));
+		if (hasQuantity) headTr.append(createTd('quantity', ['table-label']));
 		parent.append(headTr);
 	}
 
@@ -456,7 +480,6 @@ function renderTableBodyRows(object, parent) {
 		//rows for Faction page reactions
 		if (row.faction) tr.append(createTd(buildObjectLinkButton(row.faction, row.faction, 'faction')));
 		if (row.reaction) tr.append(createTd(row.reaction, ['text-center']));
-
 
 		if (row.name && row.id && row.object) tr.append(createTd(buildObjectLinkButton(row.name, row.id, row.object, 'linkBtn', isDuplicateName)));
 
@@ -487,9 +510,9 @@ function renderTableBodyRows(object, parent) {
 
 		if (row.key && row.object != 'cell') tr.append(createTd(buildObjectLinkButton(row.key, row.key, 'miscitem', 'linkBtn')));
 
-		if (row.object && row.object != 'cell') tr.append(createTd(row.object));
+		if (row.object && row.object != 'cell' && row.object != 'leveledcreature') tr.append(createTd(row.object));
 
-		if (hasOwner /*&& row.object!='cell'*/) {
+		if (hasOwner) {
 			if (row.owner) {
 				tr.appendChild(createTd(buildObjectLinkButton(row.owner_name, row.owner, 'npc', 'linkBtn')));
 			} else if (row.owner_faction) {
@@ -500,7 +523,6 @@ function renderTableBodyRows(object, parent) {
 		}
 
 		if (row.quantity) tr.append(createTd(row.quantity, ['text-center']));
-
 
 		parent.append(tr);
 	}

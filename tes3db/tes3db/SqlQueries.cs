@@ -77,6 +77,8 @@ public static class SqlQueries
 		SELECT DISTINCT `id`, `name`, 'container' AS `type` FROM `container`
 		UNION ALL
 		SELECT DISTINCT `id`, `id` AS 'name', 'leveleditem' AS `type` FROM `leveleditem`
+		UNION ALL
+		SELECT DISTINCT `id`, `id` AS 'name', 'leveledcreature' AS `type` FROM `leveledcreature`
 	;";
 
     /// <summary>
@@ -126,6 +128,8 @@ public static class SqlQueries
 			FROM cell
 		UNION ALL
 		SELECT DISTINCT id, id AS 'name', 'leveleditem' AS type FROM leveleditem
+		UNION ALL
+		SELECT DISTINCT id, id AS 'name', 'leveledcreature' AS type FROM leveledcreature
 	;";
 
     /// <summary>

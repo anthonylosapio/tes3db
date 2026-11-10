@@ -52,6 +52,23 @@ public class Functions
         return inventory;
     }
 
+    public static List<LeveledObject> SetLeveledObject(JsonElement element)
+    {
+        var leveledObjects = new List<LeveledObject>();
+        if (element.ValueKind == JsonValueKind.Array)
+        {
+            foreach (JsonElement array in element.EnumerateArray())
+            {
+                LeveledObject obj = new LeveledObject();
+                obj.id = array[0].GetString();
+                obj.level = array[1].GetInt32();
+
+                leveledObjects.Add(obj);
+            }
+        }
+        return leveledObjects;
+    }
+
     public static Skills SetSkills(JsonElement element)
     {
         Skills skills = new Skills();
