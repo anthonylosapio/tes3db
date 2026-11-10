@@ -238,7 +238,7 @@ public static class SqlQueries
 		LEFT JOIN npc ON npc.id = c.owner
     WHERE c.cell_id = @id3
 
-	ORDER BY object, type, name;
+	ORDER BY 4, 3, 2;
 	";
 
     public const string cell_ingredient_query = @"
@@ -255,7 +255,7 @@ public static class SqlQueries
 		JOIN cellreferencemap AS c ON c.reference_id = a.id
 		LEFT JOIN npc ON npc.id = c.owner
     WHERE c.cell_id = @id2
-	ORDER BY object, name;
+	ORDER BY 3, 2;
 	";
 
     public const string cell_miscitem_query = @"
@@ -273,7 +273,7 @@ public static class SqlQueries
 		LEFT JOIN npc ON npc.id = c.owner
     WHERE c.cell_id = @id2
 
-	ORDER BY object, name;
+	ORDER BY 3, 2;
 	";
 
     public const string cell_tool_query = @"
@@ -305,7 +305,7 @@ public static class SqlQueries
 		LEFT JOIN npc ON npc.id = c.owner
     WHERE c.cell_id = @id4
 
-	ORDER BY object, name;
+	ORDER BY 3, 2;
 	";
 
     public const string cell_container_query = @"
