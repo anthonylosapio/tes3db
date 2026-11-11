@@ -195,6 +195,13 @@ public static class SqlQueries
         WHERE c.reference_id = @id
         ORDER BY name;";
 
+    public const string item_list_query = @"
+		SELECT l.id, l.id AS 'name', 'leveleditem' AS 'type', `expansion` 
+		FROM leveleditem l
+			JOIN json_each(l.items) AS j ON j.value->>'$.id' = @id
+	    ORDER BY expansion, l.id;
+	";
+
 	#endregion
 
 	#region Item Queries
@@ -204,6 +211,8 @@ public static class SqlQueries
 	public const string birthsign_query = @"SELECT * FROM birthsign WHERE id = @id";
 	public const string birthsign_spell_query = @"SELECT s.* FROM birthsign b LEFT JOIN spell s ON EXISTS (SELECT 1 FROM json_each(b.spells) AS j WHERE j.value = s.id) WHERE b.id = @id;";
     public const string book_query = @"SELECT book.*, e.effects, e.enchant_type, e.cost, e.max_charge FROM book	LEFT JOIN enchanting AS e ON e.id = book.enchanting	WHERE book.id = @id";
+    public const string clothing_query = @"SELECT c.*, e.effects, e.enchant_type, e.cost, e.max_charge FROM clothing AS c LEFT JOIN enchanting AS e ON e.id = c.enchanting WHERE c.id = @id";
+
     public const string npc_query = @"SELECT * FROM npc WHERE id = @id";
     #endregion Item Queries
 
@@ -344,11 +353,34 @@ public static class SqlQueries
 	WHERE c.cell_id = @id";
     #endregion Cell Queries
 
+    #region Class Faction Race Queries
+
+    public const string npc_class_query = @"
+		SELECT id, name, expansion, location 
+		FROM npc 
+		WHERE class_id = @id 
+		ORDER BY expansion, location, name;
+		";
+
+    public const string npc_faction_query = @"
+		SELECT id, name, expansion, location 
+		FROM npc 
+		WHERE faction_id = @id 
+		ORDER BY expansion, location, name;
+		";
+
+    public const string npc_race_query = @"
+		SELECT id, name, expansion, location 
+		FROM npc 
+		WHERE race_id = @id 
+		ORDER BY expansion, location, name;
+		";
+
+    #endregion 
     /// <summary>
     /// Parameters @speakerId, @speakerId2, @speakerId3 should all be passed the same value
     /// </summary>
     public const string npc_dialogue_query = @"
-
     WITH RECURSIVE ordered_list AS (
 		SELECT 
 			id, 

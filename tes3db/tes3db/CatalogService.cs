@@ -13,6 +13,7 @@ public interface ICatalogService {
     Task<object> GetItem(CancellationToken ct, string query, string id);
     Task<object> GetNpc(CancellationToken ct, string id);
     Task<object> GetCell(CancellationToken ct, string id);
+    Task<object> GetClass(CancellationToken ct, string id);
 }
 public class CatalogService(ICatalogRepository repo) : ICatalogService
 {
@@ -53,13 +54,16 @@ public class CatalogService(ICatalogRepository repo) : ICatalogService
 
         var cells = await repo.QueryToDictionaryAsync(SqlQueries.cell_inventory_query, parameters, ct);
 
+        var lists = await repo.QueryToDictionaryAsync(SqlQueries.item_list_query, parameters, ct);
+
         var returnObject = new
         {
              data,
              npcs,
              creatures,
              containers,
-             cells
+             cells,
+             lists
         };
         return returnObject;
     }
@@ -161,6 +165,24 @@ public class CatalogService(ICatalogRepository repo) : ICatalogService
             miscitems,
             creatures,
             lists
+        };
+        return returnObject;
+    }
+
+    public async Task<object> GetClass(CancellationToken ct, string id)
+    {
+        var parameters = new List<CatalogRepository.QueryParameter>
+        {
+            new CatalogRepository.QueryParameter{ Name="@id", Value=id }
+        };
+        var data = await repo.QueryToDictionaryAsync("SELECT * FROM class WHERE id = @id", parameters, ct);
+        
+        var npcs = await repo.QueryToDictionaryAsync(SqlQueries.npc_class_query, parameters, ct);
+
+        var returnObject = new
+        {
+            data,
+            npcs
         };
         return returnObject;
     }
