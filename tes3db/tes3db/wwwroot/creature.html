@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+    <meta http-equiv="CACHE-CONTROL" content="NO-CACHE">
+    <title>The Morrowind Database</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" sizes="57x57" href="apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+    <link href="bootstrap.css" rel="stylesheet">
+    <link href="site.css" rel="stylesheet">
+    <script src="functions.js"></script>
+    <script src="item.js"></script>
+    <script>
+			window.onload = function() {
+				fetchObjectData('Creature');
+			};
+    </script>
+</head>
+<body style="background-color: #2B1A08;">
+    <div class="container">
+        <!-- -- -- -- BEGIN ROW 1  -- -- -- -->
+        <div class="row">
+            <div class="col-12 mb-1">
+                <div class="content-border content px-3 header-container">
+                    <div>
+                        <h1 id="nameId"></h1>
+                        Id: <span id="idId"></span>
+                    </div>
+                    <div style="color: #6F541D;">
+                        <h1><a class="plain-link" href="index.html">tes3db<span class="title-suffix">.com</span></a></h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- -- -- -- END ROW 1    -- -- -- -->
+        <!-- -- BEGIN ROW 2 -- -->
+        <div class="row gx-1 my-1">
+
+            <div class="col-12 col-md-6 col-lg-4 mb-1">
+                <div class="content-border content h-100 p-2">
+                    <div class="row"><div class="col text-center">Info</div></div>
+                    <table class="w-100">
+                        <tbody>
+                            <tr><td class="table-label">Crature Type:</td><td class="table-value" id="creature_typeId"></td></tr>
+                            <tr><td class="table-label">Expansion:</td><td class="table-value" id="expansionId"></td></tr>
+                            <tr><td class="table-label">Soul Value:</td><td class="table-value" id="soulId"></td></tr>
+                            <tr><td class="p-2"> </td><td> </td></tr>
+                            <tr><td class="table-label" style="vertical-align: top;">Flags:</td><td class="table-value" id="creature_flagsId"></td></tr>
+                            <tr><td class="table-label" style="vertical-align: top;">Services:</td><td class="table-value" id="servicesId"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-4 mb-1">
+                <div class="content-border content h-100 p-2">
+                    <div class="row"><div class="col text-center">Attributes</div></div>
+                    <table class="w-100">
+                        <tbody>
+                            <tr><td class="table-label">Strength:</td><td class="text-end table-value" id="strengthId"></td></tr>
+                            <tr><td class="table-label">Intelligence:</td><td class="text-end table-value" id="intelligenceId"></td></tr>
+                            <tr><td class="table-label">Willpower:</td><td class="text-end table-value" id="willpowerId"></td></tr>
+                            <tr><td class="table-label">Agility:</td><td class="text-end table-value" id="agilityId"></td></tr>
+                            <tr><td class="table-label">Speed:</td><td class="text-end table-value" id="speedId"></td></tr>
+                            <tr><td class="table-label">Endurance:</td><td class="text-end table-value" id="enduranceId"></td></tr>
+                            <tr><td class="table-label">Personality:</td><td class="text-end table-value" id="personalityId"></td></tr>
+                            <tr><td class="table-label">Luck:</td><td class="text-end table-value" id="luckId"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-4 mb-1">
+                <div class="content-border content h-100 p-2">
+                    <div class="row"><div class="col text-center">Stats</div></div>
+                    <table class="w-100">
+                        <tbody>
+                            <tr><td class="table-label">Level:</td><td class="text-end table-value" id="levelId"></td></tr>
+                            <tr><td class="table-label">Health:</td><td class="text-end table-value" id="healthId"></td></tr>
+                            <tr><td class="table-label">Magicka:</td><td class="text-end table-value" id="magickaId"></td></tr>
+                            <tr><td class="table-label">Fatigue:</td><td class="text-end table-value" id="fatigueId"></td></tr>
+                            <tr><td class="p-2"> </td><td> </td></tr>
+                            <tr><td class="table-label">Combat:</td><td class="text-end table-value" id="combatId"></td></tr>
+                            <tr><td class="table-label">Magic:</td><td class="text-end table-value" id="magicId"></td></tr>
+                            <tr><td class="table-label">Stealth:</td><td class="text-end table-value" id="stealthId"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-4 mb-1">
+                <div class="content-border content h-100 p-2">
+                    <div class="row"><div class="col text-center">Spells & Abilities</div></div>
+                    <table class="w-100">
+                        <tbody id="SpellsTableId">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-5 mb-1">
+                <div class="content-border content h-100 p-2">
+                    <div class="row"><div class="col text-center">Inventory</div></div>
+                    <table class="w-100">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody id="InventoryTableId">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-3 mb-1">
+                <div class="content-border content h-100 p-2">
+                    <div class="row"><div class="col text-center">AI Data</div></div>
+                    <table class="w-100">
+                        <tbody>
+                            <tr><td class="table-label">Hello</td><td class="text-end table-value" id="helloId"></td></tr>
+                            <tr><td class="table-label">Fight</td><td class="text-end table-value" id="fightId"></td></tr>
+                            <tr><td class="table-label">Flee</td><td class="text-end table-value" id="fleeId"></td></tr>
+                            <tr><td class="table-label">Alarm</td><td class="text-end table-value" id="alarmId"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6 col-xl-6">
+                <div class="content-border content h-100 p-2">
+                    <div class="text-center">Found in Cells:</div>
+                    <div class="linked-inventory-list" id="CellLinkListId">
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6 col-xl-6">
+                <div class="content-border content h-100 p-2">
+                    <div class="text-center"> Found in Leveled Creature Lists:</div>
+                    <div class="linked-inventory-list">
+                        <div class="linked-inventory-list" id="ListLinkListId">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- -- END ROW 3 -- -->
+        <!-- -- -- -- BEGIN DIALOGUE CONTENT -- -- -- -->
+        <div class="row gx-1 my-1">
+
+            <div class="col-12 ">
+                <div class="row g-0 content content-border p-2">
+                    <div class="col-12 text-center">
+                        Unique Dialogue
+                    </div>
+                    <div id="DialogueDiv" class="col-12">
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- -- -- -- END DIALOGUE CONTENT -- -- -- -->
+        <!-- BEGIN FOOTER -->
+        <div class="row">
+            <div class="col text-center">
+                <div class="content content-border">
+                    &nbsp;
+                </div>
+            </div>
+        </div>
+        <!-- END FOOTER -->
+
+
+    </div>
+</body>
+</html>

@@ -137,21 +137,22 @@ public static class SqlQueries
     /// Returns meta data about the game files used to populate the database
     /// </summary>
     public const string header_query = "SELECT `expansion`, `author`, `description` FROM `header`;";
+    #region Item List Queries
+    public const string expansion_list_query = "SELECT DISTINCT `expansion` FROM `header`";
 
-	public const string expansion_query = "SELECT DISTINCT `expansion` FROM `header`";
+	public const string race_list_query = "SELECT DISTINCT `name` FROM `race` ORDER BY `name` ASC";
 
-	public const string race_query = "SELECT DISTINCT `name` FROM `race` ORDER BY `name` ASC";
+	public const string class_list_query = "SELECT DISTINCT `name` FROM `class` ORDER BY `name` ASC";
 
-	public const string class_query = "SELECT DISTINCT `name` FROM `class` ORDER BY `name` ASC";
+	public const string faction_list_query = "SELECT DISTINCT `name` FROM `faction` ORDER BY `name` ASC";
 
-	public const string faction_query = "SELECT DISTINCT `name` FROM `faction` ORDER BY `name` ASC";
-
-	public const string magic_effect_query = "SELECT DISTINCT `id` FROM `magiceffect` ORDER BY `id` ASC";
+	public const string magic_effect_list_query = "SELECT DISTINCT `id` FROM `magiceffect` ORDER BY `id` ASC";
 	
-	public const string location_query = "SELECT DISTINCT `expansion`, `location` FROM `npc` ORDER BY `expansion`, `location`";
+	public const string location_list_query = "SELECT DISTINCT `expansion`, `location` FROM `npc` ORDER BY `expansion`, `location`";
+    #endregion
 
     #region Item Inventory Queries
-	/* Queries that find objects (npcs, creatures, cells, etc) that hold a specific item */
+    /* Queries that find objects (npcs, creatures, cells, etc) that hold a specific item */
     public const string npc_inventory_query = """
 		SELECT 
 			n.id, 
@@ -202,7 +203,6 @@ public static class SqlQueries
 			JOIN json_each(l.items) AS j ON j.value->>'$.id' = @id
 	    ORDER BY expansion, l.id;
 	";
-
 	#endregion
 
 	#region Item Queries
@@ -212,8 +212,11 @@ public static class SqlQueries
 	public const string birthsign_query = @"SELECT * FROM birthsign WHERE id = @id";
 	public const string birthsign_spell_query = @"SELECT s.* FROM birthsign b LEFT JOIN spell s ON EXISTS (SELECT 1 FROM json_each(b.spells) AS j WHERE j.value = s.id) WHERE b.id = @id;";
     public const string book_query = @"SELECT book.*, e.effects, e.enchant_type, e.cost, e.max_charge FROM book	LEFT JOIN enchanting AS e ON e.id = book.enchanting	WHERE book.id = @id";
+    public const string cell_query = @"SELECT * FROM cell WHERE id = @id";
+    public const string class_query = @"SELECT * FROM class WHERE id = @id";
     public const string clothing_query = @"SELECT c.*, e.effects, e.enchant_type, e.cost, e.max_charge FROM clothing AS c LEFT JOIN enchanting AS e ON e.id = c.enchanting WHERE c.id = @id";
-
+	public const string container_query = @"SELECT * FROM container WHERE id = @id";
+    public const string creature_query = @"SELECT * FROM creature WHERE id = @id";
     public const string npc_query = @"SELECT * FROM npc WHERE id = @id";
     #endregion Item Queries
 
@@ -354,7 +357,7 @@ public static class SqlQueries
 	WHERE c.cell_id = @id";
     #endregion Cell Queries
 
-    #region Class Faction Race Queries
+    #region Class Faction Race Creature Queries
     public const string npc_class_query = @"
 		SELECT id, name, expansion, location 
 		FROM npc 
@@ -376,6 +379,13 @@ public static class SqlQueries
 		ORDER BY expansion, location, name;
 		";
 
+    public const string creature_list_query = @"
+		SELECT id, id AS 'name', 'leveledcreature' AS 'type', expansion 
+		FROM leveledcreature 
+		WHERE EXISTS (
+			SELECT 1 FROM json_each(creatures) AS j WHERE j.value->>'$.id' = @id
+		)
+		ORDER BY expansion, id;";
     #endregion
 
     public const string container_cell_query = @"

@@ -11,10 +11,12 @@ public interface ICatalogService {
     Task<InterfaceObject> GetInterfaceObject(CancellationToken ct = default);
     Task<object> GetBirthsign(CancellationToken ct, string id);
     Task<object> GetItem(CancellationToken ct, string query, string id);
-    Task<object> GetNpc(CancellationToken ct, string id);
     Task<object> GetCell(CancellationToken ct, string id);
     Task<object> GetClass(CancellationToken ct, string id);
     Task<object> GetContainer(CancellationToken ct, string id);
+    Task<object> GetCreature(CancellationToken ct, string id);
+
+    Task<object> GetNpc(CancellationToken ct, string id);
 }
 public class CatalogService(ICatalogRepository repo) : ICatalogService
 {
@@ -29,12 +31,12 @@ public class CatalogService(ICatalogRepository repo) : ICatalogService
     {
         var interfaceObject = new InterfaceObject();
 
-        interfaceObject.Filters.Race = await repo.GetStringListAsync(SqlQueries.race_query, ct);
-        interfaceObject.Filters.Class = await repo.GetStringListAsync(SqlQueries.class_query, ct);
-        interfaceObject.Filters.Faction = await repo.GetStringListAsync(SqlQueries.faction_query, ct);
-        interfaceObject.Filters.Expansion = await repo.GetStringListAsync(SqlQueries.expansion_query, ct);
-        interfaceObject.Filters.Location = await repo.GetDictionaryStringListAsync(SqlQueries.location_query, ct);
-        interfaceObject.Filters.MagicEffect = await repo.GetStringListAsync(SqlQueries.magic_effect_query, ct);
+        interfaceObject.Filters.Race = await repo.GetStringListAsync(SqlQueries.race_list_query, ct);
+        interfaceObject.Filters.Class = await repo.GetStringListAsync(SqlQueries.class_list_query, ct);
+        interfaceObject.Filters.Faction = await repo.GetStringListAsync(SqlQueries.faction_list_query, ct);
+        interfaceObject.Filters.Expansion = await repo.GetStringListAsync(SqlQueries.expansion_list_query, ct);
+        interfaceObject.Filters.Location = await repo.GetDictionaryStringListAsync(SqlQueries.location_list_query, ct);
+        interfaceObject.Filters.MagicEffect = await repo.GetStringListAsync(SqlQueries.magic_effect_list_query, ct);
         return interfaceObject;
     }
 
@@ -87,31 +89,6 @@ public class CatalogService(ICatalogRepository repo) : ICatalogService
         return returnObject;
     }
 
-    public async Task<object> GetNpc(CancellationToken ct, string id)
-    {
-        var parameters = new List<CatalogRepository.QueryParameter>
-        {
-            new CatalogRepository.QueryParameter{ Name="@id", Value=id }
-        };
-        var data = await repo.QueryToDictionaryAsync("SELECT * FROM npc WHERE id = @id", parameters, ct);
-        
-        var dialogueParameters = new List<CatalogRepository.QueryParameter>
-        {
-            new CatalogRepository.QueryParameter{ Name="@speakerId", Value=id },
-            new CatalogRepository.QueryParameter{ Name="@speakerId2", Value=id },
-            new CatalogRepository.QueryParameter{ Name="@speakerId3", Value=id }
-        };
-        var dialogue = await repo.QueryToDictionaryAsync(SqlQueries.npc_dialogue_query, dialogueParameters, ct);
-
-
-        var returnObject = new
-        {
-            data,
-            dialogue
-        };
-        return returnObject;
-    }
-
     public async Task<object> GetCell(CancellationToken ct, string id)
     {
         var parameter1 = new List<CatalogRepository.QueryParameter>
@@ -137,7 +114,7 @@ public class CatalogService(ICatalogRepository repo) : ICatalogService
             new CatalogRepository.QueryParameter{ Name="@id4", Value=id }
         };
 
-        var data = await repo.QueryToDictionaryAsync("SELECT * FROM cell WHERE id = @id", parameter1, ct);
+        var data = await repo.QueryToDictionaryAsync(SqlQueries.cell_query , parameter1, ct);
 
         var npcs = await repo.QueryToDictionaryAsync(SqlQueries.cell_npc_query, parameter1, ct);
 
@@ -176,7 +153,7 @@ public class CatalogService(ICatalogRepository repo) : ICatalogService
         {
             new CatalogRepository.QueryParameter{ Name="@id", Value=id }
         };
-        var data = await repo.QueryToDictionaryAsync("SELECT * FROM class WHERE id = @id", parameters, ct);
+        var data = await repo.QueryToDictionaryAsync(SqlQueries.class_query, parameters, ct);
         
         var npcs = await repo.QueryToDictionaryAsync(SqlQueries.npc_class_query, parameters, ct);
 
@@ -194,7 +171,7 @@ public class CatalogService(ICatalogRepository repo) : ICatalogService
         {
             new CatalogRepository.QueryParameter{ Name="@id", Value=id }
         };
-        var data = await repo.QueryToDictionaryAsync("SELECT * FROM container WHERE id = @id", parameters, ct);
+        var data = await repo.QueryToDictionaryAsync(SqlQueries.container_query, parameters, ct);
 
         var cells = await repo.QueryToDictionaryAsync(SqlQueries.container_cell_query, parameters, ct);
         
@@ -202,6 +179,52 @@ public class CatalogService(ICatalogRepository repo) : ICatalogService
         {
             data,
             cells
+        };
+        return returnObject;
+    }
+
+    public async Task<object> GetCreature(CancellationToken ct, string id)
+    {
+        var parameters = new List<CatalogRepository.QueryParameter>
+        {
+            new CatalogRepository.QueryParameter{ Name="@id", Value=id }
+        };
+        var data = await repo.QueryToDictionaryAsync(SqlQueries.creature_query, parameters, ct);
+
+        var cells = await repo.QueryToDictionaryAsync(SqlQueries.cell_inventory_query, parameters, ct);
+
+        var lists = await repo.QueryToDictionaryAsync(SqlQueries.creature_list_query, parameters, ct);
+
+        var returnObject = new
+        {
+            data,
+            cells,
+            lists
+        };
+        return returnObject;
+    }
+
+    public async Task<object> GetNpc(CancellationToken ct, string id)
+    {
+        var parameters = new List<CatalogRepository.QueryParameter>
+        {
+            new CatalogRepository.QueryParameter{ Name="@id", Value=id }
+        };
+        var data = await repo.QueryToDictionaryAsync(SqlQueries.npc_query, parameters, ct);
+
+        var dialogueParameters = new List<CatalogRepository.QueryParameter>
+        {
+            new CatalogRepository.QueryParameter{ Name="@speakerId", Value=id },
+            new CatalogRepository.QueryParameter{ Name="@speakerId2", Value=id },
+            new CatalogRepository.QueryParameter{ Name="@speakerId3", Value=id }
+        };
+        var dialogue = await repo.QueryToDictionaryAsync(SqlQueries.npc_dialogue_query, dialogueParameters, ct);
+
+
+        var returnObject = new
+        {
+            data,
+            dialogue
         };
         return returnObject;
     }
