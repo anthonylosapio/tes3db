@@ -14,6 +14,7 @@ public interface ICatalogService {
     Task<object> GetNpc(CancellationToken ct, string id);
     Task<object> GetCell(CancellationToken ct, string id);
     Task<object> GetClass(CancellationToken ct, string id);
+    Task<object> GetContainer(CancellationToken ct, string id);
 }
 public class CatalogService(ICatalogRepository repo) : ICatalogService
 {
@@ -183,6 +184,24 @@ public class CatalogService(ICatalogRepository repo) : ICatalogService
         {
             data,
             npcs
+        };
+        return returnObject;
+    }
+
+    public async Task<object> GetContainer(CancellationToken ct, string id)
+    {
+        var parameters = new List<CatalogRepository.QueryParameter>
+        {
+            new CatalogRepository.QueryParameter{ Name="@id", Value=id }
+        };
+        var data = await repo.QueryToDictionaryAsync("SELECT * FROM container WHERE id = @id", parameters, ct);
+
+        var cells = await repo.QueryToDictionaryAsync(SqlQueries.container_cell_query, parameters, ct);
+        
+        var returnObject = new
+        {
+            data,
+            cells
         };
         return returnObject;
     }

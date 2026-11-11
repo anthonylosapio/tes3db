@@ -6,6 +6,7 @@ namespace tes3db;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml.Linq;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 public static class SqlQueries
@@ -354,7 +355,6 @@ public static class SqlQueries
     #endregion Cell Queries
 
     #region Class Faction Race Queries
-
     public const string npc_class_query = @"
 		SELECT id, name, expansion, location 
 		FROM npc 
@@ -376,7 +376,32 @@ public static class SqlQueries
 		ORDER BY expansion, location, name;
 		";
 
-    #endregion 
+    #endregion
+
+    public const string container_cell_query = @"
+		SELECT 
+			m.quantity, 
+			m.owner, 
+			m.lock_level, 
+			m.key, 
+			m.trap, 
+			m.owner_faction, 
+			m.owner_faction_rank,
+			CASE
+				WHEN c.name!='' THEN c.name
+				ELSE c.id
+			END AS name,
+			c.id,
+			c.region,
+			'cell' AS object,
+			npc.name AS 'owner_name'
+
+		FROM
+			cellreferencemap AS m
+			JOIN cell AS c ON c.id = m.cell_id
+			LEFT JOIN npc ON npc.id = m.owner
+		WHERE reference_id = @id
+		";
     /// <summary>
     /// Parameters @speakerId, @speakerId2, @speakerId3 should all be passed the same value
     /// </summary>
