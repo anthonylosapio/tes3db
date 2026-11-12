@@ -9,10 +9,10 @@ public interface ICatalogService {
     
     Task<IReadOnlyList<Dictionary<string, object?>>> RunQueryAsync(string query, CancellationToken ct = default);
     Task<InterfaceObject> GetInterfaceObject(CancellationToken ct = default);
-    Task<object> GetBirthsign(CancellationToken ct, string id);
     Task<object> GetItem(CancellationToken ct, string query, string id);
+    Task<object> GetClassFactionRace(CancellationToken ct, string id, string dataQuery, string npcQuery);
+    Task<object> GetBirthsign(CancellationToken ct, string id);
     Task<object> GetCell(CancellationToken ct, string id);
-    Task<object> GetClass(CancellationToken ct, string id);
     Task<object> GetContainer(CancellationToken ct, string id);
     Task<object> GetCreature(CancellationToken ct, string id);
 
@@ -67,6 +67,24 @@ public class CatalogService(ICatalogRepository repo) : ICatalogService
              containers,
              cells,
              lists
+        };
+        return returnObject;
+    }
+
+    public async Task<object> GetClassFactionRace(CancellationToken ct, string id, string dataQuery, string npcQuery)
+    {
+        var parameters = new List<CatalogRepository.QueryParameter>
+        {
+            new CatalogRepository.QueryParameter{ Name="@id", Value=id }
+        };
+        var data = await repo.QueryToDictionaryAsync(dataQuery, parameters, ct);
+
+        var npcs = await repo.QueryToDictionaryAsync(npcQuery, parameters, ct);
+
+        var returnObject = new
+        {
+            data,
+            npcs
         };
         return returnObject;
     }
@@ -143,24 +161,6 @@ public class CatalogService(ICatalogRepository repo) : ICatalogService
             miscitems,
             creatures,
             lists
-        };
-        return returnObject;
-    }
-
-    public async Task<object> GetClass(CancellationToken ct, string id)
-    {
-        var parameters = new List<CatalogRepository.QueryParameter>
-        {
-            new CatalogRepository.QueryParameter{ Name="@id", Value=id }
-        };
-        var data = await repo.QueryToDictionaryAsync(SqlQueries.class_query, parameters, ct);
-        
-        var npcs = await repo.QueryToDictionaryAsync(SqlQueries.npc_class_query, parameters, ct);
-
-        var returnObject = new
-        {
-            data,
-            npcs
         };
         return returnObject;
     }

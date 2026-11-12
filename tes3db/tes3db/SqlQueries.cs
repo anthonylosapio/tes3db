@@ -217,7 +217,9 @@ public static class SqlQueries
     public const string clothing_query = @"SELECT c.*, e.effects, e.enchant_type, e.cost, e.max_charge FROM clothing AS c LEFT JOIN enchanting AS e ON e.id = c.enchanting WHERE c.id = @id";
 	public const string container_query = @"SELECT * FROM container WHERE id = @id";
     public const string creature_query = @"SELECT * FROM creature WHERE id = @id";
+	public const string faction_query = @"SELECT * FROM faction WHERE id = @id";
     public const string npc_query = @"SELECT * FROM npc WHERE id = @id";
+	public const string race_query = @"SELECT * FROM race WHERE id = @id";
     #endregion Item Queries
 
     #region Cell Queries

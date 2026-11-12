@@ -71,7 +71,7 @@ public class ApiServer
             TypedResults.Ok(await service.GetCell(ct, id)));
 
         app.MapGet("api/class/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
-            TypedResults.Ok(await service.GetClass(ct, id)));
+            TypedResults.Ok(await service.GetClassFactionRace(ct, id, SqlQueries.class_query, SqlQueries.npc_class_query)));
 
         app.MapGet("/api/clothing/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
             TypedResults.Ok(await service.GetItem(ct, SqlQueries.clothing_query, id)));
@@ -82,8 +82,14 @@ public class ApiServer
         app.MapGet("/api/creature/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
             TypedResults.Ok(await service.GetCreature(ct, id)));
 
+        app.MapGet("api/faction/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
+            TypedResults.Ok(await service.GetClassFactionRace(ct, id, SqlQueries.faction_query, SqlQueries.npc_faction_query)));
+
         app.MapGet("/api/npc/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
             TypedResults.Ok(await service.GetNpc(ct, id)));
+
+        app.MapGet("api/race/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
+            TypedResults.Ok(await service.GetClassFactionRace(ct, id, SqlQueries.race_query, SqlQueries.npc_race_query)));
 
         Console.WriteLine($"tes3db API listening on http://{host}:{port}  (Ctrl+C to stop)");
         Console.WriteLine($"Try: http://{host}:{port}/");
