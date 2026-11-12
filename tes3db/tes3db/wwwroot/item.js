@@ -96,12 +96,12 @@ function start(json, action) {
 		//Used by MagicEffect
 		const WeaponsContainer = document.getElementById('WeaponsContainer');
 		if (data.weapons && WeaponsContainer) {
-			renderLinkList(data.weapons, WeaponsContainer);
+			renderLinkList(data.weapons, WeaponsContainer, 'weapon');
 		}
 
 		const ListLinkListId = document.getElementById('ListLinkListId');
 		if (data.lists && ListLinkListId) {
-			renderLinkList(data.lists, ListLinkListId);
+			renderLinkList(data.lists, ListLinkListId, 'leveleditem');
 		}
 		//List of Ingredients
 		//Used by Cell

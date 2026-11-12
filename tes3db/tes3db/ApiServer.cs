@@ -91,6 +91,9 @@ public class ApiServer
         app.MapGet("/api/leveledcreature/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
             TypedResults.Ok(await service.GetContainerOrCreatureList(ct, id, SqlQueries.leveledcreature_query, SqlQueries.cell_inventory_query)));
 
+        app.MapGet("/api/leveleditem/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
+            TypedResults.Ok(await service.GetLeveledItem(ct, id)));
+
         app.MapGet("/api/npc/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
             TypedResults.Ok(await service.GetNpc(ct, id)));
 

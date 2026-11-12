@@ -15,7 +15,7 @@ public interface ICatalogService {
     Task<object> GetCell(CancellationToken ct, string id);
     Task<object> GetContainerOrCreatureList(CancellationToken ct, string id, string dataQuery, string cellQuery);
     Task<object> GetCreature(CancellationToken ct, string id);
-
+    Task<object> GetLeveledItem(CancellationToken ct, string id);
     Task<object> GetNpc(CancellationToken ct, string id);
 }
 public class CatalogService(ICatalogRepository repo) : ICatalogService
@@ -200,6 +200,30 @@ public class CatalogService(ICatalogRepository repo) : ICatalogService
             data,
             cells,
             lists
+        };
+        return returnObject;
+    }
+
+    public async Task<object> GetLeveledItem(CancellationToken ct, string id)
+    {
+        var parameters = new List<CatalogRepository.QueryParameter>
+        {
+            new CatalogRepository.QueryParameter{ Name="@id", Value=id }
+        };
+
+        var data = await repo.QueryToDictionaryAsync(SqlQueries.leveleditem_query, parameters, ct);
+        var npcs = await repo.QueryToDictionaryAsync(SqlQueries.npc_inventory_query, parameters, ct);
+        var creatures = await repo.QueryToDictionaryAsync(SqlQueries.creature_inventory_query, parameters, ct);
+        var containers = await repo.QueryToDictionaryAsync(SqlQueries.container_inventory_query, parameters, ct);
+        var cells = await repo.QueryToDictionaryAsync(SqlQueries.cell_inventory_query, parameters, ct);
+        
+        var returnObject = new  
+        {
+            data,
+            npcs,
+            creatures,
+            containers,
+            cells
         };
         return returnObject;
     }
