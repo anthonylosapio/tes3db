@@ -218,6 +218,7 @@ public static class SqlQueries
 	public const string container_query = @"SELECT * FROM container WHERE id = @id";
     public const string creature_query = @"SELECT * FROM creature WHERE id = @id";
 	public const string faction_query = @"SELECT * FROM faction WHERE id = @id";
+	public const string ingredient_query = @"SELECT * FROM ingredient WHERE id = @id";
     public const string npc_query = @"SELECT * FROM npc WHERE id = @id";
 	public const string race_query = @"SELECT * FROM race WHERE id = @id";
     #endregion Item Queries

@@ -85,6 +85,9 @@ public class ApiServer
         app.MapGet("api/faction/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
             TypedResults.Ok(await service.GetClassFactionRace(ct, id, SqlQueries.faction_query, SqlQueries.npc_faction_query)));
 
+        app.MapGet("api/ingredient/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
+            TypedResults.Ok(await service.GetItem(ct, SqlQueries.ingredient_query, id)));
+
         app.MapGet("/api/npc/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
             TypedResults.Ok(await service.GetNpc(ct, id)));
 
