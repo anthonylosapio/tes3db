@@ -221,6 +221,7 @@ public static class SqlQueries
 	public const string ingredient_query = @"SELECT * FROM ingredient WHERE id = @id";
 	public const string leveledcreature_query = @"SELECT * FROM leveledcreature WHERE id = @id";
 	public const string leveleditem_query = @"SELECT * FROM leveleditem WHERE id = @id";
+	public const string lockpick_query = @"SELECT * FROM lockpick WHERE id = @id";
     public const string npc_query = @"SELECT * FROM npc WHERE id = @id";
 	public const string race_query = @"SELECT * FROM race WHERE id = @id";
     #endregion Item Queries
