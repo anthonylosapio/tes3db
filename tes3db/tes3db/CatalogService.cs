@@ -13,7 +13,7 @@ public interface ICatalogService {
     Task<object> GetClassFactionRace(CancellationToken ct, string id, string dataQuery, string npcQuery);
     Task<object> GetBirthsign(CancellationToken ct, string id);
     Task<object> GetCell(CancellationToken ct, string id);
-    Task<object> GetContainer(CancellationToken ct, string id);
+    Task<object> GetContainerOrCreatureList(CancellationToken ct, string id, string dataQuery, string cellQuery);
     Task<object> GetCreature(CancellationToken ct, string id);
 
     Task<object> GetNpc(CancellationToken ct, string id);
@@ -165,15 +165,15 @@ public class CatalogService(ICatalogRepository repo) : ICatalogService
         return returnObject;
     }
 
-    public async Task<object> GetContainer(CancellationToken ct, string id)
+    public async Task<object> GetContainerOrCreatureList(CancellationToken ct, string id, string dataQuery, string cellQuery)
     {
         var parameters = new List<CatalogRepository.QueryParameter>
         {
             new CatalogRepository.QueryParameter{ Name="@id", Value=id }
         };
-        var data = await repo.QueryToDictionaryAsync(SqlQueries.container_query, parameters, ct);
+        var data = await repo.QueryToDictionaryAsync(dataQuery, parameters, ct);
 
-        var cells = await repo.QueryToDictionaryAsync(SqlQueries.container_cell_query, parameters, ct);
+        var cells = await repo.QueryToDictionaryAsync(cellQuery, parameters, ct);
         
         var returnObject = new
         {
