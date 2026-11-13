@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
+    <meta http-equiv="CACHE-CONTROL" content="NO-CACHE">
+    <title>The Morrowind Database</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="apple-touch-icon" sizes="57x57" href="apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+    <link href="bootstrap.css" rel="stylesheet">
+    <link href="site.css" rel="stylesheet">
+    <script src="functions.js"></script>
+    <script src="item.js"></script>
+    <script>
+			window.onload = function() {
+				fetchObjectData('Container');
+			};
+    </script>
+</head>
+<body style="background-color: #2B1A08;">
+    <div class="container">
+        <!-- -- -- -- BEGIN ROW 1  -- -- -- -->
+        <div class="row">
+            <div class="col-12 mb-1">
+                <div class="content-border content px-3 header-container">
+                    <div>
+                        <h1 id="nameId"></h1>
+                        Id: <span id="idId"></span>
+                    </div>
+                    <div style="color: #6F541D;">
+                        <h1><a class="plain-link" href="index.html">tes3db<span class="title-suffix">.com</span></a></h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- -- -- -- END ROW 1    -- -- -- -->
+        <div class="row gx-1 my-1">
+
+            <div class="col-12 col-lg-6">
+                <div class="content-border content h-100 p-2">
+                    <table class="w-100">
+                        <tbody>
+                            <tr><td class="table-label">Expansion:</td><td id="expansionId"></td></tr>
+                            <tr><td class="table-label">Encumbrance:</td><td id="encumbranceId"></td></tr>
+                            <tr><td class="table-label">Flags:</td><td id="container_flagsId"></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+                <div class="content-border content h-100 p-2">
+                    <div class="text-center">Container Inventory:</div>
+                    <div class="linked-inventory-list">
+                        <table class="w-100">
+                            <tbody id="InventoryTableId">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- -- -- -- BEGIN ROW 2  -- -- -- -->
+        <div class="row gx-1 my-1">
+
+            <div class="col-12">
+                <div class="content-border content h-100 p-2">
+                    <div class="text-center">Container Locations:</div>
+                    <div class="linked-inventory-list">
+                        <table class="w-100">
+                            <tbody id="CellsContainer">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- -- -- -- END ROW 3  -- -- -- -->
+        <!-- BEGIN FOOTER -->
+        <div class="row my-1">
+            <div class="col text-center">
+                <div class="content content-border">
+                    &nbsp;
+                </div>
+            </div>
+        </div>
+        <!-- END FOOTER -->
+
+    </div>
+</body>
+</html>
