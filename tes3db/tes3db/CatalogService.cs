@@ -16,6 +16,7 @@ public interface ICatalogService {
     Task<object> GetContainerOrCreatureList(CancellationToken ct, string id, string dataQuery, string cellQuery);
     Task<object> GetCreature(CancellationToken ct, string id);
     Task<object> GetLeveledItem(CancellationToken ct, string id);
+    Task<object> GetMagicEffect(CancellationToken ct, string id);
     Task<object> GetNpc(CancellationToken ct, string id);
 }
 public class CatalogService(ICatalogRepository repo) : ICatalogService
@@ -224,6 +225,41 @@ public class CatalogService(ICatalogRepository repo) : ICatalogService
             creatures,
             containers,
             cells
+        };
+        return returnObject;
+    }
+
+    public async Task<object> GetMagicEffect(CancellationToken ct, string id)
+    {
+
+        var parameters = new List<CatalogRepository.QueryParameter>
+        {
+            new CatalogRepository.QueryParameter{ Name="@id", Value=id }
+        };
+
+        var data = await repo.QueryToDictionaryAsync(SqlQueries.magiceffect_query, parameters, ct);
+
+        var spellsEffect = await repo.QueryToDictionaryAsync(SqlQueries.spell_effect_query, parameters, ct);
+
+        var clothing = await repo.QueryToDictionaryAsync(SqlQueries.clothing_effect_query, parameters, ct);
+
+        var armor = await repo.QueryToDictionaryAsync(SqlQueries.armor_effect_query, parameters, ct);
+
+        var weapons = await repo.QueryToDictionaryAsync(SqlQueries.weapon_effect_query, parameters, ct);
+
+        var alchemyEffect = await repo.QueryToDictionaryAsync(SqlQueries.alchemy_effect_query, parameters, ct);
+
+        var ingredientsEffect = await repo.QueryToDictionaryAsync(SqlQueries.ingredient_effect_query, parameters, ct);
+
+        var returnObject = new
+        {
+            data,
+            spellsEffect,
+            clothing,
+            armor,
+            weapons,
+            alchemyEffect,
+            ingredientsEffect
         };
         return returnObject;
     }

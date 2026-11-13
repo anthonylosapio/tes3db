@@ -100,6 +100,9 @@ public class ApiServer
         app.MapGet("/api/npc/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
             TypedResults.Ok(await service.GetNpc(ct, id)));
 
+        app.MapGet("/api/magiceffect/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
+            TypedResults.Ok(await service.GetMagicEffect(ct, id)));
+
         app.MapGet("/api/race/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
             TypedResults.Ok(await service.GetClassFactionRace(ct, id, SqlQueries.race_query, SqlQueries.npc_race_query)));
 
