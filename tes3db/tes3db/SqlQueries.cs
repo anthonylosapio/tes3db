@@ -224,8 +224,11 @@ public static class SqlQueries
 	public const string lockpick_query = @"SELECT * FROM lockpick WHERE id = @id";
 	public const string magiceffect_query = @"SELECT * FROM magiceffect WHERE id = @id";
     public const string miscitem_query = @"SELECT * FROM miscitem WHERE id = @id";
+	public const string probe_query = @"SELECT * FROM probe WHERE id = @id";
     public const string npc_query = @"SELECT * FROM npc WHERE id = @id";
 	public const string race_query = @"SELECT * FROM race WHERE id = @id";
+	public const string repairitem_query = @"SELECT * FROM repairitem WHERE id = @id";
+
     #endregion Item Queries
 
     #region Cell Queries

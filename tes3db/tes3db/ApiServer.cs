@@ -106,8 +106,14 @@ public class ApiServer
         app.MapGet("/api/miscitem/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
             TypedResults.Ok(await service.GetItem(ct, SqlQueries.miscitem_query, id)));
 
+        app.MapGet("/api/probe/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
+            TypedResults.Ok(await service.GetItem(ct, SqlQueries.probe_query, id)));
+
         app.MapGet("/api/race/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
             TypedResults.Ok(await service.GetClassFactionRace(ct, id, SqlQueries.race_query, SqlQueries.npc_race_query)));
+
+        app.MapGet("/api/repairitem/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
+            TypedResults.Ok(await service.GetItem(ct, SqlQueries.repairitem_query, id)));
 
         Console.WriteLine($"tes3db API listening on http://{host}:{port}  (Ctrl+C to stop)");
         Console.WriteLine($"Try: http://{host}:{port}/");
