@@ -228,6 +228,7 @@ public static class SqlQueries
     public const string npc_query = @"SELECT * FROM npc WHERE id = @id";
 	public const string race_query = @"SELECT * FROM race WHERE id = @id";
 	public const string repairitem_query = @"SELECT * FROM repairitem WHERE id = @id";
+	public const string skill_query = @"SELECT * FROM skill WHERE id = @id";
 
     #endregion Item Queries
 
@@ -457,6 +458,63 @@ public static class SqlQueries
 
     #endregion
 
+    #region Skill Queries
+
+    public const string alchemy_skill_query = @"
+    SELECT id, name, 'alcehmy' AS object, effects, expansion 
+    FROM alchemy 
+    WHERE EXISTS (
+        SELECT 1 FROM json_each(effects) AS j WHERE j.value->>'$.skill' = @id
+    )
+    ORDER BY name;
+    ";
+
+    public const string spell_skill_query = @"
+    SELECT id, name, spell_type, cost, expansion 
+    FROM spell 
+    WHERE EXISTS (
+        SELECT 1 FROM json_each(effects) AS j WHERE j.value->>'$.skill' = @id
+    )
+    ORDER BY name;
+    ";
+
+    public const string clothing_skill_query = @"
+    SELECT clothing.id, clothing.name, clothing.clothing_type AS 'type', 'clothing' AS 'object', expansion
+    FROM clothing JOIN enchanting ON enchanting.id = clothing.enchanting
+    WHERE EXISTS (
+        SELECT 1 FROM json_each(enchanting.effects) AS j WHERE j.value->>'$.skill' = @id
+    )
+    ORDER BY clothing.clothing_type, clothing.name;
+    ";
+
+    public const string armor_skill_query = @"
+    SELECT armor.id, armor.name, armor.armor_type AS 'type', 'armor' AS 'object', expansion
+    FROM armor JOIN enchanting ON enchanting.id = armor.enchanting
+    WHERE EXISTS (
+        SELECT 1 FROM json_each(enchanting.effects) AS j WHERE j.value->>'$.skill' = @id
+    )
+    ORDER BY armor.armor_type, armor.name;
+    ";
+
+    public const string weapon_skill_query = @"
+    SELECT weapon.id, weapon.name, weapon.weapon_type AS 'type', 'weapon' AS 'object', expansion
+    FROM weapon JOIN enchanting ON enchanting.id = weapon.enchanting
+    WHERE EXISTS (
+        SELECT 1 FROM json_each(enchanting.effects) AS j WHERE j.value->>'$.skill' = @id
+    )
+    ORDER BY weapon.weapon_type, weapon.name;
+    ";
+
+    public const string ingredient_skill_query = @"
+    SELECT id, name, 'ingredient' AS object, effects, skills, attributes, expansion 
+    FROM ingredient 
+    WHERE EXISTS (
+        SELECT 1 FROM json_each(skills) AS j WHERE j.value = @id
+    )
+    ORDER BY name;
+    ";
+
+    #endregion
     public const string container_cell_query = @"
 		SELECT 
 			m.quantity, 

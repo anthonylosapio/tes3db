@@ -115,6 +115,9 @@ public class ApiServer
         app.MapGet("/api/repairitem/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
             TypedResults.Ok(await service.GetItem(ct, SqlQueries.repairitem_query, id)));
 
+        app.MapGet("/api/skill/{id}", async (ICatalogService service, string id, CancellationToken ct) =>
+            TypedResults.Ok(await service.GetSkill(ct, id)));
+
         Console.WriteLine($"tes3db API listening on http://{host}:{port}  (Ctrl+C to stop)");
         Console.WriteLine($"Try: http://{host}:{port}/");
 
