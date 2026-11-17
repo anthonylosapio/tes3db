@@ -230,6 +230,7 @@ public static class SqlQueries
 	public const string repairitem_query = @"SELECT * FROM repairitem WHERE id = @id";
 	public const string skill_query = @"SELECT * FROM skill WHERE id = @id";
 	public const string spell_query = @"SELECT * FROM spell WHERE id = @id";
+	public const string weapon_query = @"SELECT w.*, e.effects, e.enchant_type, e.cost, e.max_charge FROM weapon AS w LEFT JOIN enchanting AS e ON e.id = w.enchanting WHERE w.id = @id";
 
     #endregion Item Queries
 
