@@ -18,6 +18,8 @@ public interface ICatalogService {
     Task<object> GetLeveledItem(CancellationToken ct, string id);
     Task<object> GetMagicEffect(CancellationToken ct, string id);
     Task<object> GetNpc(CancellationToken ct, string id);
+    Task<object> GetSkill(CancellationToken ct, string id);
+    Task<object> GetSpell(CancellationToken ct, string id);
 }
 public class CatalogService(ICatalogRepository repo) : ICatalogService
 {
@@ -285,6 +287,60 @@ public class CatalogService(ICatalogRepository repo) : ICatalogService
         {
             data,
             dialogue
+        };
+        return returnObject;
+    }
+
+    public async Task<object> GetSkill(CancellationToken ct, string id)
+    {
+        var parameters = new List<CatalogRepository.QueryParameter>
+        {
+            new CatalogRepository.QueryParameter{ Name="@id", Value=id }
+        };
+        var data = await repo.QueryToDictionaryAsync(SqlQueries.skill_query, parameters, ct);
+
+        var alchemyEffect = await repo.QueryToDictionaryAsync(SqlQueries.alchemy_skill_query, parameters, ct);
+
+        var spellsEffect = await repo.QueryToDictionaryAsync(SqlQueries.spell_skill_query, parameters, ct);
+        
+        var clothing = await repo.QueryToDictionaryAsync(SqlQueries.clothing_skill_query, parameters, ct);
+
+        var armor = await repo.QueryToDictionaryAsync(SqlQueries.armor_skill_query, parameters, ct);
+
+        var weapons = await repo.QueryToDictionaryAsync(SqlQueries.weapon_skill_query, parameters, ct);
+
+        var ingredientsEffect = await repo.QueryToDictionaryAsync(SqlQueries.ingredient_skill_query, parameters, ct);
+
+        var returnObject = new
+        {
+            data,
+            alchemyEffect,
+            spellsEffect,
+            clothing,
+            armor,
+            weapons,
+            ingredientsEffect
+        };
+        return returnObject;
+    }
+
+    public async Task<object> GetSpell(CancellationToken ct, string id)
+    {
+        var parameters = new List<CatalogRepository.QueryParameter>
+        {
+            new CatalogRepository.QueryParameter{ Name="@id", Value=id }
+        };
+        var data = await repo.QueryToDictionaryAsync(SqlQueries.spell_query, parameters, ct);
+
+        var npcs = await repo.QueryToDictionaryAsync(SqlQueries.npc_spell_query, parameters, ct);
+
+        var creatures = await repo.QueryToDictionaryAsync(SqlQueries.creature_spell_query, parameters, ct);
+
+        var returnObject = new
+        {
+            data,
+            npcs,
+            creatures
         };
         return returnObject;
     }
