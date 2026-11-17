@@ -229,6 +229,7 @@ public static class SqlQueries
 	public const string race_query = @"SELECT * FROM race WHERE id = @id";
 	public const string repairitem_query = @"SELECT * FROM repairitem WHERE id = @id";
 	public const string skill_query = @"SELECT * FROM skill WHERE id = @id";
+	public const string spell_query = @"SELECT * FROM spell WHERE id = @id";
 
     #endregion Item Queries
 
@@ -513,6 +514,30 @@ public static class SqlQueries
     )
     ORDER BY name;
     ";
+
+    #endregion
+
+    #region Spell Queries
+
+    public const string npc_spell_query = @"
+		SELECT id, name, expansion, location
+		FROM npc
+		WHERE EXISTS (
+			SELECT 1 FROM json_each(spells)
+			WHERE json_each.value = @id
+		)
+		ORDER BY expansion, location, name;
+		";
+
+    public const string creature_spell_query = @"
+		SELECT id, name, expansion
+		FROM creature
+		WHERE EXISTS (
+			SELECT 1 FROM json_each(spells)
+			WHERE json_each.value = @id
+		)
+		ORDER BY expansion, name;
+		";
 
     #endregion
     public const string container_cell_query = @"

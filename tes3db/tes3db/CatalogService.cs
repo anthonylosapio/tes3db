@@ -19,6 +19,7 @@ public interface ICatalogService {
     Task<object> GetMagicEffect(CancellationToken ct, string id);
     Task<object> GetNpc(CancellationToken ct, string id);
     Task<object> GetSkill(CancellationToken ct, string id);
+    Task<object> GetSpell(CancellationToken ct, string id);
 }
 public class CatalogService(ICatalogRepository repo) : ICatalogService
 {
@@ -319,6 +320,27 @@ public class CatalogService(ICatalogRepository repo) : ICatalogService
             armor,
             weapons,
             ingredientsEffect
+        };
+        return returnObject;
+    }
+
+    public async Task<object> GetSpell(CancellationToken ct, string id)
+    {
+        var parameters = new List<CatalogRepository.QueryParameter>
+        {
+            new CatalogRepository.QueryParameter{ Name="@id", Value=id }
+        };
+        var data = await repo.QueryToDictionaryAsync(SqlQueries.spell_query, parameters, ct);
+
+        var npcs = await repo.QueryToDictionaryAsync(SqlQueries.npc_spell_query, parameters, ct);
+
+        var creatures = await repo.QueryToDictionaryAsync(SqlQueries.creature_spell_query, parameters, ct);
+
+        var returnObject = new
+        {
+            data,
+            npcs,
+            creatures
         };
         return returnObject;
     }
