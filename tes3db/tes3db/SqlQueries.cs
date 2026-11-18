@@ -565,6 +565,7 @@ public static class SqlQueries
 			LEFT JOIN npc ON npc.id = m.owner
 		WHERE reference_id = @id
 		";
+    #region Dialogue & Topic Queries
     /// <summary>
     /// Parameters @speakerId, @speakerId2, @speakerId3 should all be passed the same value
     /// </summary>
@@ -627,5 +628,73 @@ public static class SqlQueries
 			disposition, speaker_rank, speaker_sex, player_rank, quest_state
 		FROM ordered_list
 		ORDER BY dialogue_type, chain_start, position DESC; ";
+
+    public const string dialogue_topic_query = @"
+		WITH RECURSIVE ordered_list AS (
+			SELECT
+				id,
+				prev_id,
+				next_id,
+				text,
+				dialogue_type,
+				dialogue_topic,
+				dialogue_id,
+				expansion,
+				speaker_id,
+				speaker_race,
+				speaker_class,
+				speaker_faction,
+				speaker_cell,
+				player_faction,
+				disposition,
+				speaker_rank,
+				speaker_sex,
+				player_rank,
+				quest_state,
+				id AS chain_start,
+				1 AS position
+			FROM dialogueinfo
+			WHERE
+				dialogue_topic = @id1
+				AND id NOT IN (
+					SELECT next_id FROM dialogueinfo WHERE next_id IS NOT NULL
+					AND dialogue_topic = @id2
+				)
+			UNION ALL
+
+			SELECT
+				d.id,
+				d.prev_id,
+				d.next_id,
+				d.text,
+				d.dialogue_type,
+				d.dialogue_topic,
+				d.dialogue_id,
+				d.expansion,
+				d.speaker_id,
+				d.speaker_race,
+				d.speaker_class,
+				d.speaker_faction,
+				d.speaker_cell,
+				d.player_faction,
+				d.disposition,
+				d.speaker_rank,
+				d.speaker_sex,
+				d.player_rank,
+				d.quest_state,
+				ol.chain_start,
+				ol.position + 1
+			FROM
+				dialogueinfo d
+				JOIN ordered_list ol ON d.id = ol.next_id
+			WHERE d.dialogue_topic = @id3
+		)
+		SELECT DISTINCT dialogue_topic, dialogue_type, expansion, speaker_id, speaker_race, speaker_class, speaker_faction, speaker_cell, player_faction,
+						disposition, speaker_rank, speaker_sex, player_rank, quest_state, text
+		FROM ordered_list
+		ORDER BY expansion, speaker_id, speaker_race, chain_start, speaker_class, speaker_faction, speaker_cell, player_faction, position DESC
+		";
+
+    #endregion
 }
 

@@ -20,6 +20,7 @@ public interface ICatalogService {
     Task<object> GetNpc(CancellationToken ct, string id);
     Task<object> GetSkill(CancellationToken ct, string id);
     Task<object> GetSpell(CancellationToken ct, string id);
+    Task<object> GetTopic(CancellationToken ct, string id);
 }
 public class CatalogService(ICatalogRepository repo) : ICatalogService
 {
@@ -341,6 +342,32 @@ public class CatalogService(ICatalogRepository repo) : ICatalogService
             data,
             npcs,
             creatures
+        };
+        return returnObject;
+    }
+
+    public async Task<object> GetTopic(CancellationToken ct, string id)
+    {
+        var parameters = new List<CatalogRepository.QueryParameter>
+        {
+            new CatalogRepository.QueryParameter{ Name="@id1", Value=id },
+            new CatalogRepository.QueryParameter{ Name="@id2", Value=id },
+            new CatalogRepository.QueryParameter{ Name="@id3", Value=id }
+        };
+        var dialogue = await repo.QueryToDictionaryAsync(SqlQueries.dialogue_topic_query, parameters, ct);
+
+        var row = new Dictionary<string, object?>
+        {
+            ["dialogue_topic"] = id,
+            ["name"] = id,
+        };
+
+        var data = new List<Dictionary<string, object?>> { row };
+
+        var returnObject = new
+        {
+            data,
+            dialogue
         };
         return returnObject;
     }
